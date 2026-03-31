@@ -20,14 +20,15 @@ if (!isset($_SESSION['logged'])) {
       </a>
     </div>
 
+
     <!-- Navegación / Botones -->
     <nav class="nav-menu" aria-label="Menú de navegación">
-      <a href="gestionar.php" class="nav-item <?php echo ($activePage === 'gestionar') ? 'active' : ''; ?>">Gestionar</a>
-      <a href="busqueda.php" class="nav-item <?php echo ($activePage === 'busqueda') ? 'active' : ''; ?>">Búsqueda</a>
-      <a href="reportes.php" class="nav-item <?php echo ($activePage === 'reportes') ? 'active' : ''; ?>">Reportes</a>
-      <a href="perfil.php" class="nav-item <?php echo ($activePage === 'perfil') ? 'active' : ''; ?>">
+      <a href="/project-cpr/app/views/comisionado/gestionar.php" class="nav-item <?php echo ($activePage === 'gestionar') ? 'active' : ''; ?>">Gestionar</a>
+      <a href="/project-cpr/app/views/comisionado/busqueda.php" class="nav-item <?php echo ($activePage === 'busqueda') ? 'active' : ''; ?>">Búsqueda</a>
+      <a href="/project-cpr/app/views/comisionado/reportes.php" class="nav-item <?php echo ($activePage === 'reportes') ? 'active' : ''; ?>">Reportes</a>
+      <a href="/project-cpr/app/views/comisionado/perfil.php" class="nav-item <?php echo ($activePage === 'perfil') ? 'active' : ''; ?>">
         Hola,<br>
-        <strong><?php echo $_SESSION['usuario'] ?? 'Comisionado'; ?></strong>
+        <strong><?php echo $_SESSION['user']['username'] ?? 'Comisionado'; ?></strong>
       </a>
     </nav>
 

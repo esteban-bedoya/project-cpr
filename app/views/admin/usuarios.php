@@ -10,7 +10,17 @@ $activePage = 'usuarios';
 require_once __DIR__ . '/../../models/User.php';
 
 // Obtener todos los usuarios
-$usuarios = User::all();
+
+
+// Obtener filtros desde GET
+$filtro_estado = $_GET['filtro_estado'] ?? 'todos';
+$filtro_rol = $_GET['filtro_rol'] ?? 'todos';
+
+// Obtener usuarios filtrados
+$usuarios = User::filtrar($filtro_estado, $filtro_rol);
+
+
+
 ?>
 
 <!DOCTYPE html>
@@ -45,9 +55,30 @@ $usuarios = User::all();
                 <!-- ===================== -->
                 <div class="filtros" id="filtro-fol">
                     <span class="titulo-filtro">Filtrar rol</span>
-                    <label><input type="radio" name="filtro_rol" value="todos" checked> Todos</label>
-                    <label><input type="radio" name="filtro_rol" value="1"> Administradores</label>
-                    <label><input type="radio" name="filtro_rol" value="2"> Comisionados</label>
+                    <label>
+                        <input
+                            type="radio"
+                            name="filtro_rol"
+                            value="todos"
+                            <?= $filtro_rol === 'todos' ? 'checked' : '' ?>> Todos
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="filtro_rol"
+                            value="1"
+                            <?= $filtro_rol === '1' ? 'checked' : '' ?>> Administradores
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="filtro_rol"
+                            value="2"
+                            <?= $filtro_rol === '2' ? 'checked' : '' ?>> Comisionados
+                    </label>
+
                 </div>
 
                 <!-- ===================== -->
@@ -55,9 +86,30 @@ $usuarios = User::all();
                 <!-- ===================== -->
                 <div class="filtros" id="filtro-estado">
                     <span class="titulo-filtro">Filtrar estado</span>
-                    <label><input type="radio" name="filtro_estado" value="activos" checked> Activos</label>
-                    <label><input type="radio" name="filtro_estado" value="inactivos"> Inactivos</label>
-                    <label><input type="radio" name="filtro_estado" value="todos"> Todos</label>
+                    <label>
+                        <input
+                            type="radio"
+                            name="filtro_estado"
+                            value="activos"
+                            <?= $filtro_estado === 'activos' ? 'checked' : '' ?>> Activos
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="filtro_estado"
+                            value="inactivos"
+                            <?= $filtro_estado === 'inactivos' ? 'checked' : '' ?>> Inactivos
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="filtro_estado"
+                            value="todos"
+                            <?= $filtro_estado === 'todos' ? 'checked' : '' ?>> Todos
+                    </label>
+
                 </div>
             </div>
 
@@ -125,6 +177,8 @@ $usuarios = User::all();
                             </td>
                         </tr>
                     <?php endforeach; ?>
+
+
                 </tbody>
             </table>
 
@@ -288,6 +342,29 @@ $usuarios = User::all();
         });
     </script>
 
+    <script>
+        // ============================
+        // BUSCADOR EN VIVO
+        // ============================
+
+        const buscadorInput = document.querySelector('.buscador input');
+        const filas = document.querySelectorAll('.tabla-usuarios tbody tr');
+
+        buscadorInput.addEventListener('input', () => {
+            const texto = buscadorInput.value.toLowerCase().trim();
+
+            filas.forEach(fila => {
+                const contenidoFila = fila.textContent.toLowerCase();
+
+                // Si la fila contiene el texto -> se muestra
+                if (contenidoFila.includes(texto)) {
+                    fila.style.display = "";
+                } else {
+                    fila.style.display = "none";
+                }
+            });
+        });
+    </script>
 
 
 

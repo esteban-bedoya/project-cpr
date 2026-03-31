@@ -73,4 +73,35 @@ class User
         $stmt = $pdo->prepare("DELETE FROM usuarios WHERE id = ?");
         return $stmt->execute([$id]);
     }
+
+    public static function filtrar($estado, $rol)
+{
+    global $pdo;
+
+    // Base SQL
+    $sql = "SELECT * FROM usuarios WHERE 1 = 1";
+    $params = [];
+
+    // Filtrar por estado
+    if ($estado !== 'todos') {
+        if ($estado === 'activos') {
+            $sql .= " AND estado = 1";
+        } elseif ($estado === 'inactivos') {
+            $sql .= " AND estado = 2";
+        }
+    }
+
+    // Filtrar por rol
+    if ($rol !== 'todos') {
+        $sql .= " AND rol = ?";
+        $params[] = $rol;
+    }
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+
 }

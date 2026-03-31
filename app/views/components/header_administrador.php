@@ -17,7 +17,7 @@
       <a href="/project-cpr/app/views/admin/usuarios.php" class="nav-item <?= ($activePage === 'usuarios') ? 'active' : ''; ?>">Usuarios</a>
       <a href="/project-cpr/app/views/admin/perfil.php" class="nav-item <?= ($activePage === 'perfil') ? 'active' : ''; ?>">
         Hola,<br>
-        <strong><?= $_SESSION['usuario'] ?? 'Administrador'; ?></strong>
+        <strong><?= $_SESSION['user']['username'] ?? 'Administrador'; ?></strong>
       </a>
     </nav>
 
