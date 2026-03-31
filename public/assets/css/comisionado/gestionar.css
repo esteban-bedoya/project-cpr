@@ -1,0 +1,55 @@
+/* Contenedor global */
+.dashboard-container {
+    display: flex;
+    gap: 40px;
+    padding: 30px 40px;
+}
+
+/* SIDEBAR */
+.sidebar {
+    width: 220px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    padding-top: 10px;
+    border-right: 2px solid #ccc;
+}
+
+/* Botón verde "Agregar caso" */
+.btn-agregar {
+    background-color: #39A935;
+    color: #fff;
+    font-weight: 600;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.btn-agregar:hover {
+    background-color: #2f8b2c;
+}
+
+/* Cada bloque (Asignados, No atendido, etc.) */
+.sidebar-section {
+    display: flex;
+    justify-content: space-between;
+    background-color: #c8e9c6;
+    padding: 12px 15px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+/* Número */
+.sidebar-section .num {
+    font-weight: 700;
+    color: #000;
+}
+
+/* Contenido principal */
+.dashboard-content {
+    flex: 1;
+    padding: 15px;
+}

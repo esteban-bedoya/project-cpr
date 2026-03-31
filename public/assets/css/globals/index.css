@@ -1,0 +1,37 @@
+/* Hero section */
+.hero {
+  background-color: #062b4f;
+  text-align: center;
+  padding: 150px 20px 150px 20px;
+}
+
+.hero h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 1px;
+}
+
+.hero h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #39A935;
+  margin-top: 10px;
+}
+
+/* Info section */
+.info {
+  background-color: #39A935;
+  text-align: center;
+  padding: 43px 19px;
+  font-size: 1rem;
+  line-height: 2;
+  font-weight: 600;
+  color: #fff;
+}
+
+.color_azul {
+  background-color: #062b4f;
+  padding: 50px 20px;
+}
+

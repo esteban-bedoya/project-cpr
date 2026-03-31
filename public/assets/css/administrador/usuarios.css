@@ -1,0 +1,188 @@
+/****************************************
+        CONTENEDOR GENERAL
+****************************************/
+.usuarios-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column; /* organiza verticalmente */
+    gap: 25px; /* espacio entre secciones */
+}
+
+/****************************************
+          BOTÓN SUPERIOR
+****************************************/
+.top-actions {
+    display: flex;
+    justify-content: space-between; /* botón a la izquierda, filtros a la derecha */
+    align-items: center;
+}
+
+.btn-agregar {
+    background-color: #6fbe77;
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    color: #000000;
+    transition: background 0.2s;
+}
+
+.btn-agregar:hover {
+    background-color: #5aa665;
+}
+
+/****************************************
+             FILTROS
+****************************************/
+.filtros {
+    background: #d9f0dd;
+    padding: 10px 20px;
+    border-radius: 10px;
+    color: #000; /* texto negro */
+    display: flex;
+    align-items: center;
+}
+
+.filtros .titulo-filtro {
+    font-weight: 700;
+    margin-right: 10px;
+}
+
+.filtros label {
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+.filtros input {
+    margin-right: 5px;
+}
+
+/****************************************
+             BUSCADOR
+****************************************/
+.buscador {
+    width: 100%;
+    background: #d4e9d4;
+    padding: 12px 15px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.buscador .icon {
+    margin-right: 10px;
+    opacity: 0.7;
+}
+
+.buscador input {
+    width: 100%;
+    border: none;
+    font-size: 15px;
+    background: transparent;
+    outline: none;
+}
+
+/****************************************
+               TABLA
+****************************************/
+.tabla-usuarios {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tabla-usuarios thead {
+    background: #a7d9a7;
+}
+
+.tabla-usuarios th,
+.tabla-usuarios td {
+    padding: 12px;
+    text-align: left;
+    font-size: 14px;
+    border-bottom: 1px solid #ccc;
+    color: #000;
+}
+
+.acciones span {
+    color: #0056b3;
+    cursor: pointer;
+}
+
+.acciones span:hover {
+    text-decoration: underline;
+}
+
+/****************************************
+               MODALES
+****************************************/
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5); /* fondo semitransparente */
+    display: none; /* oculto por defecto */
+    align-items: center; /* centrar vertical */
+    justify-content: center; /* centrar horizontal */
+    z-index: 1000; /* encima de todo */
+}
+
+.modal-content {
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 15px;
+    width: 360px;
+    display: flex;
+    flex-direction: column; /* elementos verticales */
+    gap: 12px; /* espacio entre elementos */
+    color: #000;
+}
+
+/* Inputs y selects dentro del modal */
+.modal-content input,
+.modal-content select {
+    padding: 9px;
+    border: 1px solid #aaa;
+    border-radius: 6px;
+    display: block;       /* cada elemento en su línea */
+    width: 100%;          /* que ocupen todo el ancho */
+    margin-bottom: 10px;  /* espacio debajo de cada input */
+    box-sizing: border-box;
+}
+
+/* Botones dentro del modal */
+.modal-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.btn-guardar {
+    background: #6fbe77;
+    padding: 8px 18px;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-guardar:hover {
+    background: #5aa665;
+}
+
+.btn-cerrar {
+    background: rgb(175, 71, 71);
+    padding: 8px 18px;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-cerrar:hover {
+    background: rgb(150, 50, 50);
+}
