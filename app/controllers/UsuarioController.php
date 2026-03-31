@@ -7,16 +7,20 @@ class UsuarioController
 
     // Listar todos los usuarios
     public function index()
-    {
-        $usuarios = User::all();
-        __DIR__ . '/../views/admin/usuarios.php';
+{
+    session_start();
+
+    if (!isset($_SESSION['logged']) || $_SESSION['user']['rol'] != 1) {
+        header("Location: /project-cpr/public/login.php");
+        exit;
     }
 
-    // Mostrar formulario de creación
-    public function create()
-    {
-        include __DIR__ . '/../views/admin/usuarios.php';
-    }
+    $usuarios = User::all();
+
+    $activePage = 'usuarios';
+    include __DIR__ . '/../views/admin/usuarios.php';
+}
+
 
     // Guardar nuevo usuario
     public function store()

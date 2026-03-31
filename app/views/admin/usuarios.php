@@ -6,14 +6,7 @@
 // Página activa (puede ser usado en el header para resaltar menú)
 $activePage = 'usuarios';
 
-// Iniciar sesión
-session_start();
 
-// Proteger la página: solo admins (rol = 1) pueden acceder
-if (!isset($_SESSION['logged']) || $_SESSION['user']['rol'] != 1) {
-    header("Location: /project-cpr/public/login.php");
-    exit;
-}
 
 // Importar modelo de usuario
 require_once __DIR__ . '/../../models/User.php';
