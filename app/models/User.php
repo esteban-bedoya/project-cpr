@@ -57,12 +57,29 @@ class User
         ]);
     }
 
-    public static function update($id, $username, $rol, $correo, $telefono, $estado)
+    public static function update($id, $username, $rol, $correo, $telefono, $estado, $password = null)
     {
         global $pdo;
-        $stmt = $pdo->prepare("UPDATE usuarios SET username=?, rol=?, correo=?, telefono=?, estado=? WHERE id=?");
-        return $stmt->execute([$username, $rol, $correo, $telefono, $estado, $id]);
+
+        // Si el admin no escribió nueva contraseña → no modificarla
+        if ($password === null || trim($password) === '') {
+            $stmt = $pdo->prepare("UPDATE usuarios 
+                               SET username=?, rol=?, correo=?, telefono=?, estado=?
+                               WHERE id=?");
+
+            return $stmt->execute([$username, $rol, $correo, $telefono, $estado, $id]);
+        }
+
+        // Si el admin SÍ escribió una nueva contraseña → hashearla y actualizarla
+        $hashed = password_hash($password, PASSWORD_DEFAULT);
+
+        $stmt = $pdo->prepare("UPDATE usuarios 
+                           SET username=?, rol=?, correo=?, telefono=?, estado=?, password=?
+                           WHERE id=?");
+
+        return $stmt->execute([$username, $rol, $correo, $telefono, $estado, $hashed, $id]);
     }
+
 
     public static function delete($id)
     {

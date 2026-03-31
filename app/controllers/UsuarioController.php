@@ -64,8 +64,9 @@ class UsuarioController
         $correo = $_POST['correo'];
         $telefono = $_POST['telefono'];
         $estado = $_POST['estado'];
+        $password = $_POST['password'] ?? null;
 
-        User::update($id, $username, $rol, $correo, $telefono, $estado);
+        User::update($id, $username, $rol, $correo, $telefono, $estado, $password);
 
         header("Location: /project-cpr/public/usuarios.php");
         exit;

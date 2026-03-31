@@ -5,7 +5,7 @@
 
     <!-- Logo a la izquierda -->
     <div class="logo">
-      <a href="/project-cpr/admin/reportes.php" aria-label="Ir a la página principal">
+      <a href="/project-cpr/app/views/admin/reportes.php" aria-label="Ir a la página principal">
         <img src="/project-cpr/public/assets/img/logo-sena-cpr.png" alt="Logo SENA CPR">
       </a>
     </div>
