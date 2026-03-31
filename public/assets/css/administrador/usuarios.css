@@ -13,9 +13,12 @@
 ****************************************/
 .top-actions {
     display: flex;
-    justify-content: space-between; /* botón a la izquierda, filtros a la derecha */
-    align-items: center;
+    flex-direction: column;     /* uno debajo del otro */
+    align-items: center;         /* centrado horizontal */
+    justify-content: center;     
+    gap: 15px;                   /* espacio entre cada elemento */
 }
+
 
 .btn-agregar {
     background-color: #6fbe77;
@@ -42,6 +45,7 @@
     color: #000; /* texto negro */
     display: flex;
     align-items: center;
+    
 }
 
 .filtros .titulo-filtro {
