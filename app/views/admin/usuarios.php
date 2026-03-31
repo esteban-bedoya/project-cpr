@@ -30,7 +30,8 @@ $usuarios = User::all();
 <body class="private">
 
 <!-- Header del administrador -->
-<?php include('../components/header_administrador.php'); ?>
+<?php include __DIR__ . '/../components/header_administrador.php'; ?>
+
 
 <div class="main-content">
     <div class="usuarios-container">
