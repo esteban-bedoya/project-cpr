@@ -2,127 +2,136 @@
 
 <div class="case-layout">
 
-            <!-- ======= SIDEBAR FILTROS ======= -->
-            <div class="case-sidebar">
+    <!-- ============================================================
+         SIDEBAR (Filtros de navegación)
+    ============================================================ -->
+    <div class="case-sidebar">
 
-                <div class="filter-group">
-                    <label class="filter-title">Comisionado</label>
-                    <select>
-                        <option>Marlery Gaviria</option>
-                        <option>Comisionado 2</option>
-                    </select>
-                </div>
+        <!-- Comisionado -->
+        <div class="filter-group">
+            <label class="filter-title">Comisionado</label>
+            <select disabled>
+                <option><?= htmlspecialchars($caso['creado_por_nombre']) ?></option>
+            </select>
+        </div>
 
-                <!-- TIPO DE CASO (RADIO) -->
-                <div class="filter-group">
-                    <label class="filter-title">Tipo de caso</label>
+        <!-- Tipo de caso -->
+        <div class="filter-group">
+            <label class="filter-title">Tipo de caso</label>
+            <?php foreach ($tiposCaso as $t): ?>
+                <label class="check-item">
+                    <input 
+                        type="radio" 
+                        disabled
+                        <?= $caso['tipo_caso_id'] == $t['id'] ? 'checked' : '' ?>
+                    >
+                    <span><?= htmlspecialchars($t['nombre']) ?></span>
+                </label>
+            <?php endforeach; ?>
+        </div>
 
-                    <label class="check-item">
-                        <input type="radio" name="tipo_caso" checked>
-                        <span>Denuncia</span>
-                    </label>
+        <!-- Estado -->
+        <div class="filter-group">
+            <label class="filter-title">Estado</label>
+            <?php 
+            $estados = ['Atendido','No atendido','Pendiente'];
+            foreach ($estados as $e): ?>
+                <label class="check-item">
+                    <input 
+                        type="radio" 
+                        disabled
+                        <?= $caso['estado'] === $e ? 'checked' : '' ?>
+                    >
+                    <span><?= $e ?></span>
+                </label>
+            <?php endforeach; ?>
+        </div>
 
-                    <label class="check-item">
-                        <input type="radio" name="tipo_caso">
-                        <span>Solicitud</span>
-                    </label>
+        <!-- Tipo de proceso -->
+        <div class="filter-group">
+            <label class="filter-title">Tipo de proceso</label>
+            <select disabled>
+                <?php foreach ($tiposProceso as $p): ?>
+                    <option <?= $caso['tipo_proceso_id'] == $p['id'] ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($p['nombre']) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
 
-                    <label class="check-item">
-                        <input type="radio" name="tipo_caso">
-                        <span>Derecho de petición</span>
-                    </label>
+        <button class="btn-actualizar" disabled>Actualizar</button>
+    </div>
 
-                    <label class="check-item">
-                        <input type="radio" name="tipo_caso">
-                        <span>Tutela</span>
-                    </label>
-                </div>
+    <!-- ============================================================
+         PANEL PRINCIPAL DEL CASO
+    ============================================================ -->
+    <div class="case-content">
 
-                <!-- ESTADO (RADIO) -->
-                <div class="filter-group">
-                    <label class="filter-title">Estado</label>
+        <!-- Header -->
+        <div class="case-header">
+            #<?= $caso['numero_caso'] ?> | <?= htmlspecialchars($caso['asunto']) ?>
+        </div>
 
-                    <label class="check-item">
-                        <input type="radio" name="estado" checked>
-                        <span>Atendido</span>
-                    </label>
+        <div class="case-box">
 
-                    <label class="check-item">
-                        <input type="radio" name="estado">
-                        <span>No atendido</span>
-                    </label>
+            <!-- ====================================================
+                 MENSAJES Y CAMBIOS DE ESTADO ORDENADOS
+            ==================================================== -->
+            <?php
+            // Mezclar mensajes y historial en un solo arreglo de eventos
+            $eventos = array_merge(
+                array_map(fn($m) => ['tipo' => 'mensaje', 'data' => $m, 'fecha' => $m['fecha']], $mensajes),
+                array_map(fn($h) => ['tipo' => 'historial', 'data' => $h, 'fecha' => $h['fecha']], $historial)
+            );
 
-                    <label class="check-item">
-                        <input type="radio" name="estado">
-                        <span>Pendiente</span>
-                    </label>
-                </div>
+            // Ordenar cronológicamente
+            usort($eventos, fn($a, $b) => strtotime($a['fecha']) <=> strtotime($b['fecha']));
+            ?>
 
-                <div class="filter-group">
-                    <label class="filter-title">Tipo de proceso</label>
-                    <select>
-                        <option>Uniformes</option>
-                        <option>Presupuesto</option>
-                        <option>Formación</option>
-                    </select>
-                </div>
-
-                <button class="btn-actualizar">Actualizar</button>
-
-            </div>
-
-            <!-- ======= PANEL DE CASO ======= -->
-            <div class="case-content">
-
-                <div class="case-header"># 7399 | PRESUPUESTO FALTANTE</div>
-
-                <div class="case-box">
-
-                    <!-- Mensaje 1 -->
-                    <div class="msg-entry">
-                        <div class="msg-date">12/09/2025 16:40</div>
-                        <div class="msg-user">Marlery Gaviria (Comisionado) agrega caso #7399 | PRESUPUESTO FALTANTE</div>
-
-                        <div class="msg-body">
-                            <strong>Kevin Gil Orlas (+57 3246765898 | kevin_go@gmail.com)</strong><br><br>
-                            Se comunica el Sr. Kevin Gil Orlas por medio del correo electrónico.
-                            Realiza una denuncia contra Jorge Álvarez, quien realizó un contrato
-                            por una elevada suma incoherente. Adjunta evidencias.
-                        </div>
-
-                        <div class="msg-file">📎 Archivo adjunto</div>
-                    </div>
-
-                    <div class="divider"></div>
-
-                    <!-- Mensaje 2 -->
-                    <div class="msg-entry">
-                        <div class="msg-date">13/09/2025 11:45</div>
-                        <div class="msg-user">Marlery Gaviria (Comisionado)</div>
-
+            <?php foreach ($eventos as $e): ?>
+                <div class="msg-entry">
+                    <?php if ($e['tipo'] === 'mensaje'): ?>
+                        <div class="msg-date"><?= date("d/m/Y H:i", strtotime($e['data']['fecha'])) ?></div>
+                        <div class="msg-user"><?= htmlspecialchars($e['data']['username']) ?></div>
+                        <div class="msg-body"><?= nl2br(htmlspecialchars($e['data']['mensaje'])) ?></div>
+                        <?php if (!empty($e['data']['archivo'])): ?>
+                            <a class="msg-file" href="/uploads/<?= $e['data']['archivo'] ?>" target="_blank">
+                                📎 Archivo adjunto
+                            </a>
+                        <?php endif; ?>
+                    <?php else: ?>
                         <div class="msg-status-change">
-                            12/09/2025 16:40 — <strong>Marlery Gaviria cambió</strong><br>
-                            de “No atendido” a “Pendiente”
+                            <?= date("d/m/Y H:i", strtotime($e['data']['fecha'])) ?> —
+                            <strong><?= htmlspecialchars($e['data']['username']) ?> cambió</strong><br>
+                            de “<?= $e['data']['estado_anterior'] ?? '—' ?>” a “<?= $e['data']['estado_nuevo'] ?>”
                         </div>
-
-                        <div class="msg-body">
-                            Se registra el caso, me encuentro trabajando en él para brindar una pronta solución.
-                        </div>
-                    </div>
-
+                    <?php endif; ?>
                 </div>
-
-                <!-- INPUT MENSAJE -->
-                <div class="msg-input-box">
-                    <input type="text" placeholder="Escribir ..." class="msg-input">
-
-                    <label class="btn-attach">📎
-                        <input type="file" hidden>
-                    </label>
-
-                    <button class="btn-enviar">Enviar</button>
-                </div>
-
-            </div>
+                <div class="divider"></div>
+            <?php endforeach; ?>
 
         </div>
+
+        <!-- ============================================================
+             INPUT PARA NUEVO MENSAJE
+        ============================================================ -->
+        <form class="msg-input-box" method="POST" enctype="multipart/form-data"
+              action="/project-cpr/casos/<?= $caso['id'] ?>/mensaje">
+
+            <input 
+                type="text" 
+                name="mensaje" 
+                placeholder="Escribir ..."
+                class="msg-input"
+                required
+            >
+
+            <label class="btn-attach">📎
+                <input type="file" name="archivo" hidden>
+            </label>
+
+            <button class="btn-enviar">Enviar</button>
+        </form>
+
+    </div>
+</div>
