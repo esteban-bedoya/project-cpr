@@ -1,10 +1,17 @@
 <?php
 
+// ==========================================================
+// User.php - Modelo del usuario
+// ==========================================================
+
 require_once __DIR__ . '/../../config/db.php';
 
 class User
 {
 
+    // ------------------------------------------------------
+    // Obtener TODOS los usuarios
+    // ------------------------------------------------------
     public static function all()
     {
         global $pdo;
@@ -12,14 +19,20 @@ class User
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public static function find($id)
+    // ------------------------------------------------------
+    // Buscar usuario por su DOCUMENTO (identificador real para el admin)
+    // ------------------------------------------------------
+    public static function find($documento)
     {
         global $pdo;
-        $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE id = ?");
-        $stmt->execute([$id]);
+        $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE documento = ?");
+        $stmt->execute([$documento]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+    // ------------------------------------------------------
+    // Buscar usuario por username
+    // ------------------------------------------------------
     public static function findByUsername($username)
     {
         global $pdo;
@@ -28,7 +41,9 @@ class User
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    /* Nuevo método necesario para login por correo */
+    // ------------------------------------------------------
+    // Buscar usuario por correo (para login)
+    // ------------------------------------------------------
     public static function findByEmail($correo)
     {
         global $pdo;
@@ -37,17 +52,23 @@ class User
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public static function create($id, $username, $password, $rol, $correo, $telefono, $estado = 1)
+    // ------------------------------------------------------
+    // Crear usuario nuevo
+    // (IMPORTANTE: NO se envía el id porque ahora es AUTO_INCREMENT)
+    // ------------------------------------------------------
+    public static function create($documento, $username, $password, $rol, $correo, $telefono, $estado = 1)
     {
         global $pdo;
 
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-        $stmt = $pdo->prepare("INSERT INTO usuarios (id, username, password, rol, correo, telefono, estado)
-        VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt = $pdo->prepare("
+            INSERT INTO usuarios (documento, username, password, rol, correo, telefono, estado)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ");
 
         return $stmt->execute([
-            $id,
+            $documento,
             $username,
             $hashedPassword,
             $rol,
@@ -57,34 +78,62 @@ class User
         ]);
     }
 
-    public static function update($id, $username, $rol, $correo, $telefono, $estado, $password = null)
-    {
-        global $pdo;
+    // ------------------------------------------------------
+    // Actualizar usuario existente
+    // ------------------------------------------------------
+public static function updateById($id, $documento, $username, $rol, $correo, $telefono, $estado, $password = null)
+{
+    global $pdo;
 
-        // Si el admin no escribió nueva contraseña → no modificarla
-        if ($password === null || trim($password) === '') {
-            $stmt = $pdo->prepare("UPDATE usuarios 
-                               SET username=?, rol=?, correo=?, telefono=?, estado=?
-                               WHERE id=?");
+    // Si NO actualiza contraseña
+    if ($password === null || trim($password) === '') {
 
-            return $stmt->execute([$username, $rol, $correo, $telefono, $estado, $id]);
-        }
+        $stmt = $pdo->prepare("
+            UPDATE usuarios
+            SET documento = ?, username = ?, rol = ?, correo = ?, telefono = ?, estado = ?
+            WHERE id = ?
+        ");
 
-        // Si el admin SÍ escribió una nueva contraseña → hashearla y actualizarla
-        $hashed = password_hash($password, PASSWORD_DEFAULT);
-
-        $stmt = $pdo->prepare("UPDATE usuarios 
-                           SET username=?, rol=?, correo=?, telefono=?, estado=?, password=?
-                           WHERE id=?");
-
-        return $stmt->execute([$username, $rol, $correo, $telefono, $estado, $hashed, $id]);
+        return $stmt->execute([
+            $documento,
+            $username,
+            $rol,
+            $correo,
+            $telefono,
+            $estado,
+            $id
+        ]);
     }
 
+    // Si sí cambia contraseña
+    $hashed = password_hash($password, PASSWORD_DEFAULT);
 
-    public static function delete($id)
+    $stmt = $pdo->prepare("
+        UPDATE usuarios
+        SET documento = ?, username = ?, rol = ?, correo = ?, telefono = ?, estado = ?, password = ?
+        WHERE id = ?
+    ");
+
+    return $stmt->execute([
+        $documento,
+        $username,
+        $rol,
+        $correo,
+        $telefono,
+        $estado,
+        $hashed,
+        $id
+    ]);
+}
+
+
+    // ------------------------------------------------------
+    // Eliminar usuario por DOCUMENTO
+    // ------------------------------------------------------
+    public static function delete($documento)
     {
         global $pdo;
-        $stmt = $pdo->prepare("DELETE FROM usuarios WHERE id=?");
-        return $stmt->execute([$id]);
+        $stmt = $pdo->prepare("DELETE FROM usuarios WHERE documento = ?");
+        return $stmt->execute([$documento]);
     }
 }
