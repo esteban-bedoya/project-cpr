@@ -4,10 +4,6 @@ require_once __DIR__ . '/../models/User.php';
 
 class UsuarioController
 {
-
-    // ====================================
-    // LISTAR USUARIOS
-    // ====================================
     public function index()
     {
         session_start();
@@ -23,9 +19,7 @@ class UsuarioController
         include __DIR__ . '/../views/admin/usuarios.php';
     }
 
-    // ====================================
-    // GUARDAR NUEVO USUARIO
-    // ====================================
+
     public function store()
     {
         $documento = $_POST['documento'];
@@ -42,15 +36,11 @@ class UsuarioController
         exit;
     }
 
-    // ====================================
-    // ACTUALIZAR USUARIO
-    // ====================================
+
     public function update()
     {
-        // TOMAR ID DEL INPUT CORRECTO
         $id = $_POST['id'];
 
-        // CAMPOS EDITABLES
         $documento = $_POST['documento'];
         $username  = $_POST['username'];
         $rol       = $_POST['rol'];
@@ -59,18 +49,13 @@ class UsuarioController
         $estado    = $_POST['estado'];
         $password  = $_POST['password'] ?? null;
 
-        // LLAMAR AL MODELO CON LA NUEVA FIRMA CORRECTA
         User::updateById($id, $documento, $username, $rol, $correo, $telefono, $estado, $password);
-
 
         header("Location: /project-cpr/public/usuarios.php");
         exit;
     }
 
 
-    // ====================================
-    // ELIMINAR
-    // ====================================
     public function delete()
     {
         $id = $_GET['id'];
