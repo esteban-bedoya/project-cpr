@@ -277,7 +277,8 @@ class Caso
         $sql = "UPDATE casos SET 
         estado = :estado,
         tipo_proceso_id = :tipo_proceso_id,
-        tipo_caso_id = :tipo_caso_id
+        tipo_caso_id = :tipo_caso_id,
+        fecha_cierre = :fecha_cierre
         WHERE id = :id";
 
         $stmt = self::db()->prepare($sql);
@@ -285,6 +286,7 @@ class Caso
             ':estado' => $data['estado'],
             ':tipo_proceso_id' => $data['tipo_proceso_id'],
             ':tipo_caso_id' => $data['tipo_caso_id'],
+            ':fecha_cierre' => $data['fecha_cierre'],
             ':id' => $id
         ]);
     }
@@ -308,15 +310,16 @@ class Caso
     public static function guardarHistorialCampo($data)
     {
         $sql = "INSERT INTO casos_historial_campos 
-            (caso_id, usuario_id, campo, valor_anterior, valor_nuevo)
-            VALUES (:caso_id, :usuario_id, :campo, :valor_anterior, :valor_nuevo)";
+            (caso_id, usuario_id, campo, valor_anterior, valor_nuevo, motivo)
+            VALUES (:caso_id, :usuario_id, :campo, :valor_anterior, :valor_nuevo, :motivo)";
         $stmt = self::db()->prepare($sql);
         return $stmt->execute([
             ':caso_id' => $data['caso_id'],
             ':usuario_id' => $data['usuario_id'],
             ':campo' => $data['campo'],
             ':valor_anterior' => $data['valor_anterior'],
-            ':valor_nuevo' => $data['valor_nuevo']
+            ':valor_nuevo' => $data['valor_nuevo'],
+            ':motivo' => $data['motivo'] ?? 'manual'
         ]);
     }
 
@@ -326,7 +329,7 @@ class Caso
                 FROM casos_historial_campos h
                 JOIN usuarios u ON u.id = h.usuario_id
                 WHERE h.caso_id = ?
-                ORDER BY h.fecha ASC";
+                ORDER BY h.fecha DESC";
         $stmt = self::db()->prepare($sql);
         $stmt->execute([$caso_id]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);

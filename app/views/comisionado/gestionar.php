@@ -90,9 +90,7 @@
                                             } else {
                                                 if (!empty($caso['fecha_cierre'])) {
                                                     $fecha_cierre = new DateTime($caso['fecha_cierre']);
-                                                    $fecha_cierre->setTime(0, 0, 0);
                                                     $hoy = new DateTime();
-                                                    $hoy->setTime(0, 0, 0);
                                                     $interval = $hoy->diff($fecha_cierre);
                                                     $dias_restantes = (int)$interval->format('%r%a');
 
@@ -174,7 +172,8 @@
                 <textarea name="detalles" rows="4" required><?= htmlspecialchars($form_gestionar['detalles'] ?? '') ?></textarea>
 
                 <label>Fecha de cierre (posterior a la fecha actual)</label>
-                <input type="date" name="fecha_cierre" required value="<?= htmlspecialchars($form_gestionar['fecha_cierre'] ?? '') ?>">
+                <input type="date" name="fecha_cierre" required
+                    value="<?= htmlspecialchars($form_gestionar['fecha_cierre'] ?? '') ?>">
 
                 <div class="modal-buttons">
                     <button type="submit" class="btn-guardar">Guardar</button>

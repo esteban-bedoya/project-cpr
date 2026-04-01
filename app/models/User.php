@@ -120,6 +120,15 @@ public static function findById($id)
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
+public static function findByUsername($username)
+{
+    // Busca usuario por username (para usuario "Sistema").
+    global $pdo;
+    $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE username = ? LIMIT 1");
+    $stmt->execute([$username]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
 public static function updatePerfil($id, $correo, $password = null)
 {
     // Actualiza datos de perfil (correo y opcionalmente password).

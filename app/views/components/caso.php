@@ -108,6 +108,13 @@
 
         <div class="case-info">
 
+            <?php if (isset($_SESSION['success'])): ?>
+                <p style="color:#2e7d32; font-size:14px; margin-bottom:8px;">
+                    <?= $_SESSION['success']; ?>
+                </p>
+                <?php unset($_SESSION['success']); ?>
+            <?php endif; ?>
+
             <div class="info-item">
                 <strong>Radicado SENA:</strong>
                 <?= !empty($caso['radicado_sena']) ? htmlspecialchars($caso['radicado_sena']) : 'No registrado' ?>
@@ -312,7 +319,9 @@
             <input type="text" name="radicado_sena" maxlength="10" value="<?= htmlspecialchars($caso['radicado_sena'] ?? '') ?>">
 
             <label>Fecha de cierre</label>
-            <input type="date" name="fecha_cierre" value="<?= !empty($caso['fecha_cierre']) ? date('Y-m-d', strtotime($caso['fecha_cierre'])) : '' ?>">
+            <input type="date" name="fecha_cierre"
+                value="<?= !empty($caso['fecha_cierre']) ? date('Y-m-d', strtotime($caso['fecha_cierre'])) : '' ?>"
+                min="<?= date('Y-m-d') ?>">
 
             <div class="modal-buttons">
                 <button type="submit" class="btn-guardar">Guardar</button>
@@ -346,9 +355,22 @@
                         </div>
                         <div class="historial-texto">
                             <strong><?= htmlspecialchars($h['username']) ?></strong>
-                            cambió <strong><?= htmlspecialchars($campoLabel) ?></strong>
-                            de "<?= htmlspecialchars($h['valor_anterior'] ?? '') ?>"
-                            a "<?= htmlspecialchars($h['valor_nuevo'] ?? '') ?>"
+                            <?php if ($h['campo'] === 'fecha_cierre'): ?>
+                                <?php if (($h['motivo'] ?? '') === 'auto_estado'): ?>
+                                    cambio de <strong><?= htmlspecialchars($campoLabel) ?></strong>
+                                    de "<?= htmlspecialchars($h['valor_anterior'] ?? '') ?>"
+                                    a "<?= htmlspecialchars($h['valor_nuevo'] ?? '') ?>"
+                                    por actualización de estado
+                                <?php else: ?>
+                                    cambió <strong><?= htmlspecialchars($campoLabel) ?></strong>
+                                    de "<?= htmlspecialchars($h['valor_anterior'] ?? '') ?>"
+                                    a "<?= htmlspecialchars($h['valor_nuevo'] ?? '') ?>"
+                                <?php endif; ?>
+                            <?php else: ?>
+                                cambió <strong><?= htmlspecialchars($campoLabel) ?></strong>
+                                de "<?= htmlspecialchars($h['valor_anterior'] ?? '') ?>"
+                                a "<?= htmlspecialchars($h['valor_nuevo'] ?? '') ?>"
+                            <?php endif; ?>
                         </div>
                     </div>
                 <?php endforeach; ?>
