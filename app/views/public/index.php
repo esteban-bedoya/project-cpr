@@ -30,9 +30,9 @@
     <!-- Texto institucional -->
     <section class="info">
       <p>
-        ÓRGANO DE PARTICIPACIÓN CONFORMADO POR REPRESENTANTES DE LOS SERVIDORES PÚBLICOS Y DE LA ADMINISTRACIÓN.<br>
-        EN ESTE ESPACIO SE CONSOLIDAN LOS CASOS RELACIONADOS CON PRESUNTAS IRREGULARIDADES,<br>
-        CON EL PROPÓSITO DE VELAR POR LA TRANSPARENCIA, LA EQUIDAD Y LA ÉTICA INSTITUCIONAL.
+        Órgano de participación conformado por representantes de los servidores públicos y de la administración.<br>
+        En este espacio se consolidan los casos relacionados con presuntas irregularidades,<br>
+        con el propósito de velar por la transparencia, la equidad y la ética institucional.
       </p>
     </section>
 

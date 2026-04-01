@@ -34,7 +34,7 @@ body.public .login-container {
 .main-content {
     background-color: #ffffff;
     /* azul solo dentro del contenido */
-    min-height: 80vh;
+    min-height: calc(100vh - 120px);
     /* ocupa casi toda la altura de la pantalla */
     margin: 40px auto;
     /* margen arriba/abajo y centrado horizontal */

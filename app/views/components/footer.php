@@ -3,7 +3,7 @@
 
 <footer class="footer">
     <div class="footer-column">
-        <h4>Enlaces útiles</h4>
+        <h4>Enlaces útiles:</h4>
         <ul>
             <li>Política de Privacidad</li>
             <li>Manual de Usuario</li>
@@ -12,16 +12,16 @@
     </div>
 
     <div class="footer-column">
-        <h4>Contacto</h4>
+        <h4>Contacto:</h4>
         <ul>
-            <li>Dirección: Calle XX # XX-XX, Bogotá, Colombia</li>
-            <li>Correo: comisionpersonal@sena.admin.co</li>
             <li>Conmutador: (601) 5461500</li>
+            <li>Correo: comisionpersonal@sena.admin.co</li>
+            <li>Dirección: Calle XX # XX-XX, Bogotá, Colombia</li>
         </ul>
     </div>
 
     <div class="footer-column">
-        <h4>Aviso legal</h4>
+        <h4>Aviso legal:</h4>
         <ul>
             <li>© Copyright 2026 - SENA CPR</li>
             <li>Todos los derechos reservados</li>

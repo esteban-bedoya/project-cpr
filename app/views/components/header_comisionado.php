@@ -29,7 +29,7 @@ if (!isset($_SESSION['logged'])) {
       <a href="/project-cpr/public/busqueda_caso.php" class="nav-item <?php echo ($activePage === 'busqueda') ? 'active' : ''; ?>">Búsqueda*</a>
       <a href="/project-cpr/public/reportes.php" class="nav-item <?php echo ($activePage === 'reportes') ? 'active' : ''; ?>">Reportes*</a>
       <a href="/project-cpr/public/perfil.php" class="nav-item <?php echo ($activePage === 'perfil') ? 'active' : ''; ?>">
-        Hola,<br>
+        Comisionado,<br>
         <strong><?php echo $_SESSION['user']['username'] ?? 'Comisionado'; ?></strong>
       </a>
     </nav>

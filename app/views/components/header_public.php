@@ -1,5 +1,5 @@
 <!-- Componente: encabezado publico con logo y acceso al login -->
-<link rel="stylesheet" href="/PROJECT-CPR/public/assets/css/globals/header.css"/>
+<link rel="stylesheet" href="/PROJECT-CPR/public/assets/css/globals/header_public.css"/>
 
 
 <div class="header-background">
