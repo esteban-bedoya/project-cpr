@@ -7,7 +7,10 @@
     ============================================================ -->
     <div class="case-sidebar">
 
-        <form method="POST" action="/project-cpr/casos/<?= $caso['id'] ?>/updateDetalle">
+        <form method="POST" action="/project-cpr/public/caso.php">
+            <input type="hidden" name="action" value="updateDetalle">
+            <input type="hidden" name="caso_id" value="<?= $caso['id'] ?>">
+
 
             <!-- 1. Comisionado -->
             <div class="filter-group">
@@ -86,10 +89,30 @@
             <?php foreach ($eventos as $e): ?>
                 <div class="msg-entry">
                     <div class="msg-date"><?= date("d/m/Y H:i", strtotime($e['fecha'])) ?></div>
+
+
+
                     <?php if ($e['tipo'] == 'mensaje'): ?>
                         <div class="msg-user"><?= htmlspecialchars($e['data']['username']) ?></div>
-                        <div class="msg-body"><?= nl2br(htmlspecialchars($e['data']['mensaje'])) ?></div>
+
+                        <div class="msg-body">
+                            <?= nl2br(htmlspecialchars($e['data']['mensaje'])) ?>
+                        </div>
+
+                        <?php if (!empty($e['data']['archivo'])): ?>
+                            <div class="msg-archivo">
+                                <a href="/project-cpr/public/uploads/casos/<?= htmlspecialchars($e['data']['archivo']) ?>"
+                                    target="_blank">
+                                    📎 Ver archivo
+                                </a>
+                            </div>
+                        <?php endif; ?>
+
                     <?php else: ?>
+
+
+
+
                         <div class="msg-status-change">
                             <strong><?= htmlspecialchars($e['data']['username']) ?></strong> —
                             <?= htmlspecialchars($e['data']['descripcion']) ?>
@@ -104,8 +127,14 @@
         <!-- ============================================================
              INPUT PARA NUEVO MENSAJE
         ============================================================ -->
-        <form class="msg-input-box" method="POST" enctype="multipart/form-data"
-            action="/project-cpr/casos/<?= $caso['id'] ?>/mensaje">
+        <form class="msg-input-box"
+            method="POST"
+            enctype="multipart/form-data"
+            action="/project-cpr/public/caso.php">
+
+            <input type="hidden" name="action" value="mensaje">
+            <input type="hidden" name="caso_id" value="<?= $caso['id'] ?>">
+
 
             <input
                 type="text"

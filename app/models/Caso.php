@@ -152,12 +152,12 @@ class Caso
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-// ===============================
-// OBTENER CASOS ASIGNADOS A UN COMISIONADO
-// ===============================
-public static function getByComisionado($comisionado_id)
-{
-    $sql = "
+    // ===============================
+    // OBTENER CASOS ASIGNADOS A UN COMISIONADO
+    // ===============================
+    public static function getByComisionado($comisionado_id)
+    {
+        $sql = "
         SELECT c.*, tc.nombre AS tipo_caso_nombre, tp.nombre AS tipo_proceso_nombre
         FROM casos c
         JOIN tipos_caso tc ON tc.id = c.tipo_caso_id
@@ -166,68 +166,103 @@ public static function getByComisionado($comisionado_id)
         ORDER BY c.id DESC
     ";
 
-    $stmt = self::db()->prepare($sql);
-    $stmt->execute([':comisionado_id' => $comisionado_id]);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
+        $stmt = self::db()->prepare($sql);
+        $stmt->execute([':comisionado_id' => $comisionado_id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 
-// Crear asignación en casos_asignaciones
-public static function crearAsignacion($data)
-{
-    $sql = "INSERT INTO casos_asignaciones (caso_id, comisionado_id, asignado_por) VALUES (:caso_id, :comisionado_id, :asignado_por)";
-    $stmt = self::db()->prepare($sql);
-    return $stmt->execute([
-        ':caso_id' => $data['caso_id'],
-        ':comisionado_id' => $data['comisionado_id'],
-        ':asignado_por' => $data['asignado_por']
-    ]);
-}
+    // Crear asignación en casos_asignaciones
+    public static function crearAsignacion($data)
+    {
+        $sql = "INSERT INTO casos_asignaciones (caso_id, comisionado_id, asignado_por) VALUES (:caso_id, :comisionado_id, :asignado_por)";
+        $stmt = self::db()->prepare($sql);
+        return $stmt->execute([
+            ':caso_id' => $data['caso_id'],
+            ':comisionado_id' => $data['comisionado_id'],
+            ':asignado_por' => $data['asignado_por']
+        ]);
+    }
 
-// Obtener comisionados activos
-public static function getComisionadosActivos()
-{
-    $sql = "SELECT id, username FROM usuarios WHERE rol = 2 AND estado = 1 ORDER BY username";
-    $stmt = self::db()->prepare($sql);
-    $stmt->execute();
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
+    // Obtener comisionados activos
+    public static function getComisionadosActivos()
+    {
+        $sql = "SELECT id, username FROM usuarios WHERE rol = 2 AND estado = 1 ORDER BY username";
+        $stmt = self::db()->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 
-// Guardar un cambio en el historial (solo descripción)
-public static function guardarHistorial($data)
-{
-    $sql = "INSERT INTO casos_historial_estado (caso_id, usuario_id, descripcion) 
+    // Guardar un cambio en el historial (solo descripción)
+    public static function guardarHistorial($data)
+    {
+        $sql = "INSERT INTO casos_historial_estado (caso_id, usuario_id, descripcion) 
             VALUES (:caso_id, :usuario_id, :descripcion)";
-    $stmt = self::db()->prepare($sql);
-    return $stmt->execute([
-        ':caso_id' => $data['caso_id'],
-        ':usuario_id' => $data['usuario_id'],
-        ':descripcion' => $data['descripcion']
-    ]);
-}
+        $stmt = self::db()->prepare($sql);
+        return $stmt->execute([
+            ':caso_id' => $data['caso_id'],
+            ':usuario_id' => $data['usuario_id'],
+            ':descripcion' => $data['descripcion']
+        ]);
+    }
 
-// Obtener usuario por ID
-public static function getUsuario($id)
-{
-    $stmt = self::db()->prepare("SELECT id, username FROM usuarios WHERE id = ?");
-    $stmt->execute([$id]);
-    return $stmt->fetch(PDO::FETCH_ASSOC);
-}
+    // Obtener usuario por ID
+    public static function getUsuario($id)
+    {
+        $stmt = self::db()->prepare("SELECT id, username FROM usuarios WHERE id = ?");
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 
-// Obtener tipo de proceso
-public static function getTipoProceso($id)
-{
-    $stmt = self::db()->prepare("SELECT * FROM tipos_proceso WHERE id = ?");
-    $stmt->execute([$id]);
-    return $stmt->fetch(PDO::FETCH_ASSOC);
-}
+    // Obtener tipo de proceso
+    public static function getTipoProceso($id)
+    {
+        $stmt = self::db()->prepare("SELECT * FROM tipos_proceso WHERE id = ?");
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 
-// Obtener tipo de caso
-public static function getTipoCaso($id)
-{
-    $stmt = self::db()->prepare("SELECT * FROM tipos_caso WHERE id = ?");
-    $stmt->execute([$id]);
-    return $stmt->fetch(PDO::FETCH_ASSOC);
-}
+    // Obtener tipo de caso
+    public static function getTipoCaso($id)
+    {
+        $stmt = self::db()->prepare("SELECT * FROM tipos_caso WHERE id = ?");
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 
+    // ===============================
+    // GUARDAR MENSAJE DEL CASO
+    // ===============================
+    public static function guardarMensaje($data)
+    {
+        $sql = "INSERT INTO casos_mensajes 
+            (caso_id, usuario_id, mensaje, archivo)
+            VALUES (:caso_id, :usuario_id, :mensaje, :archivo)";
 
+        $stmt = self::db()->prepare($sql);
+        return $stmt->execute([
+            ':caso_id'   => $data['caso_id'],
+            ':usuario_id' => $data['usuario_id'],
+            ':mensaje'   => $data['mensaje'],
+            ':archivo'   => $data['archivo']
+        ]);
+    }
+
+    public static function updateDetalle($id, $data)
+    {
+        $sql = "UPDATE casos SET 
+        asignado_a = :asignado_a,
+        estado = :estado,
+        tipo_proceso_id = :tipo_proceso_id,
+        tipo_caso_id = :tipo_caso_id
+        WHERE id = :id";
+
+        $stmt = self::db()->prepare($sql);
+        return $stmt->execute([
+            ':asignado_a' => $data['asignado_a'],
+            ':estado' => $data['estado'],
+            ':tipo_proceso_id' => $data['tipo_proceso_id'],
+            ':tipo_caso_id' => $data['tipo_caso_id'],
+            ':id' => $id
+        ]);
+    }
 }

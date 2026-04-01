@@ -1,13 +1,4 @@
-<?php $activePage = 'caso';
-
-session_start();
-
-if (!isset($_SESSION['logged']) || $_SESSION['user']['rol'] != 2) {
-    header("Location: /project-cpr/public/login.php");
-    exit;
-}
-
-?>
+<?php $activePage = 'caso';?>
 
 <!DOCTYPE html>
 <html lang="en">
