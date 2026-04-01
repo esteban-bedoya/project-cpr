@@ -12,7 +12,7 @@ class CasoController
         if (!isset($_SESSION['logged'])) header("Location: /project-cpr/public/login.php");
 
         $rol = $_SESSION['user']['rol'];
-        if (!in_array($rol, [1,2])) header("Location: /project-cpr/public/login.php");
+        if (!in_array($rol, [1, 2])) header("Location: /project-cpr/public/login.php");
 
         $casos = Caso::all();
 
@@ -32,7 +32,7 @@ class CasoController
         if (!isset($_SESSION['logged'])) header("Location: /project-cpr/public/login.php");
 
         $rol = $_SESSION['user']['rol'];
-        if (!in_array($rol, [1,2])) header("Location: /project-cpr/public/login.php");
+        if (!in_array($rol, [1, 2])) header("Location: /project-cpr/public/login.php");
 
         $caso = Caso::find($id);
         if (!$caso) header("Location: /project-cpr/casos");
@@ -64,7 +64,7 @@ class CasoController
             'tipo_caso_id'       => $_POST['tipo_caso_id'] ?? null,
             'tipo_proceso_id'    => $_POST['tipo_proceso_id'] ?? null,
             'demandante_nombre'  => $_POST['demandante_nombre'] ?? null,
-            'demandante_contacto'=> $_POST['demandante_contacto'] ?? null,
+            'demandante_contacto' => $_POST['demandante_contacto'] ?? null,
             'asunto'             => $_POST['asunto'] ?? null,
             'detalles'           => $_POST['detalles'] ?? null,
             'estado'             => $_POST['estado'] ?? 'No atendido',
@@ -90,7 +90,7 @@ class CasoController
             'tipo_caso_id'       => $_POST['tipo_caso_id'] ?? null,
             'tipo_proceso_id'    => $_POST['tipo_proceso_id'] ?? null,
             'demandante_nombre'  => $_POST['demandante_nombre'] ?? null,
-            'demandante_contacto'=> $_POST['demandante_contacto'] ?? null,
+            'demandante_contacto' => $_POST['demandante_contacto'] ?? null,
             'asunto'             => $_POST['asunto'] ?? null,
             'detalles'           => $_POST['detalles'] ?? null,
             'estado'             => $_POST['estado'] ?? null
@@ -113,15 +113,13 @@ class CasoController
 
         header("Location: /project-cpr/casos");
     }
-// ===============================
-// MOSTRAR CASOS DEL COMISIONADO
-// ===============================
-public function gestionar()
-{
+    // ===============================
+    // MOSTRAR CASOS DEL COMISIONADO
+    // ===============================
+    public function gestionar()
+    {
 
-    $casos = Caso::getByComisionado($_SESSION['user']['id']);
-    require __DIR__ . '/../views/comisionado/gestionar.php';
-}
-
-
+        $casos = Caso::getByComisionado($_SESSION['user']['id']);
+        require __DIR__ . '/../views/comisionado/gestionar.php';
+    }
 }

@@ -1,5 +1,3 @@
-<?php $activePage = 'usuarios'; ?>
-
 <!DOCTYPE html>
 <html lang="es">
 

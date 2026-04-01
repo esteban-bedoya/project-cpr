@@ -6,17 +6,13 @@ class UsuarioController
 {
     public function index()
     {
-        // 1️⃣ Obtener filtros desde GET
+        $activePage = 'usuarios';
+
         $filtro_estado = $_GET['filtro_estado'] ?? 'todos';
         $filtro_rol    = $_GET['filtro_rol'] ?? 'todos';
 
-        // 2️⃣ Obtener usuarios (AQUÍ está la clave)
         $usuarios = User::filtrar($filtro_estado, $filtro_rol);
 
-        // 3️⃣ Variables para la vista
-        $activePage = 'usuarios';
-
-        // 4️⃣ Cargar vista
         include __DIR__ . '/../views/admin/usuarios.php';
     }
 
