@@ -1,5 +1,7 @@
 <?php
+// Front controller de la vista "Gestionar" para comisionados.
 
+// Configuracion de errores para entorno local.
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -14,6 +16,7 @@ if (!isset($_SESSION['logged']) || $_SESSION['user']['rol'] != 2) {
 
 require_once __DIR__ . '/../app/controllers/CasoController.php';
 
+// Instancia del controlador de casos.
 $controller = new CasoController();
 
 // Detectar acción enviada desde formulario o enlace

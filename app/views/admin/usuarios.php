@@ -1,3 +1,4 @@
+<!-- Vista de administracion de usuarios (tabla + modales) -->
 <!DOCTYPE html>
 <html lang="es">
 
@@ -103,7 +104,6 @@
                         <th>Estado</th>
                         <th>Correo</th>
                         <th>Teléfono</th>
-                        <th>Contraseña</th>
                         <th>Rol</th>
                         <th>Actualizar</th>
                     </tr>
@@ -117,9 +117,6 @@
                             <td><?= $usuario['estado'] == 1 ? 'Activo' : 'Inactivo' ?></td>
                             <td><?= htmlspecialchars($usuario['correo']) ?></td>
                             <td><?= htmlspecialchars($usuario['telefono']) ?></td>
-
-                            <!-- Nunca se muestra la contraseña -->
-                            <td>*****</td>
 
                             <td>
                                 <?php
@@ -190,7 +187,6 @@
                 <select name="rol">
                     <option value="1">Administrador</option>
                     <option value="2" selected>Comisionado</option>
-                    <option value="3">Super Admin</option>
                 </select>
 
                 <label>Estado</label>
@@ -237,7 +233,6 @@
                 <select name="rol" id="edit-rol">
                     <option value="1">Administrador</option>
                     <option value="2">Comisionado</option>
-                    <option value="3">Super Admin</option>
                 </select>
 
                 <label>Estado</label>

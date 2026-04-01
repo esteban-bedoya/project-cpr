@@ -1,3 +1,4 @@
+/* Estilos del detalle de caso: layout, sidebar y mensajes */
 /* ======== LAYOUT GENERAL ======== */
 .case-layout {
     display: grid;
@@ -48,6 +49,15 @@
     border-radius: 8px;
     border: 1px solid #b7dcb9;
     background: #fff;
+}
+
+/* Input con apariencia de select (solo lectura) */
+.case-sidebar .select-like {
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #b7dcb9;
+    background: #fff;
+    color: #000;
 }
 
 .btn-actualizar {
@@ -197,6 +207,14 @@
     border-radius: 6px;
     transition: 0.2s;
     user-select: none;
+}
+
+/* Aviso de proceso inactivo */
+.text-warning {
+    color: #b00020;
+    display: block;
+    margin-top: 6px;
+    font-size: 13px;
 }
 
 .btn-attach:hover {

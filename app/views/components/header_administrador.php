@@ -1,3 +1,4 @@
+<!-- Componente: header para administrador (menu del panel admin) -->
 <link rel="stylesheet" href="/project-cpr/public/assets/css/globals/header.css">
 
 <div class="header-background">
@@ -12,11 +13,11 @@
 
     <!-- Navegación -->
     <nav class="nav-menu" aria-label="Menú de navegación">
-      <a href="/project-cpr/app/views/admin/reportes.php" class="nav-item <?= ($activePage === 'reportes') ? 'active' : ''; ?>">Reportes</a>
-      <a href="/project-cpr/app/views/admin/casos.php" class="nav-item <?= ($activePage === 'casos') ? 'active' : ''; ?>">Casos</a>
+      <a href="/project-cpr/public/reportes.php" class="nav-item <?= ($activePage === 'reportes') ? 'active' : ''; ?>">Reportes*</a>
+      <a href="/project-cpr/public/busqueda_caso.php" class="nav-item <?= ($activePage === 'casos') ? 'active' : ''; ?>">Casos*</a>
       <a href="/project-cpr/public/usuarios.php" class="nav-item <?= ($activePage === 'usuarios') ? 'active' : ''; ?>">Usuarios</a>
       <a href="/project-cpr/public/perfil.php" class="nav-item <?= ($activePage === 'perfil') ? 'active' : ''; ?>">
-        Hola,<br>
+        Administrador, <br>
         <strong><?= $_SESSION['user']['username'] ?? 'Administrador'; ?></strong>
       </a>
     </nav>

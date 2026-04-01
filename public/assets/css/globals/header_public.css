@@ -1,8 +1,7 @@
 /* Estilos del header global (logo, menu y responsive) */
 .header {
-  height: 86px;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   padding: 20px 60px;
   background-color: #fff;
@@ -14,7 +13,9 @@
 
 .logo {
   padding: 6px;                  /* espacio interno para que no pegue al borde */
-  position: relative;            /* necesario si usas z-index */
+  position: absolute;            /* necesario si usas z-index */
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 2;                    /* para estar encima del ::after */
   background-color: transparent; /* si quieres fondo */
 }
@@ -34,8 +35,8 @@
   position: absolute;
   top: 0;
   right: 0;
-  /* width: 245px; */
-  width: 80%;
+  width: 245px;
+ /*  width: 80%; */
   height: 100%;
   background-color: #39A935;
   border-radius: 0 0 60px 60px;
@@ -55,12 +56,10 @@
   background-color: #000;
   color: #fff;
   text-decoration: none;
-  text-align: center;
   padding: 10px 28px;
   border-radius: 25px;
   border: 2px solid transparent;
   font-weight: 600;
-  font-size: 0.95rem;
   transition: all 0.3s;
 }
 

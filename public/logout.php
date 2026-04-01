@@ -1,4 +1,5 @@
 <?php
+// Archivo de cierre de sesion (logout).
 /**
  * Logout adaptado para PROJECT-CPR
  * Cierra sesión, elimina cookies y remember_token si aplica, y redirige a login.php

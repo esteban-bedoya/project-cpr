@@ -1,7 +1,8 @@
 <?php $activePage = 'reportes';
+// Vista de reportes para comisionado.
 
-session_start();
 
+// Seguridad: solo rol comisionado.
 if (!isset($_SESSION['logged']) || $_SESSION['user']['rol'] != 2) {
     header("Location: /project-cpr/public/login.php");
     exit;
@@ -21,13 +22,14 @@ if (!isset($_SESSION['logged']) || $_SESSION['user']['rol'] != 2) {
 
 <body class="private">
 
-    <?php include('../components/header_comisionado.php'); ?>
+    <!-- Header del comisionado -->
+    <?php include __DIR__ . '/../components/header_comisionado.php'; ?>
 
     <div class="main-content">
-        <!-- Todo tu contenido de busqueda.php -->
+        <!-- Contenido del modulo de reportes -->
+        <?php include __DIR__ . '/../components/reportes.php'; ?>
 
 
-       
 
     </div>
 

@@ -1,3 +1,4 @@
+<!-- Vista de gestionar casos para comisionado -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -11,12 +12,14 @@
 
 <body class="private">
 
+    <!-- Header del comisionado -->
     <?php include(__DIR__ . '/../components/header_comisionado.php'); ?>
 
     <div class="main-content">
         <div class="dashboard-container">
 
             <?php
+            // Filtro activo tomado desde la URL.
             $filtro_actual = $_GET['filtro'] ?? 'todos';
             ?>
 
@@ -129,43 +132,35 @@
 
             <form action="/project-cpr/public/gestionar.php?action=storeGestionar" method="POST">
 
-                <label>Seleccione el tipo de proceso</label>
-                <select name="tipo_proceso_id" id="add-tipo-proceso" required>
+                <label>Seleccione el tipo de caso</label>
+                <select name="tipo_caso_id" id="add-tipo-caso" required>
                     <option value="">- Seleccione -</option>
                     <?php
-                    $tiposProceso = Caso::getTiposProceso();
-                    foreach ($tiposProceso as $proceso) {
-                        if ($proceso['estado'] == 1) {
-                            echo "<option value='{$proceso['id']}' data-tipo-caso='{$proceso['tipo_caso_id']}'>{$proceso['nombre']}</option>";
-                        }
+                    $tiposCaso = Caso::getTiposCaso();
+                    foreach ($tiposCaso as $tc) {
+                        echo "<option value='{$tc['id']}'>{$tc['nombre']}</option>";
                     }
                     ?>
                 </select>
 
-                <input type="hidden" name="tipo_caso_id" id="add-tipo-caso">
-
-                <label>Nombres y apellidos del demandante</label>
-                <input type="text" name="demandante_nombre" required>
-
-                <label>Datos de contacto del demandante</label>
-                <input type="text" name="demandante_contacto" placeholder="Teléfono y/o correo" required>
+                <label>Seleccione el tipo de proceso</label>
+                <select name="tipo_proceso_id" id="add-tipo-proceso" required>
+                    <option value="">- Seleccione -</option>
+                    <?php
+                    $tiposProceso = Caso::getTiposProcesoActivos();
+                    foreach ($tiposProceso as $proceso) {
+                        if ($proceso['estado'] == 1) {
+                            echo "<option value='{$proceso['id']}'>{$proceso['nombre']}</option>";
+                        }
+                    }
+                    ?>
+                </select>
 
                 <label>Asunto</label>
                 <input type="text" name="asunto" required>
 
                 <label>Detalles del caso</label>
                 <textarea name="detalles" rows="4" required></textarea>
-
-                <label>Asignar proceso a</label>
-                <select name="asignado_a" required>
-                    <option value="">- Seleccione comisionado -</option>
-                    <?php
-                    $comisionados = Caso::getComisionadosActivos(); // función que devolverá solo usuarios con rol = 2 y estado = 1
-                    foreach ($comisionados as $c) {
-                        echo "<option value='{$c['id']}'>{$c['username']}</option>";
-                    }
-                    ?>
-                </select>
 
                 <div class="modal-buttons">
                     <button type="submit" class="btn-guardar">Guardar</button>
@@ -180,7 +175,6 @@
         const btnAgregar = document.querySelector('.btn-agregar');
         const modalAgregar = document.getElementById('modal-agregar');
         const selectProceso = document.getElementById('add-tipo-proceso');
-        const inputTipoCaso = document.getElementById('add-tipo-caso');
 
         btnAgregar.addEventListener('click', () => {
             modalAgregar.style.display = 'flex';
@@ -189,12 +183,6 @@
         function cerrarModalAgregar() {
             modalAgregar.style.display = 'none';
         }
-
-        // Asignar automáticamente el tipo de caso según el proceso
-        selectProceso.addEventListener('change', () => {
-            const tipoCasoId = selectProceso.selectedOptions[0].dataset.tipoCaso;
-            inputTipoCaso.value = tipoCasoId;
-        });
 
         // Cerrar modal si se hace click fuera del contenido
         window.addEventListener('click', e => {

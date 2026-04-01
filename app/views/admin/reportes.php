@@ -1,7 +1,9 @@
-<?php $activePage = 'reportes'; 
+<?php $activePage = 'reportes';
+// Vista de reportes para administrador.
 
 session_start();
 
+// Seguridad: solo admin.
 if (!isset($_SESSION['logged']) || $_SESSION['user']['rol'] != 1) {
     header("Location: /project-cpr/public/login.php");
     exit;
@@ -23,13 +25,14 @@ if (!isset($_SESSION['logged']) || $_SESSION['user']['rol'] != 1) {
 
 <body class="private">
 
-    <?php include('../components/header_administrador.php'); ?>
+    <!-- Header del administrador -->
+    <?php include __DIR__ . '/../components/header_administrador.php'; ?>
 
     <div class="main-content">
-        <!-- Todo tu contenido de busqueda.php -->
+        <!-- Contenido del modulo de reportes -->
+        <?php include __DIR__ . '/../components/reportes.php'; ?>
 
 
-       
 
     </div>
 
