@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../models/Caso.php';
+require_once __DIR__ . '/../models/User.php';
 
 class CasoController
 {
@@ -14,11 +15,8 @@ class CasoController
 
         $casos = Caso::all();
 
-        if ($rol == 1) {
-            require __DIR__ . '/../views/admin/casos.php';
-        } else {
-            require __DIR__ . '/../views/comisionado/casos.php';
-        }
+        $view = $rol == 1 ? 'admin' : 'comisionado';
+        require __DIR__ . "/../views/{$view}/casos.php";
     }
 
     // ===============================
@@ -26,27 +24,56 @@ class CasoController
     // ===============================
     public function show($id)
     {
-
         $rol = $_SESSION['user']['rol'];
-        if (!in_array($rol, [1, 2])) header("Location: /project-cpr/public/login.php");
+        if (!in_array($rol, [1, 2])) {
+            header("Location: /project-cpr/public/login.php");
+            exit;
+        }
 
         $caso = Caso::find($id);
-        if (!$caso) header("Location: /project-cpr/casos");
-
-        $tiposCaso = Caso::getTiposCaso();
-        $tiposProceso = Caso::getTiposProceso();
-        $historial = Caso::getHistorial($id);
-        $mensajes = Caso::getMensajes($id);
-
-        // ===============================
-        // CARGAR VISTA SEGÚN EL ROL
-        // ===============================
-        if ($rol == 1) {
-            require __DIR__ . '/../views/admin/caso.php';
-        } else {
-            require __DIR__ . '/../views/comisionado/caso.php';
+        if (!$caso) {
+            header("Location: /project-cpr/casos");
+            exit;
         }
+
+        // =====================================
+        // COMISIONADO ASIGNADO (ACTIVO O NO)
+        // =====================================
+        $comisionadoAsignado = null;
+
+        if (!empty($caso['asignado_a'])) {
+            $comisionadoAsignado = User::findById($caso['asignado_a']);
+        }
+
+        // =====================================
+        // LISTA DE COMISIONADOS PARA EL SELECT
+        // =====================================
+        $comisionados = Caso::getComisionadosActivos();
+
+        // Si el asignado está INACTIVO, lo agregamos manualmente
+        if (
+            $comisionadoAsignado &&
+            $comisionadoAsignado['estado'] != 1
+        ) {
+            $comisionados[] = $comisionadoAsignado;
+        }
+
+        // =====================================
+        // DATOS PARA LA VISTA
+        // =====================================
+        $tiposCaso    = Caso::getTiposCaso();
+        $tiposProceso = Caso::getTiposProceso();
+        $historial    = Caso::getHistorial($id);
+        $mensajes     = Caso::getMensajes($id);
+
+        // =====================================
+        // CARGAR VISTA SEGÚN ROL
+        // =====================================
+        $view = $rol == 1 ? 'admin' : 'comisionado';
+        require __DIR__ . "/../views/{$view}/caso.php";
     }
+
+
 
     // ===============================
     // CREAR CASO

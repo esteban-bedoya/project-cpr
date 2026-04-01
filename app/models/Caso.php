@@ -238,7 +238,7 @@ class Caso
     // Obtener usuario por ID
     public static function getUsuario($id)
     {
-        $stmt = self::db()->prepare("SELECT id, username FROM usuarios WHERE id = ?");
+        $stmt = self::db()->prepare("SELECT id, username, estado FROM usuarios WHERE id = ?");
         $stmt->execute([$id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }

@@ -16,14 +16,17 @@
             <div class="filter-group">
                 <label class="filter-title">Comisionado</label>
 
-                <select name="comisionado_id" required>
-                    <?php foreach (Caso::getComisionadosActivos() as $c): ?>
-                        <option value="<?= $c['id'] ?>"
-                            <?= $caso['asignado_a'] == $c['id'] ? 'selected' : '' ?>>
+                <select name="comisionado_id">
+                    <option value="">— Comisionado asignado inactivo, revise historial —</option>
+
+                    <?php foreach ($comisionados as $c): ?>
+                        <option value="<?= $c['id'] ?>" <?= $caso['asignado_a'] == $c['id'] ? 'selected' : '' ?>>
                             <?= htmlspecialchars($c['username']) ?>
+                            <?= isset($c['estado']) && (int)$c['estado'] !== 1 ? ' (inactivo)' : '' ?>
                         </option>
                     <?php endforeach; ?>
                 </select>
+
             </div>
             <br>
 
@@ -92,6 +95,15 @@
         </div>
 
         <div class="case-info">
+
+            <?php if (!empty($caso['creado_por_nombre'])): ?>
+                <div class="info-item">
+                    <strong>Caso creado por:</strong>
+                    <?= htmlspecialchars($caso['creado_por_nombre']) ?>
+                </div>
+            <?php endif; ?>
+
+            <hr>
 
             <div class="info-item">
                 <strong>Demandante:</strong>
