@@ -50,6 +50,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         case 'mensaje':
             $controller->storeMensaje($id);
             break;
+        case 'updateCampos':
+            $controller->updateCampos($id);
+            break;
 
         default:
             die("Acción no válida.");
