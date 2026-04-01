@@ -23,7 +23,7 @@ if (!isset($_SESSION['logged'])) {
 
     <!-- Navegación / Botones -->
     <nav class="nav-menu" aria-label="Menú de navegación">
-      <a href="/project-cpr/app/views/comisionado/gestionar.php" class="nav-item <?php echo ($activePage === 'gestionar') ? 'active' : ''; ?>">Gestionar</a>
+      <a href="/project-cpr/public/gestionar.php" class="nav-item <?php echo ($activePage === 'gestionar') ? 'active' : ''; ?>">Gestionar</a>
       <a href="/project-cpr/app/views/comisionado/busqueda.php" class="nav-item <?php echo ($activePage === 'busqueda') ? 'active' : ''; ?>">Búsqueda</a>
       <a href="/project-cpr/app/views/comisionado/reportes.php" class="nav-item <?php echo ($activePage === 'reportes') ? 'active' : ''; ?>">Reportes</a>
       <a href="/project-cpr/app/views/comisionado/perfil.php" class="nav-item <?php echo ($activePage === 'perfil') ? 'active' : ''; ?>">

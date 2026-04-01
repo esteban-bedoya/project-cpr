@@ -21,11 +21,11 @@ if (!isset($_SESSION['logged']) || $_SESSION['user']['rol'] != 1) {
 
 <body class="private">
 
-    <?php include('../components/header_administrador.php'); ?>
+    <?php include __DIR__ . '/../components/header_administrador.php'; ?>
     <!-- Todo tu contenido de busqueda.php -->
     <div class="main-content">
 
-        <?php include('../components/perfil.php'); ?>
+        <?php include __DIR__ . '/../components/perfil.php'; ?>
 
     </div>
 
