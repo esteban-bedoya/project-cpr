@@ -319,7 +319,6 @@
 
             <label>Fecha de cierre</label>
             <input type="date" name="fecha_cierre" value="<?= !empty($caso['fecha_cierre']) ? date('Y-m-d', strtotime($caso['fecha_cierre'])) : '' ?>">
-            <input type="hidden" name="fecha_cierre_actual" value="<?= !empty($caso['fecha_cierre']) ? date('Y-m-d', strtotime($caso['fecha_cierre'])) : '' ?>">
 
             <div class="modal-buttons">
                 <button type="submit" class="btn-guardar">Guardar</button>
@@ -400,6 +399,7 @@
         if (e.target === modalEditarCampos) cerrarModalEditarCampos();
         if (e.target === modalHistorialCampos) cerrarModalHistorialCampos();
     });
+
 </script>
 
 <?php if (($_GET['error'] ?? '') === 'fechacierre'): ?>

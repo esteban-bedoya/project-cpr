@@ -247,7 +247,6 @@ class CasoController
         $detalles = trim($_POST['detalles'] ?? '');
         $radicado_sena = trim($_POST['radicado_sena'] ?? '');
         $fecha_cierre_raw = trim($_POST['fecha_cierre'] ?? '');
-        $fecha_cierre_actual = trim($_POST['fecha_cierre_actual'] ?? '');
         $fecha_cierre = $_POST['fecha_cierre'] ?? '';
 
         $usuario_creador_id = $_SESSION['user']['id'];
@@ -480,22 +479,32 @@ class CasoController
         $asunto = trim($_POST['asunto'] ?? '');
         $detalles = trim($_POST['detalles'] ?? '');
         $radicado_sena = trim($_POST['radicado_sena'] ?? '');
+        $fecha_cierre_raw = trim($_POST['fecha_cierre'] ?? '');
 
         $asunto = $asunto !== '' ? $asunto : null;
         $detalles = $detalles !== '' ? $detalles : null;
         $radicado_sena = $radicado_sena !== '' ? $radicado_sena : null;
         $fecha_cierre = $caso['fecha_cierre'] ?? null;
+        $fecha_cierre_actual = $fecha_cierre ? date('Y-m-d', strtotime($fecha_cierre)) : '';
+        $raw_ts = $fecha_cierre_raw !== '' ? strtotime($fecha_cierre_raw) : null;
+        $actual_ts = $fecha_cierre_actual !== '' ? strtotime($fecha_cierre_actual) : null;
 
-        // Si el usuario envía fecha, validar y aplicar 23:59:59
-        if ($fecha_cierre_raw !== '' && $fecha_cierre_raw !== $fecha_cierre_actual) {
-            $hoy = new DateTime();
-            $fc = DateTime::createFromFormat('Y-m-d', $fecha_cierre_raw);
-            if (!$fc || $fc < $hoy->setTime(0, 0, 0)) {
-                $_SESSION['error'] = "La fecha de cierre no puede ser anterior a hoy.";
-                header("Location: /project-cpr/public/caso.php?id=$id&error=fechacierre");
-                exit;
+        // Si el usuario cambia la fecha, validar y aplicar 23:59:59
+        if ($fecha_cierre_raw !== '') {
+            $cambio_real = !($raw_ts !== null && $actual_ts !== null && $raw_ts === $actual_ts);
+            if ($cambio_real) {
+                $hoy = new DateTime();
+                $hoy->setTime(0, 0, 0);
+                $fc = DateTime::createFromFormat('Y-m-d', $fecha_cierre_raw);
+                if (!$fc || $fc < $hoy) {
+                    $_SESSION['error'] = "La fecha de cierre no puede ser anterior a hoy.";
+                    header("Location: /project-cpr/public/caso.php?id=$id&error=fechacierre");
+                    exit;
+                }
+                $fecha_cierre = $fecha_cierre_raw . ' 23:59:59';
             }
-            $fecha_cierre = $fecha_cierre_raw . ' 23:59:59';
+        } elseif ($fecha_cierre_raw === '' && $fecha_cierre_actual === '') {
+            $fecha_cierre = null;
         }
 
         $cambios = [];
