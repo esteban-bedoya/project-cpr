@@ -291,18 +291,14 @@ class Caso
 
     public static function updateCampos($id, $data)
     {
-        // Actualiza asunto, detalles y radicado.
+        // Actualiza radicado y fecha de cierre.
         $sql = "UPDATE casos SET 
-        asunto = :asunto,
-        detalles = :detalles,
         radicado_sena = :radicado_sena,
         fecha_cierre = :fecha_cierre
         WHERE id = :id";
 
         $stmt = self::db()->prepare($sql);
         return $stmt->execute([
-            ':asunto' => $data['asunto'],
-            ':detalles' => $data['detalles'],
             ':radicado_sena' => $data['radicado_sena'],
             ':fecha_cierre' => $data['fecha_cierre'],
             ':id' => $id

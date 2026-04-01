@@ -476,13 +476,9 @@ class CasoController
 
         $usuario_id = $_SESSION['user']['id'];
 
-        $asunto = trim($_POST['asunto'] ?? '');
-        $detalles = trim($_POST['detalles'] ?? '');
         $radicado_sena = trim($_POST['radicado_sena'] ?? '');
         $fecha_cierre_raw = trim($_POST['fecha_cierre'] ?? '');
 
-        $asunto = $asunto !== '' ? $asunto : null;
-        $detalles = $detalles !== '' ? $detalles : null;
         $radicado_sena = $radicado_sena !== '' ? $radicado_sena : null;
         $fecha_cierre = $caso['fecha_cierre'] ?? null;
         $fecha_cierre_actual = $fecha_cierre ? date('Y-m-d', strtotime($fecha_cierre)) : '';
@@ -509,22 +505,6 @@ class CasoController
 
         $cambios = [];
 
-        if ($caso['asunto'] !== $asunto) {
-            $cambios[] = [
-                'campo' => 'asunto',
-                'anterior' => $caso['asunto'],
-                'nuevo' => $asunto
-            ];
-        }
-
-        if ($caso['detalles'] !== $detalles) {
-            $cambios[] = [
-                'campo' => 'detalles',
-                'anterior' => $caso['detalles'],
-                'nuevo' => $detalles
-            ];
-        }
-
         if (($caso['radicado_sena'] ?? null) !== $radicado_sena) {
             $cambios[] = [
                 'campo' => 'radicado_sena',
@@ -543,8 +523,6 @@ class CasoController
 
         if (!empty($cambios)) {
             Caso::updateCampos($id, [
-                'asunto' => $asunto,
-                'detalles' => $detalles,
                 'radicado_sena' => $radicado_sena,
                 'fecha_cierre' => $fecha_cierre
             ]);

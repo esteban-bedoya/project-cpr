@@ -311,12 +311,6 @@
             <label>Radicado SENA</label>
             <input type="text" name="radicado_sena" maxlength="10" value="<?= htmlspecialchars($caso['radicado_sena'] ?? '') ?>">
 
-            <label>Asunto</label>
-            <input type="text" name="asunto" value="<?= htmlspecialchars($caso['asunto'] ?? '') ?>">
-
-            <label>Detalles del caso</label>
-            <textarea name="detalles" rows="4"><?= htmlspecialchars($caso['detalles'] ?? '') ?></textarea>
-
             <label>Fecha de cierre</label>
             <input type="date" name="fecha_cierre" value="<?= !empty($caso['fecha_cierre']) ? date('Y-m-d', strtotime($caso['fecha_cierre'])) : '' ?>">
 
