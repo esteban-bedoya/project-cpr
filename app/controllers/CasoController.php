@@ -185,4 +185,72 @@ public function gestionarFiltrado()
     require __DIR__ . '/../views/comisionado/gestionar.php';
 }
 
+// ===============================
+// CREAR CASO DESDE GESTIONAR
+// ===============================
+public function storeGestionar()
+{
+    // La sesión ya está iniciada desde el front controller
+    if (!isset($_SESSION['logged'])) {
+        header("Location: /project-cpr/public/login.php");
+        exit;
+    }
+
+    $usuario_creador_id = $_SESSION['user']['id'];
+
+    // Validar campos mínimos
+    $tipo_proceso_id = $_POST['tipo_proceso_id'] ?? null;
+    $demandante_nombre = trim($_POST['demandante_nombre'] ?? '');
+    $demandante_contacto = trim($_POST['demandante_contacto'] ?? '');
+    $asunto = trim($_POST['asunto'] ?? '');
+    $detalles = trim($_POST['detalles'] ?? '');
+    $asignado_a = $_POST['asignado_a'] ?? null;
+
+    if (!$tipo_proceso_id || !$demandante_nombre || !$asignado_a) {
+        // Podrías redirigir con error o manejarlo como quieras
+        header("Location: /project-cpr/public/gestionar.php?error=1");
+        exit;
+    }
+
+    // Obtener el tipo de caso automáticamente según el tipo de proceso
+    $db = new PDO("mysql:host=localhost;dbname=project-cpr;charset=utf8", "root", "");
+    $stmt = $db->prepare("SELECT tipo_caso_id FROM tipos_proceso WHERE id = ?");
+    $stmt->execute([$tipo_proceso_id]);
+    $tipo_caso_id = $stmt->fetchColumn();
+
+    // Crear caso en la tabla 'casos'
+    $sql = "INSERT INTO casos 
+            (tipo_caso_id, tipo_proceso_id, demandante_nombre, demandante_contacto, asunto, detalles, estado, creado_por, asignado_a)
+            VALUES (:tipo_caso_id, :tipo_proceso_id, :demandante_nombre, :demandante_contacto, :asunto, :detalles, 'No atendido', :creado_por, :asignado_a)";
+    $stmt = $db->prepare($sql);
+    $stmt->execute([
+        ':tipo_caso_id'       => $tipo_caso_id,
+        ':tipo_proceso_id'    => $tipo_proceso_id,
+        ':demandante_nombre'  => $demandante_nombre,
+        ':demandante_contacto'=> $demandante_contacto,
+        ':asunto'             => $asunto,
+        ':detalles'           => $detalles,
+        ':creado_por'         => $usuario_creador_id,
+        ':asignado_a'         => $asignado_a
+    ]);
+
+    // Obtener el ID recién creado
+    $caso_id = $db->lastInsertId();
+
+    // Guardar histórico en casos_asignaciones
+    $sqlHist = "INSERT INTO casos_asignaciones (caso_id, comisionado_id, asignado_por) VALUES (:caso_id, :comisionado_id, :asignado_por)";
+    $stmtHist = $db->prepare($sqlHist);
+    $stmtHist->execute([
+        ':caso_id'         => $caso_id,
+        ':comisionado_id'  => $asignado_a,
+        ':asignado_por'    => $usuario_creador_id
+    ]);
+
+    // Redirigir de vuelta a gestionar
+    header("Location: /project-cpr/public/gestionar.php?success=1");
+    exit;
+}
+
+
+
 }

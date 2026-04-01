@@ -62,7 +62,7 @@
                                 <th>Fecha creación</th>
                                 <th>Caso</th>
                                 <th>Proceso</th>
-                                <th>Tiempos</th>
+                                <th>Tiempo</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -119,6 +119,88 @@
 
         </div>
     </div>
+
+    <!-- =========================================================== -->
+    <!-- ================== MODAL AGREGAR CASO ==================== -->
+    <!-- =========================================================== -->
+    <div class="modal" id="modal-agregar">
+        <div class="modal-content">
+            <h3>Agregar caso</h3>
+
+            <form action="/project-cpr/public/gestionar.php?action=storeGestionar" method="POST">
+
+                <label>Seleccione el tipo de proceso</label>
+                <select name="tipo_proceso_id" id="add-tipo-proceso" required>
+                    <option value="">- Seleccione -</option>
+                    <?php
+                    $tiposProceso = Caso::getTiposProceso();
+                    foreach ($tiposProceso as $proceso) {
+                        if ($proceso['estado'] == 1) {
+                            echo "<option value='{$proceso['id']}' data-tipo-caso='{$proceso['tipo_caso_id']}'>{$proceso['nombre']}</option>";
+                        }
+                    }
+                    ?>
+                </select>
+
+                <input type="hidden" name="tipo_caso_id" id="add-tipo-caso">
+
+                <label>Nombres y apellidos del demandante</label>
+                <input type="text" name="demandante_nombre" required>
+
+                <label>Datos de contacto del demandante</label>
+                <input type="text" name="demandante_contacto" placeholder="Teléfono y/o correo" required>
+
+                <label>Asunto</label>
+                <input type="text" name="asunto" required>
+
+                <label>Detalles del caso</label>
+                <textarea name="detalles" rows="4" required></textarea>
+
+                <label>Asignar proceso a</label>
+                <select name="asignado_a" required>
+                    <option value="">- Seleccione comisionado -</option>
+                    <?php
+                    $comisionados = Caso::getComisionadosActivos(); // función que devolverá solo usuarios con rol = 2 y estado = 1
+                    foreach ($comisionados as $c) {
+                        echo "<option value='{$c['id']}'>{$c['username']}</option>";
+                    }
+                    ?>
+                </select>
+
+                <div class="modal-buttons">
+                    <button type="submit" class="btn-guardar">Guardar</button>
+                    <button type="button" class="btn-cerrar" onclick="cerrarModalAgregar()">Cerrar</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const btnAgregar = document.querySelector('.btn-agregar');
+        const modalAgregar = document.getElementById('modal-agregar');
+        const selectProceso = document.getElementById('add-tipo-proceso');
+        const inputTipoCaso = document.getElementById('add-tipo-caso');
+
+        btnAgregar.addEventListener('click', () => {
+            modalAgregar.style.display = 'flex';
+        });
+
+        function cerrarModalAgregar() {
+            modalAgregar.style.display = 'none';
+        }
+
+        // Asignar automáticamente el tipo de caso según el proceso
+        selectProceso.addEventListener('change', () => {
+            const tipoCasoId = selectProceso.selectedOptions[0].dataset.tipoCaso;
+            inputTipoCaso.value = tipoCasoId;
+        });
+
+        // Cerrar modal si se hace click fuera del contenido
+        window.addEventListener('click', e => {
+            if (e.target === modalAgregar) cerrarModalAgregar();
+        });
+    </script>
 
 </body>
 

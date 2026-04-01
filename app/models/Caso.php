@@ -171,6 +171,26 @@ public static function getByComisionado($comisionado_id)
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+// Crear asignación en casos_asignaciones
+public static function crearAsignacion($data)
+{
+    $sql = "INSERT INTO casos_asignaciones (caso_id, comisionado_id, asignado_por) VALUES (:caso_id, :comisionado_id, :asignado_por)";
+    $stmt = self::db()->prepare($sql);
+    return $stmt->execute([
+        ':caso_id' => $data['caso_id'],
+        ':comisionado_id' => $data['comisionado_id'],
+        ':asignado_por' => $data['asignado_por']
+    ]);
+}
+
+// Obtener comisionados activos
+public static function getComisionadosActivos()
+{
+    $sql = "SELECT id, username FROM usuarios WHERE rol = 2 AND estado = 1 ORDER BY username";
+    $stmt = self::db()->prepare($sql);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 
 
 
