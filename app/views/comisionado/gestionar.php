@@ -1,3 +1,4 @@
+<!-- Vista de gestionar casos para comisionado -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -11,22 +12,25 @@
 
 <body class="private">
 
+    <!-- Header del comisionado -->
     <?php include(__DIR__ . '/../components/header_comisionado.php'); ?>
 
     <div class="main-content">
         <div class="dashboard-container">
 
             <?php
+            // Filtro activo tomado desde la URL.
             $filtro_actual = $_GET['filtro'] ?? 'todos';
+            $form_gestionar = $_SESSION['form_gestionar'] ?? [];
             ?>
 
             <!-- SIDEBAR -->
             <aside class="sidebar">
                 <button class="btn-agregar">Agregar caso</button>
 
-                <a href="?filtro=urgentes" class="btn-sidebar urgente <?= $filtro_actual === 'urgentes' ? 'active' : '' ?>">
-                    <span>Urgentes</span>
-                    <span class="num"><?= count($casos_urgentes) ?></span>
+                <a href="?filtro=proximos" class="btn-sidebar urgente <?= $filtro_actual === 'proximos' ? 'active' : '' ?>">
+                    <span>Próximos a vencer</span>
+                    <span class="num"><?= count($casos_proximos) ?></span>
                 </a>
 
                 <a href="?filtro=no_atendido" class="btn-sidebar <?= $filtro_actual === 'no_atendido' ? 'active' : '' ?>">
@@ -84,23 +88,21 @@
                                             if ($caso['estado'] === 'Atendido') {
                                                 echo "Resuelto";
                                             } else {
-                                                $plazos = [
-                                                    'Denuncia' => 30,
-                                                    'Solicitud' => 15,
-                                                    'Derecho de petición' => 15,
-                                                    'Tutela' => 10
-                                                ];
+                                                if (!empty($caso['fecha_cierre'])) {
+                                                    $fecha_cierre = new DateTime($caso['fecha_cierre']);
+                                                    $fecha_cierre->setTime(0, 0, 0);
+                                                    $hoy = new DateTime();
+                                                    $hoy->setTime(0, 0, 0);
+                                                    $interval = $hoy->diff($fecha_cierre);
+                                                    $dias_restantes = (int)$interval->format('%r%a');
 
-                                                $tipo = $caso['tipo_caso_nombre'] ?? '';
-                                                $dias_max = $plazos[$tipo] ?? 15; // default 15 días
-                                                $fecha_creacion = strtotime($caso['fecha_creacion']);
-                                                $dias_transcurridos = (int)((time() - $fecha_creacion) / 86400); // segundos a días
-                                                $dias_restantes = $dias_max - $dias_transcurridos;
-
-                                                if ($dias_restantes < 0) {
-                                                    echo "<span style='color:red;'>$dias_restantes días</span>";
+                                                    if ($dias_restantes < 0) {
+                                                        echo "<span style='color:red;'>$dias_restantes días</span>";
+                                                    } else {
+                                                        echo "$dias_restantes días";
+                                                    }
                                                 } else {
-                                                    echo "$dias_restantes días";
+                                                    echo "Sin fecha";
                                                 }
                                             }
                                             ?>
@@ -126,46 +128,53 @@
     <div class="modal" id="modal-agregar">
         <div class="modal-content">
             <h3>Agregar caso</h3>
+            <?php if (isset($_SESSION['error']) && ($_GET['error'] ?? '') === 'fechacierre'): ?>
+                <p style="color:#b00020; font-size:14px; margin-bottom:10px;">
+                    <?= $_SESSION['error']; ?>
+                </p>
+                <?php unset($_SESSION['error']); ?>
+            <?php endif; ?>
 
             <form action="/project-cpr/public/gestionar.php?action=storeGestionar" method="POST">
+
+                <label>Radicado SENA (opcional)</label>
+                <input type="text" name="radicado_sena" maxlength="10" placeholder="Radicado SENA"
+                    value="<?= htmlspecialchars($form_gestionar['radicado_sena'] ?? '') ?>">
+
+                <label>Seleccione el tipo de caso</label>
+                <select name="tipo_caso_id" id="add-tipo-caso" required>
+                    <option value="">- Seleccione -</option>
+                    <?php
+                    $tiposCaso = Caso::getTiposCaso();
+                    foreach ($tiposCaso as $tc) {
+                        $selected = ((string)($form_gestionar['tipo_caso_id'] ?? '') === (string)$tc['id']) ? 'selected' : '';
+                        echo "<option value='{$tc['id']}' {$selected}>{$tc['nombre']}</option>";
+                    }
+                    ?>
+                </select>
 
                 <label>Seleccione el tipo de proceso</label>
                 <select name="tipo_proceso_id" id="add-tipo-proceso" required>
                     <option value="">- Seleccione -</option>
                     <?php
-                    $tiposProceso = Caso::getTiposProceso();
+                    $tiposProceso = Caso::getTiposProcesoActivos();
                     foreach ($tiposProceso as $proceso) {
                         if ($proceso['estado'] == 1) {
-                            echo "<option value='{$proceso['id']}' data-tipo-caso='{$proceso['tipo_caso_id']}'>{$proceso['nombre']}</option>";
+                            $selected = ((string)($form_gestionar['tipo_proceso_id'] ?? '') === (string)$proceso['id']) ? 'selected' : '';
+                            echo "<option value='{$proceso['id']}' {$selected}>{$proceso['nombre']}</option>";
                         }
                     }
                     ?>
                 </select>
 
-                <input type="hidden" name="tipo_caso_id" id="add-tipo-caso">
-
-                <label>Nombres y apellidos del demandante</label>
-                <input type="text" name="demandante_nombre" required>
-
-                <label>Datos de contacto del demandante</label>
-                <input type="text" name="demandante_contacto" placeholder="Teléfono y/o correo" required>
-
                 <label>Asunto</label>
-                <input type="text" name="asunto" required>
+                <input type="text" name="asunto" required value="<?= htmlspecialchars($form_gestionar['asunto'] ?? '') ?>">
 
                 <label>Detalles del caso</label>
-                <textarea name="detalles" rows="4" required></textarea>
+                <textarea name="detalles" rows="4" required><?= htmlspecialchars($form_gestionar['detalles'] ?? '') ?></textarea>
 
-                <label>Asignar proceso a</label>
-                <select name="asignado_a" required>
-                    <option value="">- Seleccione comisionado -</option>
-                    <?php
-                    $comisionados = Caso::getComisionadosActivos(); // función que devolverá solo usuarios con rol = 2 y estado = 1
-                    foreach ($comisionados as $c) {
-                        echo "<option value='{$c['id']}'>{$c['username']}</option>";
-                    }
-                    ?>
-                </select>
+                <label>Fecha de cierre (posterior a la fecha actual)</label>
+                <input type="date" name="fecha_cierre" required value="<?= htmlspecialchars($form_gestionar['fecha_cierre'] ?? '') ?>">
 
                 <div class="modal-buttons">
                     <button type="submit" class="btn-guardar">Guardar</button>
@@ -180,7 +189,6 @@
         const btnAgregar = document.querySelector('.btn-agregar');
         const modalAgregar = document.getElementById('modal-agregar');
         const selectProceso = document.getElementById('add-tipo-proceso');
-        const inputTipoCaso = document.getElementById('add-tipo-caso');
 
         btnAgregar.addEventListener('click', () => {
             modalAgregar.style.display = 'flex';
@@ -190,17 +198,19 @@
             modalAgregar.style.display = 'none';
         }
 
-        // Asignar automáticamente el tipo de caso según el proceso
-        selectProceso.addEventListener('change', () => {
-            const tipoCasoId = selectProceso.selectedOptions[0].dataset.tipoCaso;
-            inputTipoCaso.value = tipoCasoId;
-        });
-
         // Cerrar modal si se hace click fuera del contenido
         window.addEventListener('click', e => {
             if (e.target === modalAgregar) cerrarModalAgregar();
         });
     </script>
+
+    <?php if (($_GET['error'] ?? '') === 'fechacierre'): ?>
+    <script>
+        // Mantener el modal abierto si hubo error de fecha
+        modalAgregar.style.display = 'flex';
+    </script>
+    <?php unset($_SESSION['form_gestionar']); ?>
+    <?php endif; ?>
 
 </body>
 

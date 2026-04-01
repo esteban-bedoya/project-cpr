@@ -1,6 +1,11 @@
 <?php
+// Vista publica de login (formulario de autenticacion).
+
+session_start();
+
 $activePage = 'login';
 
+// Errores visibles solo para entorno local.
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 ?>
@@ -18,15 +23,28 @@ error_reporting(E_ALL);
 
 <body class="public">
 
+    <!-- Header publico -->
     <?php include('../app/views/components/header_public.php'); ?>
 
     <div class="login-container">
         <div class="login-card">
             <h2>INICIAR SESIÓN</h2>
 
+            <!-- Mensaje de error de autenticacion -->
+            <?php if (isset($_SESSION['error'])): ?>
+                <div class="alert error">
+                    <?= $_SESSION['error']; ?>
+                </div>
+                <?php unset($_SESSION['error']); ?>
+            <?php endif; ?>
+
+
+
+            <!-- Formulario que envia a login_procesar.php -->
             <form action="/project-cpr/public/login_procesar.php" method="POST">
 
 
+                <!-- Linea de depuracion para ver la URL actual -->
                 <p>FORM ACTION REAL: <?php echo htmlentities($_SERVER['REQUEST_URI']); ?></p>
 
                 <label for="correo">Correo:</label>
@@ -43,6 +61,7 @@ error_reporting(E_ALL);
         </div>
     </div>
 
+    <!-- Footer compartido -->
     <?php include('../app/views/components/footer.php'); ?>
 
 </body>

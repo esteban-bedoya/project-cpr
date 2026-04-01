@@ -1,4 +1,5 @@
-<?php $activePage = 'caso';?>
+<?php $activePage = 'caso'; ?>
+<!-- Vista de detalle de caso para comisionado -->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -13,10 +14,12 @@
 
 <body class="private">
 
+    <!-- Header del comisionado -->
     <?php include __DIR__ . '/../components/header_comisionado.php'; ?>
 
     <div class="main-content">
 
+        <!-- Componente reutilizable del detalle de caso -->
         <?php include __DIR__ . '/../components/caso.php'; ?>
 
     </div>

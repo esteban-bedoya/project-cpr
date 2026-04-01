@@ -1,0 +1,276 @@
+/* Estilos del modulo de busqueda de casos */
+/* ===========================
+   BUSCAR CONTENEDOR
+   =========================== */
+
+.search-container {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 30px;
+    min-height: 500px;
+}
+
+/* ===========================
+   BARRA LATERAL DE FILTROS
+   =========================== */
+
+.filters-sidebar {
+    background-color: #f8f9fa;
+    padding: 25px;
+    border-radius: 15px;
+    height: fit-content;
+}
+
+.filters-title {
+    color: #1e1e1e;
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.filter-group {
+    margin-bottom: 25px;
+}
+
+.filter-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #1e1e1e;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.filter-toggle {
+    cursor: pointer;
+}
+
+.toggle-icon {
+    color: #6c757d;
+    font-size: 18px;
+    font-weight: 400;
+}
+
+/* Input Styles */
+.date-input,
+.text-input {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #495057;
+    background-color: white;
+}
+
+.date-input::placeholder,
+.text-input::placeholder {
+    color: #adb5bd;
+}
+
+/* Checkbox Options */
+.filter-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 12px;
+    max-height: 500px;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.filter-options.collapsed {
+    max-height: 0;
+    margin-top: 0;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    color: #1e1e1e;
+    font-size: 15px;
+}
+
+.checkbox-label:hover {
+    background-color: #e9ecef;
+}
+
+.checkbox-label.selected {
+    background-color: #c3e6cb;
+}
+
+.checkbox-label input[type="checkbox"] {
+    display: none;
+}
+
+.checkbox-custom {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #6c757d;
+    border-radius: 4px;
+    margin-right: 12px;
+    display: inline-block;
+    position: relative;
+    background-color: white;
+    flex-shrink: 0;
+}
+
+.checkbox-label.selected .checkbox-custom {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+.checkbox-label.selected .checkbox-custom::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* ===========================
+   SEARCH MAIN AREA
+   =========================== */
+
+.search-main {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Search Bar */
+.search-bar {
+    background-color: #c3e6cb; /* Verde claro */
+    padding: 15px 25px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.search-icon {
+    font-size: 24px;
+}
+
+.search-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 16px;
+    color: #1e1e1e;
+    outline: none;
+}
+
+.search-input::placeholder {
+    color: #495057;
+    opacity: 0.7;
+}
+
+/* ===========================
+   RESULTS TABLE
+   =========================== */
+
+.results-table {
+    background-color: white;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.cases-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.cases-table tbody {
+    display: table-row-group;
+}
+
+.table-row {
+    border-bottom: 1px solid #e9ecef;
+    transition: background-color 0.2s ease;
+    cursor: pointer;
+}
+
+.table-row:hover {
+    background-color: #f8f9fa;
+}
+
+.table-row:last-child {
+    border-bottom: none;
+}
+
+.table-row td {
+    padding: 20px 25px;
+    color: #1e1e1e;
+    font-size: 15px;
+}
+
+.col-id {
+    font-weight: 600;
+    width: 100px;
+}
+
+.col-description {
+    font-weight: 400;
+    width: auto;
+}
+
+.col-date {
+    font-weight: 400;
+    width: 150px;
+}
+
+.col-type {
+    font-weight: 600;
+    width: 150px;
+    text-align: right;
+}
+
+/* ===========================
+   RESPONSIVE DESIGN
+   =========================== */
+
+@media (max-width: 1024px) {
+    .search-container {
+        grid-template-columns: 1fr;
+    }
+
+    .filters-sidebar {
+        order: 2;
+    }
+
+    .search-main {
+        order: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .table-row td {
+        padding: 15px;
+        font-size: 14px;
+    }
+
+    .col-id,
+    .col-date,
+    .col-type {
+        font-size: 13px;
+    }
+
+    .search-bar {
+        padding: 12px 20px;
+    }
+
+    .filters-sidebar {
+        padding: 20px;
+    }
+}

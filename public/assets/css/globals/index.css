@@ -1,8 +1,14 @@
+/* Estilos de la pagina de inicio (hero e info) */
 /* Hero section */
 .hero {
   background-color: #062b4f;
   text-align: center;
-  padding: 150px 20px 150px 20px;
+  /* Reduce altura para evitar scroll en la vista inicial */
+  padding: 90px 20px 70px 20px;
+  min-height: 45vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .hero h1 {
@@ -12,26 +18,26 @@
   letter-spacing: 1px;
 }
 
-.hero h2 {
-  font-size: 2.5rem;
-  font-weight: 700;
+/* Segunda parte del titulo en verde */
+.hero h1 span {
   color: #39A935;
-  margin-top: 10px;
 }
 
 /* Info section */
 .info {
   background-color: #39A935;
   text-align: center;
-  padding: 43px 19px;
+  /* Ajuste de padding para compactar la sección */
+  padding: 28px 19px;
   font-size: 1rem;
   line-height: 2;
-  font-weight: 600;
+  font-weight: 400;
+  letter-spacing: 0.3px;
   color: #fff;
 }
 
 .color_azul {
   background-color: #062b4f;
-  padding: 50px 20px;
+  /* Franja decorativa más compacta */
+  padding: 24px 20px;
 }
-

@@ -1,3 +1,4 @@
+/* Estilos de la vista de perfil (formularios y botones) */
 /* Contenedor general de la vista */
 .perfil-container {
     max-width: 900px;
@@ -25,6 +26,16 @@
     border: none;
     border-radius: 10px;
     background-color: #C3E6BF;  /* Verde de la imagen */
+    font-size: 16px;
+    color: #000;
+}
+
+.grupo select {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 10px;
+    background-color: #C3E6BF;
     font-size: 16px;
     color: #000;
 }
@@ -82,4 +93,21 @@
 
 .btn-cerrar:hover {
     opacity: 0.9;
+}
+
+.alert {
+    padding: 12px;
+    margin-bottom: 20px;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.alert.success {
+    background: #e6f4ea;
+    color: #1e7e34;
+}
+
+.alert.error {
+    background: #fdecea;
+    color: #a71d2a;
 }

@@ -1,3 +1,4 @@
+/* Estilos base globales: tipografia, reset y layout general */
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap');
 
 * {
@@ -16,11 +17,24 @@ html, body {
     overscroll-behavior: none; /*para que no rebote al hacer scroll*/
 }
 
+/* Layout de paginas publicas para alinear el footer */
+body.public {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* El contenido ocupa el espacio disponible y empuja el footer */
+body.public main,
+body.public .login-container {
+    flex: 1;
+}
+
 /* Contenedor principal de la páginas pags ya logueadas */
 .main-content {
     background-color: #ffffff;
     /* azul solo dentro del contenido */
-    min-height: 80vh;
+    min-height: calc(100vh - 120px);
     /* ocupa casi toda la altura de la pantalla */
     margin: 40px auto;
     /* margen arriba/abajo y centrado horizontal */

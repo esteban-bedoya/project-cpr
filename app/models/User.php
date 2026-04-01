@@ -1,4 +1,5 @@
 <?php
+// Modelo User: operaciones CRUD y consultas de usuarios.
 
 require_once __DIR__ . '/../../config/db.php';
 
@@ -6,6 +7,7 @@ class User
 {
     public static function all()
     {
+        // Retorna todos los usuarios.
         global $pdo;
         $stmt = $pdo->query("SELECT * FROM usuarios");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -13,6 +15,7 @@ class User
 
     public static function find($documento)
     {
+        // Busca usuario por documento.
         global $pdo;
         $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE documento = ?");
         $stmt->execute([$documento]);
@@ -21,6 +24,7 @@ class User
 
     public static function findByEmail($correo)
     {
+        // Busca usuario por correo (login).
         global $pdo;
         $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE correo = ? LIMIT 1");
         $stmt->execute([$correo]);
@@ -29,6 +33,7 @@ class User
 
     public static function create($documento, $username, $password, $rol, $correo, $telefono, $estado = 1)
     {
+        // Inserta un nuevo usuario con password hasheada.
         global $pdo;
 
         $hashed = password_hash($password, PASSWORD_DEFAULT);
@@ -45,6 +50,7 @@ class User
 
     public static function updateById($id, $documento, $username, $rol, $correo, $telefono, $estado, $password = null)
     {
+        // Actualiza usuario; la contraseña es opcional.
         global $pdo;
 
         if ($password === null || trim($password) === '') {
@@ -69,6 +75,7 @@ class User
 
     public static function delete($id)
     {
+        // Elimina usuario por id.
         global $pdo;
         $stmt = $pdo->prepare("DELETE FROM usuarios WHERE id = ?");
         return $stmt->execute([$id]);
@@ -76,6 +83,7 @@ class User
 
     public static function filtrar($estado, $rol)
 {
+    // Filtrado dinamico por estado y rol (usado en admin).
     global $pdo;
 
     // Base SQL
@@ -105,6 +113,7 @@ class User
 
 public static function findById($id)
 {
+    // Busca usuario por id (uso interno).
     global $pdo;
     $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE id = ?");
     $stmt->execute([$id]);
@@ -113,6 +122,7 @@ public static function findById($id)
 
 public static function updatePerfil($id, $correo, $password = null)
 {
+    // Actualiza datos de perfil (correo y opcionalmente password).
     global $pdo;
 
     if ($password) {
