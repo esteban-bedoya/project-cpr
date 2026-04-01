@@ -1,0 +1,140 @@
+/* =====================================
+   CONTENEDOR GENERAL
+===================================== */
+.dashboard-container {
+    display: flex;
+    gap: 40px;
+    padding: 30px 40px;
+}
+
+/* =====================================
+   SIDEBAR
+===================================== */
+.sidebar {
+    width: 260px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    padding-top: 10px;
+    padding-left: 35px;
+    border-right: 2px solid #ccc;
+}
+
+
+/* Botón principal "Agregar caso" */
+.btn-agregar {
+    background-color: #18A83B;
+    color: #fff;
+    font-weight: 700;
+    border: none;
+    padding: 12px 15px; /* igual que los botones del sidebar */
+    border-radius: 12px 0 0 12px; 
+    cursor: pointer;
+    font-size: 15px; /* igual que los botones del sidebar */
+    text-align: center;
+    transition: 0.2s ease-in-out;
+}
+
+.btn-agregar:hover {
+    background-color: #128b31;
+}
+
+
+/* =====================================
+   BOTONES DEL SIDEBAR
+   Bordes redondeados SOLO en la izquierda
+===================================== */
+.btn-sidebar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 12px 15px; /* menos padding para que sea más pequeño */
+    background-color: #b6dfb4;
+    border: none;
+
+    border-top-left-radius: 14px;
+    border-bottom-left-radius: 14px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease;
+    color: #000;
+}
+
+.btn-sidebar:hover {
+    background-color: #dff0df;
+}
+
+.btn-sidebar .num {
+    font-weight: 800;
+    font-size: 16px;
+}
+
+/* =====================================
+   CONTENIDO PRINCIPAL
+===================================== */
+.dashboard-content {
+    flex: 1;
+    padding: 15px;
+}
+
+/* =====================================
+   TABLA
+===================================== */
+.table-container {
+    width: 100%;
+    overflow-y: auto;
+    max-height: 550px;
+    border-radius: 0px;
+    padding-right: 10px;
+}
+
+.cases-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+    color: #000;
+    border-radius: 0; 
+}
+
+/* ENCABEZADO DE TABLA */
+/* Quitamos los bordes redondeados */
+.cases-table thead {
+    background-color: #b6dfb4;
+    font-weight: 700;
+}
+
+.cases-table th {
+    padding: 14px;
+    text-align: left;
+    font-size: 15px;
+    background-color: #b6dfb4;
+}
+
+.cases-table tbody tr {
+    border-bottom: 1px solid #ccc;
+}
+
+.cases-table td {
+    padding: 12px 14px;
+}
+
+/* SCROLLBAR */
+.table-container::-webkit-scrollbar {
+    width: 10px;
+}
+
+.table-container::-webkit-scrollbar-track {
+    background: #e2e2e2;
+    border-radius: 10px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+    background: #b0b0b0;
+    border-radius: 10px;
+}

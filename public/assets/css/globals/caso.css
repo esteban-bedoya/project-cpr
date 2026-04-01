@@ -1,0 +1,185 @@
+/* ======== LAYOUT GENERAL ======== */
+.case-layout {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 25px;
+}
+
+/* ======== SIDEBAR ======== */
+.case-sidebar {
+    background: #e3f5e6;
+    color: #000;
+    padding: 20px;
+    border-radius: 15px;
+    height: max-content;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.case-sidebar .filter-title,
+.case-sidebar span,
+.case-sidebar label {
+    color: #000 !important;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.filter-title {
+    font-weight: 700;
+    font-size: 16px;
+    color: #2e5a2e;
+}
+
+/* Radios por defecto */
+.check-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.case-sidebar select {
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #b7dcb9;
+    background: #fff;
+}
+
+.btn-actualizar {
+    padding: 12px 18px;
+    background: #5fbf6e;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: .2s;
+}
+
+.btn-actualizar:hover {
+    background: #4aac5e;
+}
+
+/* ======== PANEL DEL CASO ======== */
+.case-content {
+    background: #fff;
+    padding: 20px;
+    border-radius: 15px;
+    border: 1px solid #cdd8ce;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.case-header {
+    background: #8bcf94;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 700;
+    color: #1b3d1b;
+    text-align: center;
+}
+
+.case-box {
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 12px;
+    background: #fafafa;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.msg-entry {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.msg-date {
+    font-size: 13px;
+    color: #666;
+}
+
+.msg-user {
+    font-weight: 700;
+    color: #1a4d1a;
+}
+
+.msg-body {
+    color: #333;
+    line-height: 1.5;
+}
+
+.msg-file {
+    margin-top: 5px;
+    background: #e8f4e8;
+    color:#000;
+    padding: 8px;
+    width: fit-content;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.msg-status-change {
+    background: #f1f7ff;
+    padding: 8px;
+    border-radius: 8px;
+    border-left: 3px solid #5b8bd3;
+    font-size: 14px;
+    color: #000;
+}
+
+/* Línea divisoria */
+.divider {
+    width: 100%;
+    height: 1px;
+    background: #ddd;
+}
+
+/* ======== INPUT DE MENSAJE ======== */
+.msg-input-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid #ccc;
+    padding: 12px;
+    border-radius: 10px;
+}
+
+.msg-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 16px;
+    outline: none;
+}
+
+.btn-enviar {
+    padding: 10px 20px;
+    background: #5fbf6e;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.btn-enviar:hover {
+    background: #4aac5e;
+}
+
+.btn-attach {
+    font-size: 22px;
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 6px;
+    transition: 0.2s;
+    user-select: none;
+}
+
+.btn-attach:hover {
+    background: #e0e0e0;
+}

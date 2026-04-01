@@ -1,0 +1,35 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Open Sans', sans-serif;
+}
+
+html, body {
+
+    color: #fff;
+    height: 100%; /* para usar toda la pantalla*/
+    min-height: 100%; /* para usar toda la pantalla*/
+    background-color: #062b4f;
+    overscroll-behavior: none; /*para que no rebote al hacer scroll*/
+}
+
+/* Contenedor principal de la páginas pags ya logueadas */
+.main-content {
+    background-color: #ffffff;
+    /* azul solo dentro del contenido */
+    min-height: 80vh;
+    /* ocupa casi toda la altura de la pantalla */
+    margin: 40px auto;
+    /* margen arriba/abajo y centrado horizontal */
+    padding: 20px;
+    /* espacio interno */
+    border-radius: 20px;
+    /* esquinas redondeadas */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    /* “efecto de elevación” */
+    max-width: 2000px; 
+    /*evita que no se estire demasiado el azul, para que se vea blanco a los lados */
+}

@@ -1,0 +1,84 @@
+/* Contenedor general */
+.login-container {
+    width: 100%;
+    min-height: 70vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #062b4f; /* Tu azul */
+    padding: 40px 0;
+}
+
+/* Tarjeta */
+.login-card {
+    background: white;
+    padding: 40px;
+    width: 380px;
+    border-radius: 14px;
+    border: 2px solid #e6e6e6;
+    box-shadow: 0px 4px 15px rgba(0,0,0,0.1);
+}
+
+/* Título */
+.login-card h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 26px;
+    font-weight: bold;
+    color: #053b5c;
+}
+
+/* Labels */
+.login-card label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+/* Inputs */
+.login-card input {
+    width: 100%;
+    padding: 10px;
+    border: 1.5px solid #ccc;
+    border-radius: 6px;
+    margin-bottom: 18px;
+    font-size: 14px;
+}
+
+/* Botón */
+.btn-login {
+    width: 100%;
+    background: #39A935; /* Verde SENA */
+    color: white;
+    font-weight: bold;
+    padding: 12px 0;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: 0.2s ease-in-out;
+}
+
+.btn-login:hover {
+    background: #0f8e2d;
+}
+
+/* Link recuperar contraseña */
+.forgot {
+    display: block;
+    text-align: center;
+    margin-top: 15px;
+    font-size: 14px;
+    color: #0f8e2d;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.forgot:hover {
+    text-decoration: underline;
+}
+
+form label {
+    color: #000;
+}
