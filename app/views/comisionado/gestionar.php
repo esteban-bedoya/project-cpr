@@ -78,13 +78,30 @@
                                         <td><?= date("d-m-Y", strtotime($caso['fecha_creacion'] ?? '')) ?></td>
                                         <td><?= htmlspecialchars($caso['tipo_caso_nombre']) ?></td>
                                         <td><?= htmlspecialchars($caso['tipo_proceso_nombre']) ?></td>
+                                        <!-- Columna de tiempos -->
                                         <td>
                                             <?php
-                                            $dias = $caso['dias_restantes'];
-                                            if ($dias < 0) {
-                                                echo "<span style='color:red'>{$dias}</span>";
+                                            if ($caso['estado'] === 'Atendido') {
+                                                echo "Resuelto";
                                             } else {
-                                                echo $dias;
+                                                $plazos = [
+                                                    'Denuncia' => 30,
+                                                    'Solicitud' => 15,
+                                                    'Derecho de petición' => 15,
+                                                    'Tutela' => 10
+                                                ];
+
+                                                $tipo = $caso['tipo_caso_nombre'] ?? '';
+                                                $dias_max = $plazos[$tipo] ?? 15; // default 15 días
+                                                $fecha_creacion = strtotime($caso['fecha_creacion']);
+                                                $dias_transcurridos = (int)((time() - $fecha_creacion) / 86400); // segundos a días
+                                                $dias_restantes = $dias_max - $dias_transcurridos;
+
+                                                if ($dias_restantes < 0) {
+                                                    echo "<span style='color:red;'>$dias_restantes días</span>";
+                                                } else {
+                                                    echo "$dias_restantes días";
+                                                }
                                             }
                                             ?>
                                         </td>
