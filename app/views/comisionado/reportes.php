@@ -1,0 +1,36 @@
+<?php $activePage = 'reportes';
+
+session_start();
+
+if (!isset($_SESSION['logged']) || $_SESSION['user']['rol'] != 2) {
+    header("Location: /project-cpr/public/login.php");
+    exit;
+}
+
+?>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reportes - CPR</title>
+    <link rel="stylesheet" href="/project-cpr/public/assets/css/globals/base.css">
+    <link rel="stylesheet" href="/project-cpr/public/assets/css/comisionado/________.css">
+</head>
+
+<body class="private">
+
+    <?php include('../components/header_comisionado.php'); ?>
+
+    <div class="main-content">
+        <!-- Todo tu contenido de busqueda.php -->
+
+
+       
+
+    </div>
+
+</body>
+
+</html>
