@@ -1,19 +1,21 @@
 <?php
 // public/caso.php
 
-
-
-
 require_once __DIR__ . '/../app/controllers/CasoController.php';
+session_start();
 
-// Iniciar el controller
 $controller = new CasoController();
 
-// Verificar que llegue un ID por GET
-$id = $_GET['id'] ?? null;
-if (!$id) {
-    die("No se especificó el caso.");
+// Si es POST, actualizamos el caso
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $id = $_POST['id'] ?? null;
+    if (!$id) die("No se especificó el caso.");
+    $controller->updateDetalle($id);
+    exit; // updateDetalle ya hace redirección
 }
 
-// Llamar al método show del controller
+// Si es GET, mostramos el caso
+$id = $_GET['id'] ?? null;
+if (!$id) die("No se especificó el caso.");
+
 $controller->show($id);

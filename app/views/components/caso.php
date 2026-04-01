@@ -7,60 +7,55 @@
     ============================================================ -->
     <div class="case-sidebar">
 
-        <!-- Comisionado -->
-        <div class="filter-group">
-            <label class="filter-title">Comisionado</label>
-            <select disabled>
-                <option><?= htmlspecialchars($caso['creado_por_nombre']) ?></option>
-            </select>
-        </div>
+        <form method="POST" action="/project-cpr/casos/<?= $caso['id'] ?>/updateDetalle">
 
-        <!-- Tipo de caso -->
-        <div class="filter-group">
-            <label class="filter-title">Tipo de caso</label>
-            <?php foreach ($tiposCaso as $t): ?>
-                <label class="check-item">
-                    <input 
-                        type="radio" 
-                        disabled
-                        <?= $caso['tipo_caso_id'] == $t['id'] ? 'checked' : '' ?>
-                    >
-                    <span><?= htmlspecialchars($t['nombre']) ?></span>
-                </label>
-            <?php endforeach; ?>
-        </div>
+            <!-- 1. Comisionado -->
+            <div class="filter-group">
+                <label class="filter-title">Comisionado</label>
+                <select name="comisionado_id" required>
+                    <?php foreach (Caso::getComisionadosActivos() as $c): ?>
+                        <option value="<?= $c['id'] ?>" <?= $caso['asignado_a'] == $c['id'] ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($c['username']) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
 
-        <!-- Estado -->
-        <div class="filter-group">
-            <label class="filter-title">Estado</label>
-            <?php 
-            $estados = ['Atendido','No atendido','Pendiente'];
-            foreach ($estados as $e): ?>
-                <label class="check-item">
-                    <input 
-                        type="radio" 
-                        disabled
-                        <?= $caso['estado'] === $e ? 'checked' : '' ?>
-                    >
-                    <span><?= $e ?></span>
-                </label>
-            <?php endforeach; ?>
-        </div>
-
-        <!-- Tipo de proceso -->
-        <div class="filter-group">
-            <label class="filter-title">Tipo de proceso</label>
-            <select disabled>
-                <?php foreach ($tiposProceso as $p): ?>
-                    <option <?= $caso['tipo_proceso_id'] == $p['id'] ? 'selected' : '' ?>>
-                        <?= htmlspecialchars($p['nombre']) ?>
-                    </option>
+            <!-- 2. Estado -->
+            <div class="filter-group">
+                <label class="filter-title">Estado</label>
+                <?php
+                $estados = ['Atendido', 'No atendido', 'Pendiente'];
+                foreach ($estados as $e): ?>
+                    <label class="check-item">
+                        <input type="radio" name="estado" value="<?= $e ?>" <?= $caso['estado'] === $e ? 'checked' : '' ?> required>
+                        <span><?= $e ?></span>
+                    </label>
                 <?php endforeach; ?>
-            </select>
-        </div>
+            </div>
 
-        <button class="btn-actualizar" disabled>Actualizar</button>
+            <!-- 3. Tipo de proceso -->
+            <div class="filter-group">
+                <label class="filter-title">Tipo de proceso</label>
+                <select name="tipo_proceso_id" required>
+                    <?php foreach ($tiposProceso as $p): ?>
+                        <option value="<?= $p['id'] ?>" <?= $caso['tipo_proceso_id'] == $p['id'] ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($p['nombre']) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <!-- 4. Tipo de caso (solo mostrar) -->
+            <div class="filter-group">
+                <label class="filter-title">Tipo de caso</label>
+                <input type="text" value="<?= htmlspecialchars($caso['tipo_caso_nombre']) ?>" disabled>
+            </div>
+
+            <button type="submit" class="btn-actualizar">Actualizar</button>
+        </form>
     </div>
+
 
     <!-- ============================================================
          PANEL PRINCIPAL DEL CASO
@@ -90,20 +85,14 @@
 
             <?php foreach ($eventos as $e): ?>
                 <div class="msg-entry">
-                    <?php if ($e['tipo'] === 'mensaje'): ?>
-                        <div class="msg-date"><?= date("d/m/Y H:i", strtotime($e['data']['fecha'])) ?></div>
+                    <div class="msg-date"><?= date("d/m/Y H:i", strtotime($e['fecha'])) ?></div>
+                    <?php if ($e['tipo'] == 'mensaje'): ?>
                         <div class="msg-user"><?= htmlspecialchars($e['data']['username']) ?></div>
                         <div class="msg-body"><?= nl2br(htmlspecialchars($e['data']['mensaje'])) ?></div>
-                        <?php if (!empty($e['data']['archivo'])): ?>
-                            <a class="msg-file" href="/uploads/<?= $e['data']['archivo'] ?>" target="_blank">
-                                📎 Archivo adjunto
-                            </a>
-                        <?php endif; ?>
                     <?php else: ?>
                         <div class="msg-status-change">
-                            <?= date("d/m/Y H:i", strtotime($e['data']['fecha'])) ?> —
-                            <strong><?= htmlspecialchars($e['data']['username']) ?> cambió</strong><br>
-                            de “<?= $e['data']['estado_anterior'] ?? '—' ?>” a “<?= $e['data']['estado_nuevo'] ?>”
+                            <strong><?= htmlspecialchars($e['data']['username']) ?></strong> —
+                            <?= htmlspecialchars($e['data']['descripcion']) ?>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -116,15 +105,14 @@
              INPUT PARA NUEVO MENSAJE
         ============================================================ -->
         <form class="msg-input-box" method="POST" enctype="multipart/form-data"
-              action="/project-cpr/casos/<?= $caso['id'] ?>/mensaje">
+            action="/project-cpr/casos/<?= $caso['id'] ?>/mensaje">
 
-            <input 
-                type="text" 
-                name="mensaje" 
+            <input
+                type="text"
+                name="mensaje"
                 placeholder="Escribir ..."
                 class="msg-input"
-                required
-            >
+                required>
 
             <label class="btn-attach">📎
                 <input type="file" name="archivo" hidden>

@@ -251,6 +251,97 @@ public function storeGestionar()
     exit;
 }
 
+public function updateDetalle($id)
+{
+    // La sesión ya está iniciada en el front controller
+    if (!isset($_SESSION['logged'])) {
+        header("Location: /project-cpr/public/login.php");
+        exit;
+    }
+
+    $caso = Caso::find($id);
+    if (!$caso) {
+        die("Caso no encontrado.");
+    }
+
+    $usuario_id = $_SESSION['user']['id'];
+
+    $comisionado_id = $_POST['comisionado_id'] ?? $caso['asignado_a'];
+    $estado = $_POST['estado'] ?? $caso['estado'];
+    $tipo_proceso_id = $_POST['tipo_proceso_id'] ?? $caso['tipo_proceso_id'];
+
+    // Obtenemos el tipo de caso según el tipo de proceso
+    $tipo_proceso = Caso::getTiposProceso();
+    $tipo_caso_id_nuevo = null;
+    foreach ($tipo_proceso as $tp) {
+        if ($tp['id'] == $tipo_proceso_id) {
+            $tipo_caso_id_nuevo = $tp['tipo_caso_id'];
+            break;
+        }
+    }
+    $tipo_caso_id_actual = $caso['tipo_caso_id'];
+
+    // ============================================
+    // Guardar historial en una sola tabla
+    // ============================================
+    $historialCambios = [];
+
+    if ($caso['asignado_a'] != $comisionado_id) {
+        $nuevoComisionado = Caso::getUsuario($comisionado_id);
+        $antiguoComisionado = Caso::getUsuario($caso['asignado_a']);
+        $historialCambios[] = [
+            'caso_id' => $id,
+            'usuario_id' => $usuario_id,
+            'descripcion' => "Asignó a {$nuevoComisionado['username']} como comisionado (antes: {$antiguoComisionado['username']})"
+        ];
+    }
+
+    if ($caso['estado'] != $estado) {
+        $historialCambios[] = [
+            'caso_id' => $id,
+            'usuario_id' => $usuario_id,
+            'descripcion' => "Cambio de estado de {$caso['estado']} a {$estado}"
+        ];
+    }
+
+    if ($caso['tipo_proceso_id'] != $tipo_proceso_id) {
+        $tipoProcesoAnt = Caso::getTipoProceso($caso['tipo_proceso_id']);
+        $tipoProcesoNuevo = Caso::getTipoProceso($tipo_proceso_id);
+        $historialCambios[] = [
+            'caso_id' => $id,
+            'usuario_id' => $usuario_id,
+            'descripcion' => "Cambio de tipo de proceso de {$tipoProcesoAnt['nombre']} a {$tipoProcesoNuevo['nombre']}"
+        ];
+    }
+
+    if ($tipo_caso_id_actual != $tipo_caso_id_nuevo) {
+        $tipoCasoAnt = Caso::getTipoCaso($tipo_caso_id_actual);
+        $tipoCasoNuevo = Caso::getTipoCaso($tipo_caso_id_nuevo);
+        $historialCambios[] = [
+            'caso_id' => $id,
+            'usuario_id' => $usuario_id,
+            'descripcion' => "Cambio de tipo de caso de {$tipoCasoAnt['nombre']} a {$tipoCasoNuevo['nombre']}"
+        ];
+    }
+
+    // Guardar historial
+    foreach ($historialCambios as $h) {
+        Caso::guardarHistorial($h);
+    }
+
+    // Actualizar datos en la tabla casos
+    Caso::update($id, [
+        'asignado_a' => $comisionado_id,
+        'estado' => $estado,
+        'tipo_proceso_id' => $tipo_proceso_id,
+        'tipo_caso_id' => $tipo_caso_id_nuevo
+    ]);
+
+    header("Location: /project-cpr/casos/$id");
+    exit;
+}
+
+
 
 
 }

@@ -192,9 +192,42 @@ public static function getComisionadosActivos()
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+// Guardar un cambio en el historial (solo descripción)
+public static function guardarHistorial($data)
+{
+    $sql = "INSERT INTO casos_historial_estado (caso_id, usuario_id, descripcion) 
+            VALUES (:caso_id, :usuario_id, :descripcion)";
+    $stmt = self::db()->prepare($sql);
+    return $stmt->execute([
+        ':caso_id' => $data['caso_id'],
+        ':usuario_id' => $data['usuario_id'],
+        ':descripcion' => $data['descripcion']
+    ]);
+}
 
+// Obtener usuario por ID
+public static function getUsuario($id)
+{
+    $stmt = self::db()->prepare("SELECT id, username FROM usuarios WHERE id = ?");
+    $stmt->execute([$id]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
 
+// Obtener tipo de proceso
+public static function getTipoProceso($id)
+{
+    $stmt = self::db()->prepare("SELECT * FROM tipos_proceso WHERE id = ?");
+    $stmt->execute([$id]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
 
+// Obtener tipo de caso
+public static function getTipoCaso($id)
+{
+    $stmt = self::db()->prepare("SELECT * FROM tipos_caso WHERE id = ?");
+    $stmt->execute([$id]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
 
 
 }
