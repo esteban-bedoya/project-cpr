@@ -48,7 +48,7 @@ class User
         ]);
     }
 
-    public static function updateById($id, $documento, $username, $rol, $correo, $telefono, $estado, $password = null)
+    public static function updateById($id, $rol, $correo, $telefono, $estado, $password = null)
     {
         // Actualiza usuario; la contraseña es opcional.
         global $pdo;
@@ -56,21 +56,21 @@ class User
         if ($password === null || trim($password) === '') {
             $stmt = $pdo->prepare("
                 UPDATE usuarios
-                SET documento = ?, username = ?, rol = ?, correo = ?, telefono = ?, estado = ?
+                SET rol = ?, correo = ?, telefono = ?, estado = ?
                 WHERE id = ?
             ");
-            return $stmt->execute([$documento, $username, $rol, $correo, $telefono, $estado, $id]);
+            return $stmt->execute([$rol, $correo, $telefono, $estado, $id]);
         }
 
         $hashed = password_hash($password, PASSWORD_DEFAULT);
 
         $stmt = $pdo->prepare("
             UPDATE usuarios
-            SET documento = ?, username = ?, rol = ?, correo = ?, telefono = ?, estado = ?, password = ?
+            SET rol = ?, correo = ?, telefono = ?, estado = ?, password = ?
             WHERE id = ?
         ");
 
-        return $stmt->execute([$documento, $username, $rol, $correo, $telefono, $estado, $hashed, $id]);
+        return $stmt->execute([$rol, $correo, $telefono, $estado, $hashed, $id]);
     }
 
     public static function delete($id)
@@ -89,6 +89,11 @@ class User
     // Base SQL
     $sql = "SELECT * FROM usuarios WHERE 1 = 1";
     $params = [];
+
+    // Oculta usuario del sistema en listados admin
+    $sql .= " AND NOT (username = ? AND documento = ?)";
+    $params[] = 'Sistema';
+    $params[] = 'SYSTEM-000';
 
     // Filtrar por estado
     if ($estado !== 'todos') {
