@@ -23,12 +23,12 @@ if (!isset($_SESSION['logged']) || $_SESSION['user']['rol'] != 2) {
 
 <body class="private">
 
-    <?php include('../components/header_comisionado.php'); ?>
+    <?php include __DIR__ . '/../components/header_comisionado.php'; ?>
     <!-- Todo tu contenido de busqueda.php -->
     <div class="main-content">
 
 
-        <?php include('../components/perfil.php'); ?>
+        <?php include __DIR__ . '/../components/perfil.php'; ?>
 
 
 

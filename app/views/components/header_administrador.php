@@ -15,7 +15,7 @@
       <a href="/project-cpr/app/views/admin/reportes.php" class="nav-item <?= ($activePage === 'reportes') ? 'active' : ''; ?>">Reportes</a>
       <a href="/project-cpr/app/views/admin/casos.php" class="nav-item <?= ($activePage === 'casos') ? 'active' : ''; ?>">Casos</a>
       <a href="/project-cpr/public/usuarios.php" class="nav-item <?= ($activePage === 'usuarios') ? 'active' : ''; ?>">Usuarios</a>
-      <a href="/project-cpr/app/views/admin/perfil.php" class="nav-item <?= ($activePage === 'perfil') ? 'active' : ''; ?>">
+      <a href="/project-cpr/public/perfil.php" class="nav-item <?= ($activePage === 'perfil') ? 'active' : ''; ?>">
         Hola,<br>
         <strong><?= $_SESSION['user']['username'] ?? 'Administrador'; ?></strong>
       </a>
