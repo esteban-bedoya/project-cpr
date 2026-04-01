@@ -132,19 +132,29 @@
 
             <form action="/project-cpr/public/gestionar.php?action=storeGestionar" method="POST">
 
+                <label>Seleccione el tipo de caso</label>
+                <select name="tipo_caso_id" id="add-tipo-caso" required>
+                    <option value="">- Seleccione -</option>
+                    <?php
+                    $tiposCaso = Caso::getTiposCaso();
+                    foreach ($tiposCaso as $tc) {
+                        echo "<option value='{$tc['id']}'>{$tc['nombre']}</option>";
+                    }
+                    ?>
+                </select>
+
                 <label>Seleccione el tipo de proceso</label>
                 <select name="tipo_proceso_id" id="add-tipo-proceso" required>
                     <option value="">- Seleccione -</option>
                     <?php
-                    $tiposProceso = Caso::getTiposProceso();
+                    $tiposProceso = Caso::getTiposProcesoActivos();
                     foreach ($tiposProceso as $proceso) {
                         if ($proceso['estado'] == 1) {
-                            echo "<option value='{$proceso['id']}' data-tipo-caso='{$proceso['tipo_caso_id']}'>{$proceso['nombre']}</option>";
+                            echo "<option value='{$proceso['id']}'>{$proceso['nombre']}</option>";
                         }
                     }
                     ?>
                 </select>
-                <input type="hidden" name="tipo_caso_id" id="add-tipo-caso">
 
                 <label>Asunto</label>
                 <input type="text" name="asunto" required>
@@ -165,7 +175,6 @@
         const btnAgregar = document.querySelector('.btn-agregar');
         const modalAgregar = document.getElementById('modal-agregar');
         const selectProceso = document.getElementById('add-tipo-proceso');
-        const inputTipoCaso = document.getElementById('add-tipo-caso');
 
         btnAgregar.addEventListener('click', () => {
             modalAgregar.style.display = 'flex';
@@ -174,12 +183,6 @@
         function cerrarModalAgregar() {
             modalAgregar.style.display = 'none';
         }
-
-        // Asignar automáticamente el tipo de caso según el proceso
-        selectProceso.addEventListener('change', () => {
-            const tipoCasoId = selectProceso.selectedOptions[0].dataset.tipoCaso;
-            inputTipoCaso.value = tipoCasoId;
-        });
 
         // Cerrar modal si se hace click fuera del contenido
         window.addEventListener('click', e => {

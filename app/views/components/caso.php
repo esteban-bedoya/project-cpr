@@ -18,6 +18,7 @@
                 <label class="filter-title">Comisionado asignado</label>
                 <input
                     type="text"
+                    class="select-like"
                     value="<?= htmlspecialchars($caso['asignado_a_nombre'] ?? '') ?>"
                     disabled>
             </div>
@@ -44,28 +45,46 @@
             </div>
             <br>
 
-            <!-- 3. Tipo de proceso -->
+            <!-- 3. Tipo de caso -->
             <div class="filter-group">
-                <label class="filter-title">Tipo de proceso</label>
-
-                <select name="tipo_proceso_id" required>
-                    <?php foreach ($tiposProceso as $p): ?>
-                        <option value="<?= $p['id'] ?>"
-                            <?= $caso['tipo_proceso_id'] == $p['id'] ? 'selected' : '' ?>>
-                            <?= htmlspecialchars($p['nombre']) ?>
+                <label class="filter-title">Tipo de caso</label>
+                <select name="tipo_caso_id" required>
+                    <?php foreach ($tiposCaso as $tc): ?>
+                        <option value="<?= $tc['id'] ?>"
+                            <?= $caso['tipo_caso_id'] == $tc['id'] ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($tc['nombre']) ?>
                         </option>
                     <?php endforeach; ?>
                 </select>
             </div>
             <br>
 
-            <!-- 4. Tipo de caso (solo mostrar) -->
+            <!-- 4. Tipo de proceso -->
             <div class="filter-group">
-                <label class="filter-title">Tipo de caso</label>
-                <input
-                    type="text"
-                    value="<?= htmlspecialchars($caso['tipo_caso_nombre']) ?>"
-                    disabled>
+                <label class="filter-title">Tipo de proceso</label>
+
+                <?php
+                $procesoInactivoActual = false;
+                foreach ($tiposProceso as $pCheck) {
+                    if (($caso['tipo_proceso_id'] == $pCheck['id']) && !empty($pCheck['_inactivo'])) {
+                        $procesoInactivoActual = true;
+                        break;
+                    }
+                }
+                ?>
+
+                <select name="tipo_proceso_id" required>
+                    <?php foreach ($tiposProceso as $p): ?>
+                        <option value="<?= $p['id'] ?>"
+                            <?= $caso['tipo_proceso_id'] == $p['id'] ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($p['nombre']) ?><?= !empty($p['_inactivo']) ? ' (inactivo)' : '' ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+
+                <?php if ($procesoInactivoActual): ?>
+                    <small class="text-warning">Proceso inactivo por el admin.</small>
+                <?php endif; ?>
             </div>
             <br>
 

@@ -145,6 +145,14 @@ class Caso
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public static function getTiposProcesoActivos()
+    {
+        // Catalogo de tipos de proceso activos.
+        $stmt = self::db()->prepare("SELECT * FROM tipos_proceso WHERE estado = 1");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     // ===============================
     // HISTORIAL DE ESTADO
     // ===============================

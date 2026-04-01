@@ -1,5 +1,5 @@
 <?php
-// Modelo TipoProceso: gestiona catalogo de procesos y sus relaciones.
+// Modelo TipoProceso: gestiona catalogo de procesos.
 
 class TipoProceso
 {
@@ -14,13 +14,10 @@ class TipoProceso
         return $db;
     }
 
-    public static function allWithTipoCaso()
+    public static function all()
     {
-        // Lista tipos de proceso con su tipo de caso asociado.
-        $sql = "SELECT tp.*, tc.nombre AS tipo_caso_nombre
-                FROM tipos_proceso tp
-                JOIN tipos_caso tc ON tc.id = tp.tipo_caso_id
-                ORDER BY tp.nombre";
+        // Lista tipos de proceso (independientes).
+        $sql = "SELECT * FROM tipos_proceso ORDER BY nombre";
         $stmt = self::db()->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -34,18 +31,18 @@ class TipoProceso
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public static function create($nombre, $tipo_caso_id)
+    public static function create($nombre, $estado = 1)
     {
         // Crea un nuevo tipo de proceso.
-        $stmt = self::db()->prepare("INSERT INTO tipos_proceso (nombre, tipo_caso_id) VALUES (?, ?)");
-        return $stmt->execute([$nombre, $tipo_caso_id]);
+        $stmt = self::db()->prepare("INSERT INTO tipos_proceso (nombre, estado) VALUES (?, ?)");
+        return $stmt->execute([$nombre, $estado]);
     }
 
-    public static function update($id, $nombre, $tipo_caso_id)
+    public static function update($id, $nombre, $estado = 1)
     {
         // Actualiza un tipo de proceso.
-        $stmt = self::db()->prepare("UPDATE tipos_proceso SET nombre = ?, tipo_caso_id = ? WHERE id = ?");
-        return $stmt->execute([$nombre, $tipo_caso_id, $id]);
+        $stmt = self::db()->prepare("UPDATE tipos_proceso SET nombre = ?, estado = ? WHERE id = ?");
+        return $stmt->execute([$nombre, $estado, $id]);
     }
 
     public static function delete($id)

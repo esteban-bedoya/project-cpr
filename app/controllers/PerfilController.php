@@ -18,8 +18,7 @@ class PerfilController
 
         // Solo el admin carga catalogos para gestion de procesos.
         if (isset($_SESSION['user']) && $_SESSION['user']['rol'] == 1) {
-            $tiposProceso = TipoProceso::allWithTipoCaso();
-            $tiposCaso = Caso::getTiposCaso();
+            $tiposProceso = TipoProceso::all();
 
             $procesoId = $_GET['proceso_id'] ?? null;
             if ($procesoId) {
@@ -117,20 +116,19 @@ class PerfilController
 
         $id = $_POST['proceso_id'] ?? '';
         $nombre = trim($_POST['proceso_nombre'] ?? '');
-        $tipoCasoId = $_POST['tipo_caso_id'] ?? '';
-
-        if ($nombre === '' || $tipoCasoId === '') {
-            $_SESSION['error'] = "Debe ingresar el nombre y seleccionar el tipo de caso.";
+        $estado = isset($_POST['estado']) ? (int)$_POST['estado'] : 1;
+        if ($nombre === '') {
+            $_SESSION['error'] = "Debe ingresar el nombre del proceso.";
             header("Location: /project-cpr/public/perfil.php");
             exit;
         }
 
         // Si hay id: actualiza, si no: crea.
         if ($id) {
-            TipoProceso::update($id, $nombre, $tipoCasoId);
+            TipoProceso::update($id, $nombre, $estado);
             $_SESSION['success'] = "Proceso actualizado correctamente.";
         } else {
-            TipoProceso::create($nombre, $tipoCasoId);
+            TipoProceso::create($nombre, $estado);
             $_SESSION['success'] = "Proceso creado correctamente.";
         }
 

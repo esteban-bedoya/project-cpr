@@ -15,7 +15,7 @@
                     <option value="">— Nuevo proceso —</option>
                     <?php foreach ($tiposProceso as $tp): ?>
                         <option value="<?= $tp['id'] ?>" <?= ($procesoSeleccionado && $procesoSeleccionado['id'] == $tp['id']) ? 'selected' : '' ?>>
-                            <?= htmlspecialchars($tp['nombre']) ?> (<?= htmlspecialchars($tp['tipo_caso_nombre']) ?>)
+                            <?= htmlspecialchars($tp['nombre']) ?><?= ((int)($tp['estado'] ?? 1) !== 1) ? ' (inactivo)' : '' ?>
                         </option>
                     <?php endforeach; ?>
                 </select>
@@ -36,14 +36,11 @@
             </div>
 
             <div class="grupo">
-                <label for="tipo_caso_id" class="oculto">Tipo de caso</label>
-                <select id="tipo_caso_id" name="tipo_caso_id">
-                    <option value="">— Seleccionar tipo de caso —</option>
-                    <?php foreach ($tiposCaso as $tc): ?>
-                        <option value="<?= $tc['id'] ?>" <?= (isset($procesoSeleccionado['tipo_caso_id']) && $procesoSeleccionado['tipo_caso_id'] == $tc['id']) ? 'selected' : '' ?>>
-                            <?= htmlspecialchars($tc['nombre']) ?>
-                        </option>
-                    <?php endforeach; ?>
+                <label for="proceso_estado" class="oculto">Estado del proceso</label>
+                <select id="proceso_estado" name="estado">
+                    <?php $estadoActual = (int)($procesoSeleccionado['estado'] ?? 1); ?>
+                    <option value="1" <?= $estadoActual === 1 ? 'selected' : '' ?>>Activo</option>
+                    <option value="0" <?= $estadoActual === 0 ? 'selected' : '' ?>>Inactivo</option>
                 </select>
             </div>
 

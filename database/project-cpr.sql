@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost
--- Tiempo de generación: 15-02-2026 a las 20:25:56
+-- Tiempo de generación: 15-02-2026 a las 21:03:51
 -- Versión del servidor: 10.4.28-MariaDB
 -- Versión de PHP: 8.2.4
 
@@ -49,8 +49,9 @@ INSERT INTO `casos` (`id`, `numero_caso`, `tipo_caso_id`, `tipo_proceso_id`, `as
 (17, 'C-000017', 2, 1, 'Ropa', 'Ropa', 'Atendido', 1013341545, '2026-02-10 10:58:43', '2026-02-10 11:03:45'),
 (18, 'C-000018', 1, 2, 'h', 'h', 'No atendido', 1013341545, '2026-02-10 11:25:33', NULL),
 (19, 'C-000019', 4, 3, 'hola', 'tjy', 'Pendiente', 2, '2026-02-14 10:46:06', NULL),
-(20, 'C-000020', 4, 3, 'hola', 'holq', 'No atendido', 1013341545, '2026-02-15 13:21:44', NULL),
-(21, 'C-000021', 3, 4, 'Si', 'no', 'Pendiente', 1013341545, '2026-02-15 14:16:52', NULL);
+(20, 'C-000020', 1, 1, 'hola', 'holq', 'No atendido', 1013341545, '2026-02-15 13:21:44', NULL),
+(21, 'C-000021', 3, 9, 'Si', 'no', 'Pendiente', 1013341545, '2026-02-15 14:16:52', NULL),
+(22, 'C-000022', 2, 1, 'Asunto', 'Se tienen datos etc...', 'No atendido', 1013341545, '2026-02-15 15:00:25', NULL);
 
 --
 -- Disparadores `casos`
@@ -109,7 +110,12 @@ INSERT INTO `casos_historial_estado` (`id`, `caso_id`, `usuario_id`, `descripcio
 (67, 19, 2, 'Cambio de estado de No atendido a Pendiente', '2026-02-14 12:49:56'),
 (68, 21, 1013341545, 'Cambio de estado de No atendido a Pendiente', '2026-02-15 14:20:32'),
 (69, 21, 1013341545, 'Cambio de tipo de proceso de Evaluación de desempeño laboral a SST', '2026-02-15 14:21:16'),
-(70, 21, 1013341545, 'Cambio de tipo de caso de Denuncia a Derecho de petición', '2026-02-15 14:21:16');
+(70, 21, 1013341545, 'Cambio de tipo de caso de Denuncia a Derecho de petición', '2026-02-15 14:21:16'),
+(71, 20, 1013341545, 'Cambio de tipo de caso de Tutela a Solicitud', '2026-02-15 14:58:59'),
+(72, 20, 1013341545, 'Cambio de tipo de caso de Solicitud a Tutela', '2026-02-15 14:59:07'),
+(73, 20, 1013341545, 'Cambio de tipo de caso de Tutela a Denuncia', '2026-02-15 14:59:10'),
+(74, 20, 1013341545, 'Cambio de tipo de proceso de Ropa de trabajo a Bienestar', '2026-02-15 14:59:26'),
+(75, 21, 1013341545, 'Cambio de tipo de proceso de SST a Convivencia', '2026-02-15 15:02:47');
 
 -- --------------------------------------------------------
 
@@ -133,7 +139,8 @@ CREATE TABLE `casos_mensajes` (
 INSERT INTO `casos_mensajes` (`id`, `caso_id`, `usuario_id`, `mensaje`, `archivo`, `fecha`) VALUES
 (55, 17, 1013341545, 'Hable con recursos humanos, el bono esta en tramite.', NULL, '2026-02-10 11:00:00'),
 (56, 19, 2, 'Hola', NULL, '2026-02-14 10:52:47'),
-(57, 19, 2, '', 'caso_19_1771091384.jpeg', '2026-02-14 12:49:44');
+(57, 19, 2, '', 'caso_19_1771091384.jpeg', '2026-02-14 12:49:44'),
+(58, 21, 1013341545, '', 'caso_21_1771185652.jpeg', '2026-02-15 15:00:52');
 
 -- --------------------------------------------------------
 
@@ -165,7 +172,6 @@ INSERT INTO `tipos_caso` (`id`, `nombre`) VALUES
 CREATE TABLE `tipos_proceso` (
   `id` int(11) NOT NULL,
   `nombre` varchar(50) NOT NULL,
-  `tipo_caso_id` int(11) NOT NULL,
   `estado` tinyint(1) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -173,14 +179,14 @@ CREATE TABLE `tipos_proceso` (
 -- Volcado de datos para la tabla `tipos_proceso`
 --
 
-INSERT INTO `tipos_proceso` (`id`, `nombre`, `tipo_caso_id`, `estado`) VALUES
-(1, 'Bienestar', 2, 1),
-(2, 'Evaluación de desempeño laboral', 1, 1),
-(3, 'Ropa de trabajo', 4, 1),
-(4, 'SST', 3, 1),
-(9, 'Convivencia', 2, 1),
-(10, 'Clima organizacional', 3, 1),
-(11, 'SSEMI (Sistema salarial SENA)', 2, 1);
+INSERT INTO `tipos_proceso` (`id`, `nombre`, `estado`) VALUES
+(1, 'Bienestar', 0),
+(2, 'Evaluación de desempeño laboral', 1),
+(3, 'Ropa de trabajo', 1),
+(4, 'SST', 0),
+(9, 'Convivencia', 1),
+(10, 'Clima organizacional', 1),
+(11, 'SSEMI (Sistema salarial SENA)', 1);
 
 -- --------------------------------------------------------
 
@@ -286,8 +292,7 @@ ALTER TABLE `tipos_caso`
 -- Indices de la tabla `tipos_proceso`
 --
 ALTER TABLE `tipos_proceso`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_tipos_proceso_tipo_caso` (`tipo_caso_id`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indices de la tabla `usuarios`
@@ -314,7 +319,7 @@ ALTER TABLE `usuarios_logins`
 -- AUTO_INCREMENT de la tabla `casos`
 --
 ALTER TABLE `casos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT de la tabla `casos_archivos`
@@ -326,13 +331,13 @@ ALTER TABLE `casos_archivos`
 -- AUTO_INCREMENT de la tabla `casos_historial_estado`
 --
 ALTER TABLE `casos_historial_estado`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=71;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=76;
 
 --
 -- AUTO_INCREMENT de la tabla `casos_mensajes`
 --
 ALTER TABLE `casos_mensajes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=59;
 
 --
 -- AUTO_INCREMENT de la tabla `tipos_caso`
@@ -390,12 +395,6 @@ ALTER TABLE `casos_historial_estado`
 ALTER TABLE `casos_mensajes`
   ADD CONSTRAINT `casos_mensajes_ibfk_1` FOREIGN KEY (`caso_id`) REFERENCES `casos` (`id`),
   ADD CONSTRAINT `casos_mensajes_ibfk_2` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`);
-
---
--- Filtros para la tabla `tipos_proceso`
---
-ALTER TABLE `tipos_proceso`
-  ADD CONSTRAINT `fk_tipos_proceso_tipo_caso` FOREIGN KEY (`tipo_caso_id`) REFERENCES `tipos_caso` (`id`);
 
 --
 -- Filtros para la tabla `usuarios`

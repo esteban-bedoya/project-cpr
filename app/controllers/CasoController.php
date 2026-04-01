@@ -45,7 +45,25 @@ class CasoController
         // =====================================
         // Catalogos y datos de soporte para renderizar la vista.
         $tiposCaso    = Caso::getTiposCaso();
-        $tiposProceso = Caso::getTiposProceso();
+        $tiposProceso = Caso::getTiposProcesoActivos();
+        // Si el proceso actual está inactivo, lo agregamos para mostrarlo
+        $procesoActualId = $caso['tipo_proceso_id'] ?? null;
+        if ($procesoActualId) {
+            $enLista = false;
+            foreach ($tiposProceso as $p) {
+                if ((int)$p['id'] === (int)$procesoActualId) {
+                    $enLista = true;
+                    break;
+                }
+            }
+            if (!$enLista) {
+                $procesoActual = Caso::getTipoProceso($procesoActualId);
+                if ($procesoActual) {
+                    $procesoActual['_inactivo'] = true;
+                    $tiposProceso[] = $procesoActual;
+                }
+            }
+        }
         $historial    = Caso::getHistorial($id);
         $mensajes     = Caso::getMensajes($id);
 
@@ -272,16 +290,8 @@ class CasoController
 
         $estado = $_POST['estado'] ?? $caso['estado'];
         $tipo_proceso_id = $_POST['tipo_proceso_id'] ?? $caso['tipo_proceso_id'];
+        $tipo_caso_id_nuevo = $_POST['tipo_caso_id'] ?? $caso['tipo_caso_id'];
 
-        // Obtenemos el tipo de caso según el tipo de proceso
-        $tipo_proceso = Caso::getTiposProceso();
-        $tipo_caso_id_nuevo = null;
-        foreach ($tipo_proceso as $tp) {
-            if ($tp['id'] == $tipo_proceso_id) {
-                $tipo_caso_id_nuevo = $tp['tipo_caso_id'];
-                break;
-            }
-        }
         $tipo_caso_id_actual = $caso['tipo_caso_id'];
 
         // ============================================
