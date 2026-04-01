@@ -129,6 +129,18 @@
 
             <form action="/project-cpr/public/gestionar.php?action=storeGestionar" method="POST">
 
+                <label>Documento de identidad del demandante</label>
+                <input
+                    type="text"
+                    name="demandante_documento"
+                    placeholder="Documento de identidad">
+
+                <label>Nombres y apellidos del demandante</label>
+                <input type="text" name="demandante_nombre" required>
+
+                <label>Datos de contacto del demandante</label>
+                <input type="text" name="demandante_contacto" placeholder="Teléfono y/o correo" required>
+
                 <label>Seleccione el tipo de proceso</label>
                 <select name="tipo_proceso_id" id="add-tipo-proceso" required>
                     <option value="">- Seleccione -</option>
@@ -141,14 +153,7 @@
                     }
                     ?>
                 </select>
-
                 <input type="hidden" name="tipo_caso_id" id="add-tipo-caso">
-
-                <label>Nombres y apellidos del demandante</label>
-                <input type="text" name="demandante_nombre" required>
-
-                <label>Datos de contacto del demandante</label>
-                <input type="text" name="demandante_contacto" placeholder="Teléfono y/o correo" required>
 
                 <label>Asunto</label>
                 <input type="text" name="asunto" required>

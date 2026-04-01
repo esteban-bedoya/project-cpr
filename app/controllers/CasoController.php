@@ -53,21 +53,23 @@ class CasoController
     // ===============================
     public function store()
     {
-
         $data = [
-            'tipo_caso_id'       => $_POST['tipo_caso_id'] ?? null,
-            'tipo_proceso_id'    => $_POST['tipo_proceso_id'] ?? null,
-            'demandante_nombre'  => $_POST['demandante_nombre'] ?? null,
-            'demandante_contacto' => $_POST['demandante_contacto'] ?? null,
-            'asunto'             => $_POST['asunto'] ?? null,
-            'detalles'           => $_POST['detalles'] ?? null,
-            'estado'             => $_POST['estado'] ?? 'No atendido',
-            'creado_por'         => $_SESSION['user']['id']
+            'tipo_caso_id'         => $_POST['tipo_caso_id'] ?? null,
+            'tipo_proceso_id'      => $_POST['tipo_proceso_id'] ?? null,
+            'demandante_nombre'    => $_POST['demandante_nombre'] ?? null,
+            'demandante_documento' => null,
+            'demandante_contacto'  => $_POST['demandante_contacto'] ?? null,
+            'asunto'               => $_POST['asunto'] ?? null,
+            'detalles'             => $_POST['detalles'] ?? null,
+            'estado'               => 'No atendido',
+            'creado_por'           => $_SESSION['user']['id'],
+            'asignado_a'           => null
         ];
 
         Caso::create($data);
         header("Location: /project-cpr/casos");
     }
+
 
     // ===============================
     // ACTUALIZAR CASO
@@ -176,63 +178,89 @@ class CasoController
     }
 
     // ===============================
-    // CREAR CASO DESDE GESTIONAR
+    // CREAR/GUARDAR CASO DESDE GESTIONAR
     // ===============================
     public function storeGestionar()
     {
-
-        $usuario_creador_id = $_SESSION['user']['id'];
-
-        // Validar campos mínimos
-        $tipo_proceso_id = $_POST['tipo_proceso_id'] ?? null;
-        $demandante_nombre = trim($_POST['demandante_nombre'] ?? '');
-        $demandante_contacto = trim($_POST['demandante_contacto'] ?? '');
-        $asunto = trim($_POST['asunto'] ?? '');
-        $detalles = trim($_POST['detalles'] ?? '');
-        $asignado_a = $_POST['asignado_a'] ?? null;
-
-        if (!$tipo_proceso_id || !$demandante_nombre || !$asignado_a) {
-            // Podrías redirigir con error o manejarlo como quieras
-            header("Location: /project-cpr/public/gestionar.php?error=1");
+        // ===============================
+        // 1. SEGURIDAD
+        // ===============================
+        if (!isset($_SESSION['logged'])) {
+            header("Location: /project-cpr/public/login.php");
             exit;
         }
 
-        // Obtener el tipo de caso automáticamente según el tipo de proceso
-        $db = new PDO("mysql:host=localhost;dbname=project-cpr;charset=utf8", "root", "");
-        $stmt = $db->prepare("SELECT tipo_caso_id FROM tipos_proceso WHERE id = ?");
-        $stmt->execute([$tipo_proceso_id]);
-        $tipo_caso_id = $stmt->fetchColumn();
+        // ===============================
+        // 2. VALIDAR MÉTODO
+        // ===============================
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header("Location: /project-cpr/public/gestionar.php");
+            exit;
+        }
 
-        // Crear caso en la tabla 'casos'
-        $sql = "INSERT INTO casos 
-            (tipo_caso_id, tipo_proceso_id, demandante_nombre, demandante_contacto, asunto, detalles, estado, creado_por, asignado_a)
-            VALUES (:tipo_caso_id, :tipo_proceso_id, :demandante_nombre, :demandante_contacto, :asunto, :detalles, 'No atendido', :creado_por, :asignado_a)";
-        $stmt = $db->prepare($sql);
-        $stmt->execute([
-            ':tipo_caso_id'       => $tipo_caso_id,
-            ':tipo_proceso_id'    => $tipo_proceso_id,
-            ':demandante_nombre'  => $demandante_nombre,
-            ':demandante_contacto' => $demandante_contacto,
-            ':asunto'             => $asunto,
-            ':detalles'           => $detalles,
-            ':creado_por'         => $usuario_creador_id,
-            ':asignado_a'         => $asignado_a
+        // ===============================
+        // 3. CAPTURA Y LIMPIEZA DE DATOS
+        // ===============================
+        $tipo_caso_id    = (int) ($_POST['tipo_caso_id'] ?? 0);
+        $tipo_proceso_id = (int) ($_POST['tipo_proceso_id'] ?? 0);
+
+        $demandante_nombre    = trim($_POST['demandante_nombre'] ?? '');
+        $demandante_documento = trim($_POST['demandante_documento'] ?? '');
+        $demandante_contacto  = trim($_POST['demandante_contacto'] ?? '');
+
+        $asunto   = trim($_POST['asunto'] ?? '');
+        $detalles = trim($_POST['detalles'] ?? '');
+
+        $asignado_a = (int) ($_POST['asignado_a'] ?? 0);
+
+        $usuario_creador_id = $_SESSION['user']['id'];
+
+        // ===============================
+        // 4. NORMALIZAR CAMPOS OPCIONALES
+        // ===============================
+        $demandante_documento = $demandante_documento !== '' ? $demandante_documento : null;
+        $demandante_contacto  = $demandante_contacto  !== '' ? $demandante_contacto  : null;
+        $asunto               = $asunto               !== '' ? $asunto               : null;
+        $detalles             = $detalles             !== '' ? $detalles             : null;
+
+        // ===============================
+        // 5. VALIDACIÓN MÍNIMA OBLIGATORIA
+        // ===============================
+        if (
+            !$tipo_caso_id ||
+            !$tipo_proceso_id ||
+            $demandante_nombre === '' ||
+            !$asignado_a
+        ) {
+            header("Location: /project-cpr/public/gestionar.php?error=campos");
+            exit;
+        }
+
+        // ===============================
+        // 6. GUARDAR CASO (MODELO ÚNICO)
+        // ===============================
+        $resultado = Caso::create([
+            'tipo_caso_id'         => $tipo_caso_id,
+            'tipo_proceso_id'      => $tipo_proceso_id,
+            'demandante_nombre'    => $demandante_nombre,
+            'demandante_documento' => $demandante_documento, // NULL permitido
+            'demandante_contacto'  => $demandante_contacto,  // NULL permitido
+            'asunto'               => $asunto,               // NULL permitido
+            'detalles'             => $detalles,             // NULL permitido
+            'estado'               => 'No atendido',
+            'creado_por'           => $usuario_creador_id,
+            'asignado_a'           => $asignado_a
         ]);
 
-        // Obtener el ID recién creado
-        $caso_id = $db->lastInsertId();
+        // ===============================
+        // 7. RESULTADO
+        // ===============================
+        if ($resultado) {
+            header("Location: /project-cpr/public/gestionar.php?success=1");
+        } else {
+            header("Location: /project-cpr/public/gestionar.php?error=db");
+        }
 
-        // Guardar histórico en casos_asignaciones
-        $sqlHist = "INSERT INTO casos_asignaciones (caso_id, comisionado_id, asignado_por) VALUES (:caso_id, :comisionado_id, :asignado_por)";
-        $stmtHist = $db->prepare($sqlHist);
-        $stmtHist->execute([
-            ':caso_id'         => $caso_id,
-            ':comisionado_id'  => $asignado_a,
-            ':asignado_por'    => $usuario_creador_id
-        ]);
-
-        // Redirigir de vuelta a gestionar
-        header("Location: /project-cpr/public/gestionar.php?success=1");
         exit;
     }
 

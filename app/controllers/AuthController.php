@@ -3,9 +3,11 @@
 require_once __DIR__ . '/../../config/db.php';
 require_once __DIR__ . '/../models/User.php';
 
-class AuthController {
+class AuthController
+{
 
-    public function login() {
+    public function login()
+    {
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header("Location: /project-cpr/public/login.php");
@@ -23,6 +25,11 @@ class AuthController {
         $user = User::findByEmail($correo);
 
         if ($user && password_verify($password, $user['password'])) {
+
+
+            // Limpiar los mensajes emergentes
+            unset($_SESSION['error']);
+            unset($_SESSION['success']);
 
             if ($user['estado'] != 1) {
                 $_SESSION['error'] = "Usuario inactivo";

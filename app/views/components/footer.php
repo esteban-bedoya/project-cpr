@@ -17,7 +17,7 @@
     </div>
 
     <div class="footer-column">
-        <p>© 2025 SENA – Comisión de Personal<br>
+        <p>© 2026 SENA – Comisión de Personal<br>
             Todos los derechos reservados</p>
     </div>
 </footer>

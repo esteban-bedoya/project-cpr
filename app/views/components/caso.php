@@ -92,15 +92,25 @@
         </div>
 
         <div class="case-info">
+
             <div class="info-item">
                 <strong>Demandante:</strong>
                 <?= htmlspecialchars($caso['demandante_nombre']) ?>
             </div>
 
-            <div class="info-item">
-                <strong>Contacto:</strong>
-                <?= htmlspecialchars($caso['demandante_contacto']) ?>
-            </div>
+            <?php if (!empty($caso['demandante_documento'])): ?>
+                <div class="info-item">
+                    <strong>Documento de identidad:</strong>
+                    <?= htmlspecialchars($caso['demandante_documento']) ?>
+                </div>
+            <?php endif; ?>
+
+            <?php if (!empty($caso['demandante_contacto'])): ?>
+                <div class="info-item">
+                    <strong>Contacto:</strong>
+                    <?= htmlspecialchars($caso['demandante_contacto']) ?>
+                </div>
+            <?php endif; ?>
 
             <?php if (!empty($caso['detalles'])): ?>
                 <div class="info-item info-detalles">
@@ -108,6 +118,7 @@
                     <?= nl2br(htmlspecialchars($caso['detalles'])) ?>
                 </div>
             <?php endif; ?>
+
         </div>
 
         <div class="case-box">
@@ -251,4 +262,3 @@
         messages.scrollTop = messages.scrollHeight;
     });
 </script>
-

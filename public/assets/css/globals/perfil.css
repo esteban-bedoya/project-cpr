@@ -83,3 +83,20 @@
 .btn-cerrar:hover {
     opacity: 0.9;
 }
+
+.alert {
+    padding: 12px;
+    margin-bottom: 20px;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.alert.success {
+    background: #e6f4ea;
+    color: #1e7e34;
+}
+
+.alert.error {
+    background: #fdecea;
+    color: #a71d2a;
+}

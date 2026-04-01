@@ -82,3 +82,16 @@
 form label {
     color: #000;
 }
+
+.alert {
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    font-size: 14px;
+    text-align: center;
+}
+
+.alert.error {
+    background: #fdecea;
+    color: #a71d2a;
+}

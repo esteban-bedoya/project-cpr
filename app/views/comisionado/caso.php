@@ -1,4 +1,4 @@
-<?php $activePage = 'caso';?>
+<?php $activePage = 'caso'; ?>
 
 <!DOCTYPE html>
 <html lang="en">

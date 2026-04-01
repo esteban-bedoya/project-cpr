@@ -1,4 +1,7 @@
 <?php
+
+session_start();
+
 $activePage = 'login';
 
 ini_set('display_errors', 1);
@@ -23,6 +26,15 @@ error_reporting(E_ALL);
     <div class="login-container">
         <div class="login-card">
             <h2>INICIAR SESIÓN</h2>
+
+            <?php if (isset($_SESSION['error'])): ?>
+                <div class="alert error">
+                    <?= $_SESSION['error']; ?>
+                </div>
+                <?php unset($_SESSION['error']); ?>
+            <?php endif; ?>
+
+
 
             <form action="/project-cpr/public/login_procesar.php" method="POST">
 

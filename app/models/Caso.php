@@ -49,21 +49,51 @@ class Caso
     // ===============================
     public static function create($data)
     {
-        $sql = "INSERT INTO casos 
-                (tipo_caso_id, tipo_proceso_id, demandante_nombre, demandante_contacto, asunto, detalles, estado, creado_por)
-                VALUES (:tipo_caso_id, :tipo_proceso_id, :demandante_nombre, :demandante_contacto, :asunto, :detalles, :estado, :creado_por)";
+        $sql = "
+        INSERT INTO casos
+        (
+            tipo_caso_id,
+            tipo_proceso_id,
+            demandante_nombre,
+            demandante_documento,
+            demandante_contacto,
+            asunto,
+            detalles,
+            estado,
+            creado_por,
+            asignado_a
+        )
+        VALUES
+        (
+            :tipo_caso_id,
+            :tipo_proceso_id,
+            :demandante_nombre,
+            :demandante_documento,
+            :demandante_contacto,
+            :asunto,
+            :detalles,
+            :estado,
+            :creado_por,
+            :asignado_a
+        )
+    ";
+
         $stmt = self::db()->prepare($sql);
+
         return $stmt->execute([
-            ':tipo_caso_id'       => $data['tipo_caso_id'] ?? null,
-            ':tipo_proceso_id'    => $data['tipo_proceso_id'] ?? null,
-            ':demandante_nombre'  => $data['demandante_nombre'] ?? null,
-            ':demandante_contacto' => $data['demandante_contacto'] ?? null,
-            ':asunto'             => $data['asunto'] ?? null,
-            ':detalles'           => $data['detalles'] ?? null,
-            ':estado'             => $data['estado'] ?? 'No atendido',
-            ':creado_por'         => $data['creado_por'] ?? null
+            ':tipo_caso_id'         => $data['tipo_caso_id'],
+            ':tipo_proceso_id'      => $data['tipo_proceso_id'],
+            ':demandante_nombre'    => $data['demandante_nombre'],
+            ':demandante_documento' => $data['demandante_documento'], // ← AQUÍ ESTABA EL BUG
+            ':demandante_contacto'  => $data['demandante_contacto'],
+            ':asunto'               => $data['asunto'],
+            ':detalles'             => $data['detalles'],
+            ':estado'               => $data['estado'] ?? 'No atendido',
+            ':creado_por'           => $data['creado_por'],
+            ':asignado_a'           => $data['asignado_a']
         ]);
     }
+
 
     // ===============================
     // ACTUALIZAR CASO

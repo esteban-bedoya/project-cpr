@@ -1,4 +1,4 @@
-<?php $activePage = 'busqueda'; 
+<?php $activePage = 'busqueda';
 
 session_start();
 
@@ -16,7 +16,7 @@ if (!isset($_SESSION['logged']) || $_SESSION['user']['rol'] != 2) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Búsqueda - CPR</title>
     <link rel="stylesheet" href="/project-cpr/public/assets/css/globals/base.css">
-    <link rel="stylesheet" href="/project-cpr/public/assets/css/comisionado/_______.css">
+    <link rel="stylesheet" href="/project-cpr/public/assets/css/globals/busqueda_caso.css">
 </head>
 
 <body class="private">
@@ -25,6 +25,9 @@ if (!isset($_SESSION['logged']) || $_SESSION['user']['rol'] != 2) {
 
     <div class="main-content">
         <!-- Todo tu contenido de busqueda.php -->
+        <?php include __DIR__ . '/../components/busqueda_caso.php'; ?>
+
+
     </div>
 
 </body>

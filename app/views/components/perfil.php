@@ -5,6 +5,20 @@
 
     <h2 class="titulo-seccion">Cambiar correo</h2>
 
+<?php if (isset($_SESSION['success'])): ?>
+    <div class="alert success">
+        <?= $_SESSION['success']; ?>
+    </div>
+    <?php unset($_SESSION['success']); ?>
+<?php endif; ?>
+
+<?php if (isset($_SESSION['error'])): ?>
+    <div class="alert error">
+        <?= $_SESSION['error']; ?>
+    </div>
+    <?php unset($_SESSION['error']); ?>
+<?php endif; ?>
+
     <form id="form-perfil" action="/project-cpr/public/perfil.php?action=update" method="POST">
 
         <!-- CAMBIAR CORREO -->
