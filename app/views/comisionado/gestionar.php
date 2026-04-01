@@ -16,31 +16,35 @@
     <div class="main-content">
         <div class="dashboard-container">
 
+            <?php
+            $filtro_actual = $_GET['filtro'] ?? 'todos';
+            ?>
+
             <!-- SIDEBAR -->
             <aside class="sidebar">
                 <button class="btn-agregar">Agregar caso</button>
 
-                <a href="?filtro=urgentes" class="btn-sidebar">
+                <a href="?filtro=urgentes" class="btn-sidebar urgente <?= $filtro_actual === 'urgentes' ? 'active' : '' ?>">
                     <span>Urgentes</span>
                     <span class="num"><?= count($casos_urgentes) ?></span>
                 </a>
 
-                <a href="?filtro=no_atendido" class="btn-sidebar">
+                <a href="?filtro=no_atendido" class="btn-sidebar <?= $filtro_actual === 'no_atendido' ? 'active' : '' ?>">
                     <span>No atendidos</span>
                     <span class="num"><?= count($casos_no_atendidos) ?></span>
                 </a>
 
-                <a href="?filtro=pendiente" class="btn-sidebar">
+                <a href="?filtro=pendiente" class="btn-sidebar <?= $filtro_actual === 'pendiente' ? 'active' : '' ?>">
                     <span>Pendientes</span>
                     <span class="num"><?= count($casos_pendiente) ?></span>
                 </a>
 
-                <a href="?filtro=resueltos" class="btn-sidebar">
+                <a href="?filtro=resueltos" class="btn-sidebar <?= $filtro_actual === 'resueltos' ? 'active' : '' ?>">
                     <span>Resueltos</span>
                     <span class="num"><?= count($casos_resueltos) ?></span>
                 </a>
 
-                <a href="?filtro=todos" class="btn-sidebar">
+                <a href="?filtro=todos" class="btn-sidebar <?= $filtro_actual === 'todos' ? 'active' : '' ?>">
                     <span>Todos</span>
                     <span class="num"><?= count($casos_todos) ?></span>
                 </a>

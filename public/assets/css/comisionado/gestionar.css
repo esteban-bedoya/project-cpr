@@ -6,7 +6,6 @@
     gap: 40px;
     padding: 30px 40px;
 }
-
 /* =====================================
    SIDEBAR
 ===================================== */
@@ -14,35 +13,14 @@
     width: 260px;
     display: flex;
     flex-direction: column;
-    gap: 28px;
+    gap: 20px; /* un poco más compacto */
     padding-top: 10px;
     padding-left: 35px;
     border-right: 2px solid #ccc;
 }
 
-
-/* Botón principal "Agregar caso" */
-.btn-agregar {
-    background-color: #18A83B;
-    color: #fff;
-    font-weight: 700;
-    border: none;
-    padding: 12px 15px; /* igual que los botones del sidebar */
-    border-radius: 12px 0 0 12px; 
-    cursor: pointer;
-    font-size: 15px; /* igual que los botones del sidebar */
-    text-align: center;
-    transition: 0.2s ease-in-out;
-}
-
-.btn-agregar:hover {
-    background-color: #128b31;
-}
-
-
 /* =====================================
-   BOTONES DEL SIDEBAR
-   Bordes redondeados SOLO en la izquierda
+   BOTONES DEL SIDEBAR (Filtros)
 ===================================== */
 .btn-sidebar {
     width: 100%;
@@ -50,30 +28,80 @@
     justify-content: space-between;
     align-items: center;
 
-    padding: 12px 15px; /* menos padding para que sea más pequeño */
-    background-color: #b6dfb4;
+    padding: 12px 15px;
     border: none;
 
     border-top-left-radius: 14px;
     border-bottom-left-radius: 14px;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
 
     font-size: 15px;
     font-weight: 600;
     cursor: pointer;
     transition: 0.2s ease;
     color: #000;
+    text-decoration: none; /* quitar subrayado */
+
+    background-color: #cfe6d1; /* color base siempre visible */
 }
 
+/* Hover general */
 .btn-sidebar:hover {
-    background-color: #dff0df;
+    background-color: #b6dfb4; /* más destacado al pasar mouse */
 }
 
+/* Botón activo */
+.btn-sidebar.active {
+    background-color: #9fcf95; /* más oscuro que el base */
+}
+
+/* Botón urgente */
+.btn-sidebar.urgente {
+    background-color: #f7b2b2; /* rojo pastel */
+    color: #000;
+}
+
+.btn-sidebar.urgente:hover {
+    background-color: #f08a8a; /* rojo más oscuro */
+}
+
+.btn-sidebar.urgente.active {
+    background-color: #e96666; /* aún más oscuro */
+}
+
+/* Número dentro del botón */
 .btn-sidebar .num {
     font-weight: 800;
     font-size: 16px;
 }
+
+/* =====================================
+   BOTÓN PRINCIPAL "AGREGAR CASO"
+   Separado de los filtros
+===================================== */
+.btn-agregar {
+    background-color: #18A83B;
+    color: #fffdfd; /* blanco para destacar */
+    font-weight: 700;
+    border: none;
+    padding: 12px 15px; 
+    border-radius: 12px 0 0 12px; 
+    cursor: pointer;
+    font-size: 15px; 
+    text-align: center;
+    transition: 0.2s ease-in-out;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* un pequeño relieve */
+}
+
+.btn-agregar:hover {
+    background-color: #128b31;
+}
+
+/* Opcional: si quieres separar visualmente del resto de botones */
+.sidebar .btn-agregar {
+    margin-bottom: 15px;
+}
+
+
 
 /* =====================================
    CONTENIDO PRINCIPAL
