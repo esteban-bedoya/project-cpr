@@ -1,28 +1,3 @@
-<?php
-// ==============================================
-// usuarios.php - Vista principal del módulo Usuarios
-// ==============================================
-
-// Marcar esta página como activa (afecta el menú)
-$activePage = 'usuarios';
-
-// Importar el modelo User
-require_once __DIR__ . '/../../models/User.php';
-
-// Obtener todos los usuarios
-
-
-// Obtener filtros desde GET
-$filtro_estado = $_GET['filtro_estado'] ?? 'todos';
-$filtro_rol = $_GET['filtro_rol'] ?? 'todos';
-
-// Obtener usuarios filtrados
-$usuarios = User::filtrar($filtro_estado, $filtro_rol);
-
-
-
-?>
-
 <!DOCTYPE html>
 <html lang="es">
 
@@ -196,29 +171,29 @@ $usuarios = User::filtrar($filtro_estado, $filtro_rol);
 
             <form action="/project-cpr/public/usuarios.php?action=store" method="POST">
 
-                <label>Nombre completo:</label>
+                <label>Nombre completo</label>
                 <input type="text" name="username" required>
 
-                <label>Documento:</label>
+                <label>Documento</label>
                 <input type="text" name="documento" required>
 
-                <label>Correo:</label>
+                <label>Correo</label>
                 <input type="email" name="correo">
 
-                <label>Teléfono:</label>
+                <label>Teléfono</label>
                 <input type="text" name="telefono">
 
-                <label>Contraseña:</label>
+                <label>Contraseña</label>
                 <input type="password" name="password" required>
 
-                <label>Rol:</label>
+                <label>Rol</label>
                 <select name="rol">
                     <option value="1">Administrador</option>
                     <option value="2" selected>Comisionado</option>
                     <option value="3">Super Admin</option>
                 </select>
 
-                <label>Estado:</label>
+                <label>Estado</label>
                 <select name="estado">
                     <option value="1" selected>Activo</option>
                     <option value="2">Inactivo</option>

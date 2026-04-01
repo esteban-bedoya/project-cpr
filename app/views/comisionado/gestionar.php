@@ -1,13 +1,3 @@
-<?php 
-$activePage = 'gestionar'; 
-session_start();
-
-if (!isset($_SESSION['logged']) || $_SESSION['user']['rol'] != 2) {
-    header("Location: /project-cpr/public/login.php");
-    exit;
-}
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -15,135 +5,202 @@ if (!isset($_SESSION['logged']) || $_SESSION['user']['rol'] != 2) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestionar - CPR</title>
-
     <link rel="stylesheet" href="/project-cpr/public/assets/css/globals/base.css">
     <link rel="stylesheet" href="/project-cpr/public/assets/css/comisionado/gestionar.css">
 </head>
 
 <body class="private">
 
-    <?php include('../components/header_comisionado.php'); ?>
+    <?php include(__DIR__ . '/../components/header_comisionado.php'); ?>
 
     <div class="main-content">
-
         <div class="dashboard-container">
+
+            <?php
+            $filtro_actual = $_GET['filtro'] ?? 'todos';
+            ?>
 
             <!-- SIDEBAR -->
             <aside class="sidebar">
-
                 <button class="btn-agregar">Agregar caso</button>
 
-                <button class="btn-sidebar">
-                    <span>Asignados</span>
-                    <span class="num">20</span>
-                </button>
+                <a href="?filtro=urgentes" class="btn-sidebar urgente <?= $filtro_actual === 'urgentes' ? 'active' : '' ?>">
+                    <span>Urgentes</span>
+                    <span class="num"><?= count($casos_urgentes) ?></span>
+                </a>
 
-                <button class="btn-sidebar">
-                    <span>No atendido</span>
-                    <span class="num">3</span>
-                </button>
+                <a href="?filtro=no_atendido" class="btn-sidebar <?= $filtro_actual === 'no_atendido' ? 'active' : '' ?>">
+                    <span>No atendidos</span>
+                    <span class="num"><?= count($casos_no_atendidos) ?></span>
+                </a>
 
-                <button class="btn-sidebar">
-                    <span>Pendiente</span>
-                    <span class="num">3</span>
-                </button>
+                <a href="?filtro=pendiente" class="btn-sidebar <?= $filtro_actual === 'pendiente' ? 'active' : '' ?>">
+                    <span>Pendientes</span>
+                    <span class="num"><?= count($casos_pendiente) ?></span>
+                </a>
 
-                <button class="btn-sidebar">
-                    <span>Últimos atendidos</span>
-                    <span class="num">100</span>
-                </button>
+                <a href="?filtro=resueltos" class="btn-sidebar <?= $filtro_actual === 'resueltos' ? 'active' : '' ?>">
+                    <span>Resueltos</span>
+                    <span class="num"><?= count($casos_resueltos) ?></span>
+                </a>
+
+                <a href="?filtro=todos" class="btn-sidebar <?= $filtro_actual === 'todos' ? 'active' : '' ?>">
+                    <span>Todos</span>
+                    <span class="num"><?= count($casos_todos) ?></span>
+                </a>
 
             </aside>
 
             <!-- CONTENIDO PRINCIPAL -->
             <section class="dashboard-content">
-
                 <div class="table-container">
-
                     <table class="cases-table">
-
                         <thead>
                             <tr>
-                                <th>#Caso</th>
+                                <th>#</th>
                                 <th>Asunto</th>
-                                <th>Fecha</th>
-                                <th>Tipo</th>
+                                <th>Fecha creación</th>
+                                <th>Caso</th>
+                                <th>Proceso</th>
+                                <th>Tiempo</th>
                             </tr>
                         </thead>
-
                         <tbody>
-                            <tr>
-                                <td>7399</td>
-                                <td>Presupuesto faltante</td>
-                                <td>13-11-2025</td>
-                                <td>Denuncia</td>
-                            </tr>
+                            <?php if (!empty($casos)): ?>
+                                <?php foreach ($casos as $caso): ?>
+                                    <tr>
+                                        <td>
+                                            <a href="/project-cpr/public/caso.php?id=<?= $caso['id'] ?>">
+                                                <?= htmlspecialchars($caso['numero_caso']) ?>
+                                            </a>
+                                        </td>
+                                        <td><?= htmlspecialchars($caso['asunto']) ?></td>
+                                        <td><?= date("d-m-Y", strtotime($caso['fecha_creacion'] ?? '')) ?></td>
+                                        <td><?= htmlspecialchars($caso['tipo_caso_nombre']) ?></td>
+                                        <td><?= htmlspecialchars($caso['tipo_proceso_nombre']) ?></td>
+                                        <!-- Columna de tiempos -->
+                                        <td>
+                                            <?php
+                                            if ($caso['estado'] === 'Atendido') {
+                                                echo "Resuelto";
+                                            } else {
+                                                $plazos = [
+                                                    'Denuncia' => 30,
+                                                    'Solicitud' => 15,
+                                                    'Derecho de petición' => 15,
+                                                    'Tutela' => 10
+                                                ];
 
-                            <tr>
-                                <td>7390</td>
-                                <td>Acceso al historial académico</td>
-                                <td>12-11-2025</td>
-                                <td>Solicitud</td>
-                            </tr>
+                                                $tipo = $caso['tipo_caso_nombre'] ?? '';
+                                                $dias_max = $plazos[$tipo] ?? 15; // default 15 días
+                                                $fecha_creacion = strtotime($caso['fecha_creacion']);
+                                                $dias_transcurridos = (int)((time() - $fecha_creacion) / 86400); // segundos a días
+                                                $dias_restantes = $dias_max - $dias_transcurridos;
 
-                            <tr>
-                                <td>6987</td>
-                                <td>Corrección formal de datos</td>
-                                <td>10-11-2025</td>
-                                <td>Derecho de petición</td>
-                            </tr>
-
-                            <tr>
-                                <td>5638</td>
-                                <td>Confidencialidad</td>
-                                <td>20-10-2025</td>
-                                <td>Tutela</td>
-                            </tr>
-
-                            <tr>
-                                <td>4565</td>
-                                <td>Derecho de acceso a la información</td>
-                                <td>15-10-2025</td>
-                                <td>Tutela</td>
-                            </tr>
-
-                            <tr>
-                                <td>3267</td>
-                                <td>No procesado</td>
-                                <td>15-09-2025</td>
-                                <td>Denuncia</td>
-                            </tr>
-
-                            <tr>
-                                <td>2789</td>
-                                <td>Poco presupuesto</td>
-                                <td>11-09-2025</td>
-                                <td>Denuncia</td>
-                            </tr>
-
-                            <tr>
-                                <td>2452</td>
-                                <td>Certificado de curso finalizado</td>
-                                <td>02-09-2025</td>
-                                <td>Solicitud</td>
-                            </tr>
-
-                            <tr>
-                                <td>1245</td>
-                                <td>Gastos inflados</td>
-                                <td>13-08-2025</td>
-                                <td>Denuncia</td>
-                            </tr>
+                                                if ($dias_restantes < 0) {
+                                                    echo "<span style='color:red;'>$dias_restantes días</span>";
+                                                } else {
+                                                    echo "$dias_restantes días";
+                                                }
+                                            }
+                                            ?>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="6">No hay casos para este filtro.</td>
+                                </tr>
+                            <?php endif; ?>
                         </tbody>
-
                     </table>
                 </div>
-
             </section>
 
         </div>
-
     </div>
+
+    <!-- =========================================================== -->
+    <!-- ================== MODAL AGREGAR CASO ==================== -->
+    <!-- =========================================================== -->
+    <div class="modal" id="modal-agregar">
+        <div class="modal-content">
+            <h3>Agregar caso</h3>
+
+            <form action="/project-cpr/public/gestionar.php?action=storeGestionar" method="POST">
+
+                <label>Seleccione el tipo de proceso</label>
+                <select name="tipo_proceso_id" id="add-tipo-proceso" required>
+                    <option value="">- Seleccione -</option>
+                    <?php
+                    $tiposProceso = Caso::getTiposProceso();
+                    foreach ($tiposProceso as $proceso) {
+                        if ($proceso['estado'] == 1) {
+                            echo "<option value='{$proceso['id']}' data-tipo-caso='{$proceso['tipo_caso_id']}'>{$proceso['nombre']}</option>";
+                        }
+                    }
+                    ?>
+                </select>
+
+                <input type="hidden" name="tipo_caso_id" id="add-tipo-caso">
+
+                <label>Nombres y apellidos del demandante</label>
+                <input type="text" name="demandante_nombre" required>
+
+                <label>Datos de contacto del demandante</label>
+                <input type="text" name="demandante_contacto" placeholder="Teléfono y/o correo" required>
+
+                <label>Asunto</label>
+                <input type="text" name="asunto" required>
+
+                <label>Detalles del caso</label>
+                <textarea name="detalles" rows="4" required></textarea>
+
+                <label>Asignar proceso a</label>
+                <select name="asignado_a" required>
+                    <option value="">- Seleccione comisionado -</option>
+                    <?php
+                    $comisionados = Caso::getComisionadosActivos(); // función que devolverá solo usuarios con rol = 2 y estado = 1
+                    foreach ($comisionados as $c) {
+                        echo "<option value='{$c['id']}'>{$c['username']}</option>";
+                    }
+                    ?>
+                </select>
+
+                <div class="modal-buttons">
+                    <button type="submit" class="btn-guardar">Guardar</button>
+                    <button type="button" class="btn-cerrar" onclick="cerrarModalAgregar()">Cerrar</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const btnAgregar = document.querySelector('.btn-agregar');
+        const modalAgregar = document.getElementById('modal-agregar');
+        const selectProceso = document.getElementById('add-tipo-proceso');
+        const inputTipoCaso = document.getElementById('add-tipo-caso');
+
+        btnAgregar.addEventListener('click', () => {
+            modalAgregar.style.display = 'flex';
+        });
+
+        function cerrarModalAgregar() {
+            modalAgregar.style.display = 'none';
+        }
+
+        // Asignar automáticamente el tipo de caso según el proceso
+        selectProceso.addEventListener('change', () => {
+            const tipoCasoId = selectProceso.selectedOptions[0].dataset.tipoCaso;
+            inputTipoCaso.value = tipoCasoId;
+        });
+
+        // Cerrar modal si se hace click fuera del contenido
+        window.addEventListener('click', e => {
+            if (e.target === modalAgregar) cerrarModalAgregar();
+        });
+    </script>
 
 </body>
 

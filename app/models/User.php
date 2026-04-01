@@ -103,5 +103,30 @@ class User
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+public static function findById($id)
+{
+    global $pdo;
+    $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE id = ?");
+    $stmt->execute([$id]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+public static function updatePerfil($id, $correo, $password = null)
+{
+    global $pdo;
+
+    if ($password) {
+        $hashed = password_hash($password, PASSWORD_DEFAULT);
+        $stmt = $pdo->prepare("
+            UPDATE usuarios SET correo = ?, password = ? WHERE id = ?
+        ");
+        return $stmt->execute([$correo, $hashed, $id]);
+    }
+
+    $stmt = $pdo->prepare("
+        UPDATE usuarios SET correo = ? WHERE id = ?
+    ");
+    return $stmt->execute([$correo, $id]);
+}
 
 }

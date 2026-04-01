@@ -6,15 +6,12 @@ class UsuarioController
 {
     public function index()
     {
-        session_start();
-
-        if (!isset($_SESSION['logged']) || $_SESSION['user']['rol'] != 1) {
-            header("Location: /project-cpr/public/login.php");
-            exit;
-        }
-
-        $usuarios = User::all();
         $activePage = 'usuarios';
+
+        $filtro_estado = $_GET['filtro_estado'] ?? 'todos';
+        $filtro_rol    = $_GET['filtro_rol'] ?? 'todos';
+
+        $usuarios = User::filtrar($filtro_estado, $filtro_rol);
 
         include __DIR__ . '/../views/admin/usuarios.php';
     }
@@ -40,7 +37,6 @@ class UsuarioController
     public function update()
     {
         $id = $_POST['id'];
-
         $documento = $_POST['documento'];
         $username  = $_POST['username'];
         $rol       = $_POST['rol'];

@@ -14,7 +14,7 @@
     height: max-content;
     display: flex;
     flex-direction: column;
-    gap: 25px;
+    gap: 35px;
 }
 
 .case-sidebar .filter-title,
@@ -26,7 +26,7 @@
 .filter-group {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 12px;
 }
 
 .filter-title {
@@ -39,7 +39,8 @@
 .check-item {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 10px;
+    margin-left: 5px;
 }
 
 .case-sidebar select {
@@ -88,9 +89,27 @@
     padding: 20px;
     border-radius: 12px;
     background: #fafafa;
+
     display: flex;
     flex-direction: column;
     gap: 25px;
+
+    height: 60vh;
+}
+
+.case-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+/* scrollbar discreta */
+.case-messages::-webkit-scrollbar {
+    width: 6px;
+}
+.case-messages::-webkit-scrollbar-thumb {
+    background: #c5c5c5;
+    border-radius: 4px;
 }
 
 .msg-entry {
@@ -182,4 +201,32 @@
 
 .btn-attach:hover {
     background: #e0e0e0;
+}
+
+.case-info {
+    background: #f4f8f4;
+    border: 1px solid #d6e4d8;
+    border-radius: 10px;
+    padding: 15px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    font-size: 14px;
+    color: #000; /* ← TEXTO NEGRO */
+}
+
+.info-item {
+    color: #000;
+}
+
+.info-item strong {
+    color: #1b3d1b;
+    font-weight: 700;
+}
+
+.info-detalles {
+    margin-top: 6px;
+    line-height: 1.5;
 }
