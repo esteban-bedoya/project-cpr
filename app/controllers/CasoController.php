@@ -323,36 +323,77 @@ class CasoController
 
     public function storeMensaje($caso_id)
     {
+        // ===============================
+        // SEGURIDAD
+        // ===============================
         if (!isset($_SESSION['logged'])) {
             header("Location: /project-cpr/public/login.php");
             exit;
         }
 
+        // ===============================
+        // DATOS BASE
+        // ===============================
         $mensaje = trim($_POST['mensaje'] ?? '');
+        $hayArchivo = isset($_FILES['archivo']) && $_FILES['archivo']['error'] === 0;
         $archivoNombre = null;
 
-        // Si viene archivo
-        if (!empty($_FILES['archivo']['name'])) {
-            $carpeta = __DIR__ . '/../../public/uploads/casos/';
+        // Se permite enviar:
+        // - solo mensaje
+        // - solo archivo
+        // - mensaje + archivo
+
+        // ===============================
+        // VALIDACIÓN PRINCIPAL
+        // ===============================
+        if ($mensaje === '' && !$hayArchivo) {
+            header("Location: /project-cpr/public/caso.php?id=$caso_id&error=vacio");
+            exit;
+        }
+
+        // ===============================
+        // VALIDACIÓN Y SUBIDA DE ARCHIVO
+        // ===============================
+        if ($hayArchivo) {
+
+            $permitidos = ['pdf', 'jpg', 'jpeg', 'png'];
+            $maxSize = 5 * 1024 * 1024; // 5 MB
+
+            $extension = strtolower(pathinfo($_FILES['archivo']['name'], PATHINFO_EXTENSION));
+            $tamano = $_FILES['archivo']['size'];
+
+            if (!in_array($extension, $permitidos)) {
+                header("Location: /project-cpr/public/caso.php?id=$caso_id&error=tipo");
+                exit;
+            }
+
+            if ($tamano > $maxSize) {
+                header("Location: /project-cpr/public/caso.php?id=$caso_id&error=tamano");
+                exit;
+            }
+
+            $carpeta = realpath(__DIR__ . '/../../public') . '/uploads/casos/';
+
             if (!is_dir($carpeta)) {
                 mkdir($carpeta, 0777, true);
             }
 
-            $extension = pathinfo($_FILES['archivo']['name'], PATHINFO_EXTENSION);
             $archivoNombre = 'caso_' . $caso_id . '_' . time() . '.' . $extension;
-            move_uploaded_file($_FILES['archivo']['tmp_name'], $carpeta . $archivoNombre);
+
+            if (!move_uploaded_file($_FILES['archivo']['tmp_name'], $carpeta . $archivoNombre)) {
+                header("Location: /project-cpr/public/caso.php?id=$caso_id&error=subida");
+                exit;
+            }
         }
 
-        if ($mensaje === '' && !$archivoNombre) {
-            header("Location: /project-cpr/public/caso.php?id=$caso_id");
-            exit;
-        }
-
+        // ===============================
+        // GUARDAR MENSAJE
+        // ===============================
         Caso::guardarMensaje([
-            'caso_id' => $caso_id,
+            'caso_id'    => $caso_id,
             'usuario_id' => $_SESSION['user']['id'],
-            'mensaje' => $mensaje,
-            'archivo' => $archivoNombre
+            'mensaje'    => $mensaje,
+            'archivo'    => $archivoNombre
         ]);
 
         header("Location: /project-cpr/public/caso.php?id=$caso_id");
