@@ -13,22 +13,13 @@
             <input type="hidden" name="action" value="updateDetalle">
             <input type="hidden" name="caso_id" value="<?= $caso['id'] ?>">
 
-            <!-- 1. Comisionado -->
+            <!-- 1. Comisionado asignado (solo lectura) -->
             <div class="filter-group">
-                <label class="filter-title">Comisionado</label>
-
-                <!-- Lista de comisionados (activos + asignado inactivo agregado desde el controller) -->
-                <select name="comisionado_id">
-                    <option value="">— Comisionado asignado inactivo, revise historial —</option>
-
-                    <?php foreach ($comisionados as $c): ?>
-                        <option value="<?= $c['id'] ?>" <?= $caso['asignado_a'] == $c['id'] ? 'selected' : '' ?>>
-                            <?= htmlspecialchars($c['username']) ?>
-                            <?= isset($c['estado']) && (int)$c['estado'] !== 1 ? ' (inactivo)' : '' ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-
+                <label class="filter-title">Comisionado asignado</label>
+                <input
+                    type="text"
+                    value="<?= htmlspecialchars($caso['asignado_a_nombre'] ?? '') ?>"
+                    disabled>
             </div>
             <br>
 
@@ -98,35 +89,21 @@
 
         <div class="case-info">
 
-            <!-- Usuario que creó el caso -->
-            <?php if (!empty($caso['creado_por_nombre'])): ?>
+            <!-- Usuario asignado (creador actual) -->
+            <?php if (!empty($caso['asignado_a_nombre'])): ?>
                 <div class="info-item">
                     <strong>Caso creado por:</strong>
-                    <?= htmlspecialchars($caso['creado_por_nombre']) ?>
+                    <?= htmlspecialchars($caso['asignado_a_nombre']) ?>
+                </div>
+            <?php endif; ?>
+            <?php if (!empty($caso['fecha_creacion'])): ?>
+                <div class="info-item">
+                    <strong>Fecha de creación:</strong>
+                    <?= date("d/m/Y H:i", strtotime($caso['fecha_creacion'])) ?>
                 </div>
             <?php endif; ?>
 
             <hr>
-
-            <!-- Datos del demandante -->
-            <div class="info-item">
-                <strong>Demandante:</strong>
-                <?= htmlspecialchars($caso['demandante_nombre']) ?>
-            </div>
-
-            <?php if (!empty($caso['demandante_documento'])): ?>
-                <div class="info-item">
-                    <strong>Documento de identidad:</strong>
-                    <?= htmlspecialchars($caso['demandante_documento']) ?>
-                </div>
-            <?php endif; ?>
-
-            <?php if (!empty($caso['demandante_contacto'])): ?>
-                <div class="info-item">
-                    <strong>Contacto:</strong>
-                    <?= htmlspecialchars($caso['demandante_contacto']) ?>
-                </div>
-            <?php endif; ?>
 
             <?php if (!empty($caso['detalles'])): ?>
                 <div class="info-item info-detalles">

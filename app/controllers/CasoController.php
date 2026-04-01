@@ -1,7 +1,6 @@
 <?php
 // Controlador de casos: listado, detalle, creación, actualización y mensajes.
 require_once __DIR__ . '/../models/Caso.php';
-require_once __DIR__ . '/../models/User.php';
 
 class CasoController
 {
@@ -42,29 +41,6 @@ class CasoController
         }
 
         // =====================================
-        // COMISIONADO ASIGNADO (ACTIVO O NO)
-        // =====================================
-        // Se prepara el comisionado asignado (si existe).
-        $comisionadoAsignado = null;
-
-        if (!empty($caso['asignado_a'])) {
-            $comisionadoAsignado = User::findById($caso['asignado_a']);
-        }
-
-        // =====================================
-        // LISTA DE COMISIONADOS PARA EL SELECT
-        // =====================================
-        $comisionados = Caso::getComisionadosActivos();
-
-        // Si el asignado está INACTIVO, lo agregamos manualmente
-        if (
-            $comisionadoAsignado &&
-            $comisionadoAsignado['estado'] != 1
-        ) {
-            $comisionados[] = $comisionadoAsignado;
-        }
-
-        // =====================================
         // DATOS PARA LA VISTA
         // =====================================
         // Catalogos y datos de soporte para renderizar la vista.
@@ -91,14 +67,10 @@ class CasoController
         $data = [
             'tipo_caso_id'         => $_POST['tipo_caso_id'] ?? null,
             'tipo_proceso_id'      => $_POST['tipo_proceso_id'] ?? null,
-            'demandante_nombre'    => $_POST['demandante_nombre'] ?? null,
-            'demandante_documento' => null,
-            'demandante_contacto'  => $_POST['demandante_contacto'] ?? null,
             'asunto'               => $_POST['asunto'] ?? null,
             'detalles'             => $_POST['detalles'] ?? null,
             'estado'               => 'No atendido',
-            'creado_por'           => $_SESSION['user']['id'],
-            'asignado_a'           => null
+            'asignado_a'           => $_SESSION['user']['id']
         ];
 
         // Inserta el caso en BD y redirige al listado.
@@ -120,8 +92,6 @@ class CasoController
         $data = [
             'tipo_caso_id'       => $_POST['tipo_caso_id'] ?? null,
             'tipo_proceso_id'    => $_POST['tipo_proceso_id'] ?? null,
-            'demandante_nombre'  => $_POST['demandante_nombre'] ?? null,
-            'demandante_contacto' => $_POST['demandante_contacto'] ?? null,
             'asunto'             => $_POST['asunto'] ?? null,
             'detalles'           => $_POST['detalles'] ?? null,
             'estado'             => $_POST['estado'] ?? null
@@ -244,22 +214,14 @@ class CasoController
         $tipo_caso_id    = (int) ($_POST['tipo_caso_id'] ?? 0);
         $tipo_proceso_id = (int) ($_POST['tipo_proceso_id'] ?? 0);
 
-        $demandante_nombre    = trim($_POST['demandante_nombre'] ?? '');
-        $demandante_documento = trim($_POST['demandante_documento'] ?? '');
-        $demandante_contacto  = trim($_POST['demandante_contacto'] ?? '');
-
         $asunto   = trim($_POST['asunto'] ?? '');
         $detalles = trim($_POST['detalles'] ?? '');
-
-        $asignado_a = (int) ($_POST['asignado_a'] ?? 0);
 
         $usuario_creador_id = $_SESSION['user']['id'];
 
         // ===============================
         // 4. NORMALIZAR CAMPOS OPCIONALES
         // ===============================
-        $demandante_documento = $demandante_documento !== '' ? $demandante_documento : null;
-        $demandante_contacto  = $demandante_contacto  !== '' ? $demandante_contacto  : null;
         $asunto               = $asunto               !== '' ? $asunto               : null;
         $detalles             = $detalles             !== '' ? $detalles             : null;
 
@@ -268,9 +230,7 @@ class CasoController
         // ===============================
         if (
             !$tipo_caso_id ||
-            !$tipo_proceso_id ||
-            $demandante_nombre === '' ||
-            !$asignado_a
+            !$tipo_proceso_id
         ) {
             header("Location: /project-cpr/public/gestionar.php?error=campos");
             exit;
@@ -282,14 +242,10 @@ class CasoController
         $resultado = Caso::create([
             'tipo_caso_id'         => $tipo_caso_id,
             'tipo_proceso_id'      => $tipo_proceso_id,
-            'demandante_nombre'    => $demandante_nombre,
-            'demandante_documento' => $demandante_documento, // NULL permitido
-            'demandante_contacto'  => $demandante_contacto,  // NULL permitido
             'asunto'               => $asunto,               // NULL permitido
             'detalles'             => $detalles,             // NULL permitido
             'estado'               => 'No atendido',
-            'creado_por'           => $usuario_creador_id,
-            'asignado_a'           => $asignado_a
+            'asignado_a'           => $usuario_creador_id
         ]);
 
         // ===============================
@@ -314,7 +270,6 @@ class CasoController
 
         $usuario_id = $_SESSION['user']['id'];
 
-        $comisionado_id = $_POST['comisionado_id'] ?? $caso['asignado_a'];
         $estado = $_POST['estado'] ?? $caso['estado'];
         $tipo_proceso_id = $_POST['tipo_proceso_id'] ?? $caso['tipo_proceso_id'];
 
@@ -333,16 +288,6 @@ class CasoController
         // Guardar historial en una sola tabla
         // ============================================
         $historialCambios = [];
-
-        if ($caso['asignado_a'] != $comisionado_id) {
-            $nuevoComisionado = Caso::getUsuario($comisionado_id);
-            $antiguoComisionado = Caso::getUsuario($caso['asignado_a']);
-            $historialCambios[] = [
-                'caso_id' => $id,
-                'usuario_id' => $usuario_id,
-                'descripcion' => "Asignó a {$nuevoComisionado['username']} como comisionado (antes: {$antiguoComisionado['username']})"
-            ];
-        }
 
         if ($caso['estado'] != $estado) {
             $historialCambios[] = [
@@ -379,7 +324,6 @@ class CasoController
 
         // Actualizar datos en la tabla casos
         Caso::updateDetalle($id, [
-            'asignado_a' => $comisionado_id,
             'estado' => $estado,
             'tipo_proceso_id' => $tipo_proceso_id,
             'tipo_caso_id' => $tipo_caso_id_nuevo

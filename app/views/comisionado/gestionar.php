@@ -132,18 +132,6 @@
 
             <form action="/project-cpr/public/gestionar.php?action=storeGestionar" method="POST">
 
-                <label>Documento de identidad del demandante</label>
-                <input
-                    type="text"
-                    name="demandante_documento"
-                    placeholder="Documento de identidad (opcional)">
-
-                <label>Nombres y apellidos del demandante</label>
-                <input type="text" name="demandante_nombre" required>
-
-                <label>Datos de contacto del demandante</label>
-                <input type="text" name="demandante_contacto" placeholder="Teléfono y/o correo" required>
-
                 <label>Seleccione el tipo de proceso</label>
                 <select name="tipo_proceso_id" id="add-tipo-proceso" required>
                     <option value="">- Seleccione -</option>
@@ -163,17 +151,6 @@
 
                 <label>Detalles del caso</label>
                 <textarea name="detalles" rows="4" required></textarea>
-
-                <label>Asignar proceso a</label>
-                <select name="asignado_a" required>
-                    <option value="">- Seleccione comisionado -</option>
-                    <?php
-                    $comisionados = Caso::getComisionadosActivos(); // función que devolverá solo usuarios con rol = 2 y estado = 1
-                    foreach ($comisionados as $c) {
-                        echo "<option value='{$c['id']}'>{$c['username']}</option>";
-                    }
-                    ?>
-                </select>
 
                 <div class="modal-buttons">
                     <button type="submit" class="btn-guardar">Guardar</button>

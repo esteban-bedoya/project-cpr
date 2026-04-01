@@ -20,9 +20,9 @@ class Caso
     public static function all()
     {
         // Lista casos con datos de usuario y catalogos (joins).
-        $sql = "SELECT c.*, u.username AS creado_por_nombre, tc.nombre AS tipo_caso_nombre, tp.nombre AS tipo_proceso_nombre
+        $sql = "SELECT c.*, u.username AS asignado_a_nombre, tc.nombre AS tipo_caso_nombre, tp.nombre AS tipo_proceso_nombre
                 FROM casos c
-                JOIN usuarios u ON u.id = c.creado_por
+                LEFT JOIN usuarios u ON u.id = c.asignado_a
                 JOIN tipos_caso tc ON tc.id = c.tipo_caso_id
                 JOIN tipos_proceso tp ON tp.id = c.tipo_proceso_id
                 ORDER BY c.id DESC";
@@ -37,9 +37,9 @@ class Caso
     public static function find($id)
     {
         // Busca un caso y sus relaciones principales.
-        $sql = "SELECT c.*, u.username AS creado_por_nombre, tc.nombre AS tipo_caso_nombre, tp.nombre AS tipo_proceso_nombre
+        $sql = "SELECT c.*, u.username AS asignado_a_nombre, tc.nombre AS tipo_caso_nombre, tp.nombre AS tipo_proceso_nombre
                 FROM casos c
-                JOIN usuarios u ON u.id = c.creado_por
+                LEFT JOIN usuarios u ON u.id = c.asignado_a
                 JOIN tipos_caso tc ON tc.id = c.tipo_caso_id
                 JOIN tipos_proceso tp ON tp.id = c.tipo_proceso_id
                 WHERE c.id = ?";
@@ -59,26 +59,18 @@ class Caso
         (
             tipo_caso_id,
             tipo_proceso_id,
-            demandante_nombre,
-            demandante_documento,
-            demandante_contacto,
             asunto,
             detalles,
             estado,
-            creado_por,
             asignado_a
         )
         VALUES
         (
             :tipo_caso_id,
             :tipo_proceso_id,
-            :demandante_nombre,
-            :demandante_documento,
-            :demandante_contacto,
             :asunto,
             :detalles,
             :estado,
-            :creado_por,
             :asignado_a
         )
     ";
@@ -88,13 +80,9 @@ class Caso
         return $stmt->execute([
             ':tipo_caso_id'         => $data['tipo_caso_id'],
             ':tipo_proceso_id'      => $data['tipo_proceso_id'],
-            ':demandante_nombre'    => $data['demandante_nombre'],
-            ':demandante_documento' => $data['demandante_documento'], // campo opcional en el formulario
-            ':demandante_contacto'  => $data['demandante_contacto'],
             ':asunto'               => $data['asunto'],
             ':detalles'             => $data['detalles'],
             ':estado'               => $data['estado'] ?? 'No atendido',
-            ':creado_por'           => $data['creado_por'],
             ':asignado_a'           => $data['asignado_a']
         ]);
     }
@@ -109,8 +97,6 @@ class Caso
         $sql = "UPDATE casos SET 
                     tipo_caso_id = :tipo_caso_id,
                     tipo_proceso_id = :tipo_proceso_id,
-                    demandante_nombre = :demandante_nombre,
-                    demandante_contacto = :demandante_contacto,
                     asunto = :asunto,
                     detalles = :detalles,
                     estado = :estado
@@ -119,8 +105,6 @@ class Caso
         return $stmt->execute([
             ':tipo_caso_id'       => $data['tipo_caso_id'] ?? null,
             ':tipo_proceso_id'    => $data['tipo_proceso_id'] ?? null,
-            ':demandante_nombre'  => $data['demandante_nombre'] ?? null,
-            ':demandante_contacto' => $data['demandante_contacto'] ?? null,
             ':asunto'             => $data['asunto'] ?? null,
             ':detalles'           => $data['detalles'] ?? null,
             ':estado'             => $data['estado'] ?? null,
@@ -213,29 +197,6 @@ class Caso
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Crear asignación en casos_asignaciones
-    public static function crearAsignacion($data)
-    {
-        // Registra una asignacion en tabla historica.
-        $sql = "INSERT INTO casos_asignaciones (caso_id, comisionado_id, asignado_por) VALUES (:caso_id, :comisionado_id, :asignado_por)";
-        $stmt = self::db()->prepare($sql);
-        return $stmt->execute([
-            ':caso_id' => $data['caso_id'],
-            ':comisionado_id' => $data['comisionado_id'],
-            ':asignado_por' => $data['asignado_por']
-        ]);
-    }
-
-    // Obtener comisionados activos
-    public static function getComisionadosActivos()
-    {
-        // Lista comisionados activos para selects.
-        $sql = "SELECT id, username FROM usuarios WHERE rol = 2 AND estado = 1 ORDER BY username";
-        $stmt = self::db()->prepare($sql);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
     // Guardar un cambio en el historial (solo descripción)
     public static function guardarHistorial($data)
     {
@@ -300,7 +261,6 @@ class Caso
     {
         // Actualiza campos especificos desde la vista detalle.
         $sql = "UPDATE casos SET 
-        asignado_a = :asignado_a,
         estado = :estado,
         tipo_proceso_id = :tipo_proceso_id,
         tipo_caso_id = :tipo_caso_id
@@ -308,7 +268,6 @@ class Caso
 
         $stmt = self::db()->prepare($sql);
         return $stmt->execute([
-            ':asignado_a' => $data['asignado_a'],
             ':estado' => $data['estado'],
             ':tipo_proceso_id' => $data['tipo_proceso_id'],
             ':tipo_caso_id' => $data['tipo_caso_id'],

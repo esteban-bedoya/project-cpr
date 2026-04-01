@@ -94,6 +94,7 @@
 .tabla-usuarios {
     width: 100%;
     border-collapse: collapse;
+    table-layout: fixed; /* distribuye columnas de forma uniforme */
 }
 
 .tabla-usuarios thead {
@@ -107,6 +108,8 @@
     font-size: 14px;
     border-bottom: 1px solid #ccc;
     color: #000;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .acciones span {
