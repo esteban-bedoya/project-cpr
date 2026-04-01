@@ -1,18 +1,19 @@
+/* Estilos de la pagina de login */
 /* Contenedor general */
 .login-container {
     width: 100%;
-    min-height: 70vh;
+    min-height: 60vh;
     display: flex;
     justify-content: center;
     align-items: center;
     background: #062b4f; /* Tu azul */
-    padding: 40px 0;
+    padding: 20px 0;
 }
 
 /* Tarjeta */
 .login-card {
     background: white;
-    padding: 40px;
+    padding: 32px;
     width: 380px;
     border-radius: 14px;
     border: 2px solid #e6e6e6;

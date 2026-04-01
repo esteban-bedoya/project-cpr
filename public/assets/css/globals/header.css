@@ -1,3 +1,4 @@
+/* Estilos del header global (logo, menu y responsive) */
 .header {
   display: flex;
   justify-content: space-between;

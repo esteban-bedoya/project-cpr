@@ -1,14 +1,6 @@
-<?php $activePage = 'perfil';
+<?php $activePage = 'perfil';?>
+<!-- // Vista de perfil para comisionado. -->
 
-
-session_start();
-
-if (!isset($_SESSION['logged']) || $_SESSION['user']['rol'] != 2) {
-    header("Location: /project-cpr/public/login.php");
-    exit;
-}
-
-?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -23,8 +15,9 @@ if (!isset($_SESSION['logged']) || $_SESSION['user']['rol'] != 2) {
 
 <body class="private">
 
+    <!-- Header del comisionado -->
     <?php include __DIR__ . '/../components/header_comisionado.php'; ?>
-    <!-- Todo tu contenido de busqueda.php -->
+    <!-- Contenido de perfil -->
     <div class="main-content">
 
 

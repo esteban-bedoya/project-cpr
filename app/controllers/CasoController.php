@@ -1,4 +1,5 @@
 <?php
+// Controlador de casos: listado, detalle, creación, actualización y mensajes.
 require_once __DIR__ . '/../models/Caso.php';
 require_once __DIR__ . '/../models/User.php';
 
@@ -9,12 +10,14 @@ class CasoController
     // ===============================
     public function index()
     {
-
+        // Se valida el rol (admin o comisionado) antes de mostrar el listado.
         $rol = $_SESSION['user']['rol'];
         if (!in_array($rol, [1, 2])) header("Location: /project-cpr/public/login.php");
 
+        // Obtiene todos los casos desde el modelo.
         $casos = Caso::all();
 
+        // Selecciona la vista segun el rol.
         $view = $rol == 1 ? 'admin' : 'comisionado';
         require __DIR__ . "/../views/{$view}/casos.php";
     }
@@ -24,12 +27,14 @@ class CasoController
     // ===============================
     public function show($id)
     {
+        // Acceso restringido a roles autorizados.
         $rol = $_SESSION['user']['rol'];
         if (!in_array($rol, [1, 2])) {
             header("Location: /project-cpr/public/login.php");
             exit;
         }
 
+        // Busca el caso por id.
         $caso = Caso::find($id);
         if (!$caso) {
             header("Location: /project-cpr/casos");
@@ -39,6 +44,7 @@ class CasoController
         // =====================================
         // COMISIONADO ASIGNADO (ACTIVO O NO)
         // =====================================
+        // Se prepara el comisionado asignado (si existe).
         $comisionadoAsignado = null;
 
         if (!empty($caso['asignado_a'])) {
@@ -61,6 +67,7 @@ class CasoController
         // =====================================
         // DATOS PARA LA VISTA
         // =====================================
+        // Catalogos y datos de soporte para renderizar la vista.
         $tiposCaso    = Caso::getTiposCaso();
         $tiposProceso = Caso::getTiposProceso();
         $historial    = Caso::getHistorial($id);
@@ -80,6 +87,7 @@ class CasoController
     // ===============================
     public function store()
     {
+        // Arma la data basica del caso desde el formulario.
         $data = [
             'tipo_caso_id'         => $_POST['tipo_caso_id'] ?? null,
             'tipo_proceso_id'      => $_POST['tipo_proceso_id'] ?? null,
@@ -93,6 +101,7 @@ class CasoController
             'asignado_a'           => null
         ];
 
+        // Inserta el caso en BD y redirige al listado.
         Caso::create($data);
         header("Location: /project-cpr/casos");
     }
@@ -103,10 +112,11 @@ class CasoController
     // ===============================
     public function update()
     {
-
+        // Se obtiene el id del caso a actualizar.
         $id = $_POST['id'] ?? null;
         if (!$id) header("Location: /project-cpr/casos");
 
+        // Datos actualizables del caso.
         $data = [
             'tipo_caso_id'       => $_POST['tipo_caso_id'] ?? null,
             'tipo_proceso_id'    => $_POST['tipo_proceso_id'] ?? null,
@@ -117,6 +127,7 @@ class CasoController
             'estado'             => $_POST['estado'] ?? null
         ];
 
+        // Actualiza en BD y vuelve al listado.
         Caso::update($id, $data);
         header("Location: /project-cpr/casos");
     }
@@ -126,7 +137,7 @@ class CasoController
     // ===============================
     public function delete()
     {
-
+        // Elimina el caso si existe id valido.
         $id = $_POST['id'] ?? null;
         if ($id) Caso::delete($id);
 
@@ -138,6 +149,7 @@ class CasoController
     // ===============================
     public function gestionarFiltrado()
     {
+        // Pantalla "Gestionar": se filtra segun botones de estado/urgencia.
         $activePage = 'gestionar';
         $comisionado_id = $_SESSION['user']['id'];
 
@@ -201,6 +213,7 @@ class CasoController
                 break;
         }
 
+        // Carga la vista con el listado ya filtrado.
         require __DIR__ . '/../views/comisionado/gestionar.php';
     }
 
@@ -293,7 +306,7 @@ class CasoController
 
     public function updateDetalle($id)
     {
-
+        // Carga el caso actual para comparar cambios.
         $caso = Caso::find($id);
         if (!$caso) {
             die("Caso no encontrado.");
@@ -389,6 +402,7 @@ class CasoController
         // ===============================
         // DATOS BASE
         // ===============================
+        // Mensaje y archivo son opcionales, pero no pueden venir ambos vacios.
         $mensaje = trim($_POST['mensaje'] ?? '');
         $hayArchivo = isset($_FILES['archivo']) && $_FILES['archivo']['error'] === 0;
         $archivoNombre = null;
@@ -444,6 +458,7 @@ class CasoController
         // ===============================
         // GUARDAR MENSAJE
         // ===============================
+        // Inserta el mensaje y opcionalmente referencia al archivo subido.
         Caso::guardarMensaje([
             'caso_id'    => $caso_id,
             'usuario_id' => $_SESSION['user']['id'],

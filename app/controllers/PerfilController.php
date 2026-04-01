@@ -1,12 +1,31 @@
 <?php
+// Controlador de perfil: datos del usuario y catalogo de tipos de proceso (admin).
 
 require_once __DIR__ . '/../models/User.php';
+require_once __DIR__ . '/../models/TipoProceso.php';
+require_once __DIR__ . '/../models/Caso.php';
 
 class PerfilController
 {
     public function index()
     {
+        // Marca el menu activo en la vista.
         $activePage = 'perfil';
+
+        $tiposProceso = [];
+        $tiposCaso = [];
+        $procesoSeleccionado = null;
+
+        // Solo el admin carga catalogos para gestion de procesos.
+        if (isset($_SESSION['user']) && $_SESSION['user']['rol'] == 1) {
+            $tiposProceso = TipoProceso::allWithTipoCaso();
+            $tiposCaso = Caso::getTiposCaso();
+
+            $procesoId = $_GET['proceso_id'] ?? null;
+            if ($procesoId) {
+                $procesoSeleccionado = TipoProceso::find($procesoId);
+            }
+        }
 
         // Vista según rol
         if ($_SESSION['user']['rol'] == 1) {
@@ -16,9 +35,9 @@ class PerfilController
         }
     }
 
-public function update()
+    public function update()
 {
-
+    // Actualiza correo y/o contraseña del usuario logueado.
     $idUsuario = $_SESSION['user']['id'];
 
     $nuevoCorreo   = trim($_POST['nuevo_correo'] ?? '');
@@ -31,7 +50,7 @@ public function update()
 
     $usuario = User::findById($idUsuario);
 
-    // 1️⃣ Validar contraseña actual
+    // 1️ Validar contraseña actual
     if (!password_verify($actualContra, $usuario['password'])) {
         $_SESSION['error'] = "La contraseña actual es incorrecta.";
         header("Location: /project-cpr/public/perfil.php");
@@ -41,7 +60,7 @@ public function update()
     $cambioCorreo = false;
     $cambioContra = false;
 
-    // 2️⃣ Validar y preparar correo
+    // 2️ Validar y preparar correo
     if ($nuevoCorreo !== '') {
         if ($nuevoCorreo !== $confirmCorreo) {
             $_SESSION['error'] = "Los correos no coinciden.";
@@ -51,7 +70,7 @@ public function update()
         $cambioCorreo = true;
     }
 
-    // 3️⃣ Validar y preparar contraseña
+    // 3️ Validar y preparar contraseña
     if ($nuevaContra !== '') {
         if ($nuevaContra !== $confirmContra) {
             $_SESSION['error'] = "Las contraseñas no coinciden.";
@@ -61,21 +80,21 @@ public function update()
         $cambioContra = true;
     }
 
-    // 4️⃣ Si no cambió nada
+    // 4️ Si no cambió nada
     if (!$cambioCorreo && !$cambioContra) {
         $_SESSION['error'] = "No se realizaron cambios.";
         header("Location: /project-cpr/public/perfil.php");
         exit;
     }
 
-    // 5️⃣ Actualizar
+    // 5️ Actualizar
     User::updatePerfil(
         $idUsuario,
         $cambioCorreo ? $nuevoCorreo : $usuario['correo'],
         $cambioContra ? $nuevaContra : null
     );
 
-    // 6️⃣ Mensaje final claro
+    // 6️ Mensaje final claro
     if ($cambioCorreo && $cambioContra) {
         $_SESSION['success'] = "Correo y contraseña actualizados correctamente.";
     } elseif ($cambioCorreo) {
@@ -87,4 +106,65 @@ public function update()
     header("Location: /project-cpr/public/perfil.php");
     exit;
 }
+
+    public function guardarProceso()
+    {
+        // Solo el admin puede crear/editar tipos de proceso.
+        if (!isset($_SESSION['logged']) || $_SESSION['user']['rol'] != 1) {
+            header("Location: /project-cpr/public/login.php");
+            exit;
+        }
+
+        $id = $_POST['proceso_id'] ?? '';
+        $nombre = trim($_POST['proceso_nombre'] ?? '');
+        $tipoCasoId = $_POST['tipo_caso_id'] ?? '';
+
+        if ($nombre === '' || $tipoCasoId === '') {
+            $_SESSION['error'] = "Debe ingresar el nombre y seleccionar el tipo de caso.";
+            header("Location: /project-cpr/public/perfil.php");
+            exit;
+        }
+
+        // Si hay id: actualiza, si no: crea.
+        if ($id) {
+            TipoProceso::update($id, $nombre, $tipoCasoId);
+            $_SESSION['success'] = "Proceso actualizado correctamente.";
+        } else {
+            TipoProceso::create($nombre, $tipoCasoId);
+            $_SESSION['success'] = "Proceso creado correctamente.";
+        }
+
+        header("Location: /project-cpr/public/perfil.php");
+        exit;
+    }
+
+    public function eliminarProceso()
+    {
+        // Elimina un tipo de proceso si no tiene casos asignados.
+        if (!isset($_SESSION['logged']) || $_SESSION['user']['rol'] != 1) {
+            header("Location: /project-cpr/public/login.php");
+            exit;
+        }
+
+        $id = $_POST['proceso_id'] ?? '';
+        if (!$id) {
+            $_SESSION['error'] = "Debe seleccionar un proceso para eliminar.";
+            header("Location: /project-cpr/public/perfil.php");
+            exit;
+        }
+
+        $count = TipoProceso::countCasosAsignados($id);
+        if ($count > 0) {
+            $casos = TipoProceso::getCasosAsignados($id);
+            $numeros = array_map(fn($c) => $c['numero_caso'], $casos);
+            $_SESSION['error'] = "No se puede eliminar. Casos asignados: " . implode(', ', $numeros);
+            header("Location: /project-cpr/public/perfil.php");
+            exit;
+        }
+
+        TipoProceso::delete($id);
+        $_SESSION['success'] = "Proceso eliminado correctamente.";
+        header("Location: /project-cpr/public/perfil.php");
+        exit;
+    }
 }

@@ -1,13 +1,5 @@
-<?php $activePage = 'perfil';
-
-session_start();
-
-if (!isset($_SESSION['logged']) || $_SESSION['user']['rol'] != 1) {
-    header("Location: /project-cpr/public/login.php");
-    exit;
-}
-
-?>
+<?php $activePage = 'perfil';?>
+<!-- // Vista de perfil para administrador. -->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -21,8 +13,9 @@ if (!isset($_SESSION['logged']) || $_SESSION['user']['rol'] != 1) {
 
 <body class="private">
 
+    <!-- Header del administrador -->
     <?php include __DIR__ . '/../components/header_administrador.php'; ?>
-    <!-- Todo tu contenido de busqueda.php -->
+    <!-- Contenido de perfil -->
     <div class="main-content">
 
         <?php include __DIR__ . '/../components/perfil.php'; ?>

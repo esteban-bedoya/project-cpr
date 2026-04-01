@@ -1,3 +1,4 @@
+<!-- Vista de administracion de usuarios (tabla + modales) -->
 <!DOCTYPE html>
 <html lang="es">
 
@@ -190,7 +191,6 @@
                 <select name="rol">
                     <option value="1">Administrador</option>
                     <option value="2" selected>Comisionado</option>
-                    <option value="3">Super Admin</option>
                 </select>
 
                 <label>Estado</label>
@@ -237,7 +237,6 @@
                 <select name="rol" id="edit-rol">
                     <option value="1">Administrador</option>
                     <option value="2">Comisionado</option>
-                    <option value="3">Super Admin</option>
                 </select>
 
                 <label>Estado</label>

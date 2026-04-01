@@ -1,9 +1,9 @@
-<!-- Componente informativo del modulo de busqueda de casos (placeholder) -->
+<!-- Componente informativo del modulo de reportes (placeholder) -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Búsqueda de Casos</title>
+    <title>Reportes</title>
 
     <style>
         body {
@@ -15,10 +15,10 @@
 <body>
 
     <div class="contenedor">
-        <h1>Módulo de "Búsqueda de Casos"</h1>
+        <h1>Módulo de "Reportes"</h1>
 
         <p>
-            Esta vista corresponde al módulo de búsqueda de casos del sistema.
+            Esta vista corresponde al módulo de reportes del sistema.
         </p><br><br>
 
         <h2>Estado actual</h2>
@@ -28,8 +28,7 @@
 
         <h2>Descripción funcional</h2>
         <p>
-            Este módulo permitirá la búsqueda de casos almacenados en el sistema
-            mediante filtros específicos como número de caso, encargado, tipo proceso, fechas, etc.
+            Este módulo permitirá analizar el comportamiento de los casos, su estado, gestión de comisionados y otros criterios definidos, apoyando el control y la gestión del sistema.
         </p>
 
         <h2>Nota</h2>

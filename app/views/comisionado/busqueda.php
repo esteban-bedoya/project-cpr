@@ -1,12 +1,5 @@
 <?php $activePage = 'busqueda';
-
-session_start();
-
-if (!isset($_SESSION['logged']) || $_SESSION['user']['rol'] != 2) {
-    header("Location: /project-cpr/public/login.php");
-    exit;
-}
-
+// Vista de busqueda de casos para comisionado.
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -21,10 +14,11 @@ if (!isset($_SESSION['logged']) || $_SESSION['user']['rol'] != 2) {
 
 <body class="private">
 
-    <?php include('../components/header_comisionado.php'); ?>
+    <!-- Header del comisionado -->
+    <?php include __DIR__ . '/../components/header_comisionado.php'; ?>
 
     <div class="main-content">
-        <!-- Todo tu contenido de busqueda.php -->
+        <!-- Contenido del modulo de busqueda de casos -->
         <?php include __DIR__ . '/../components/busqueda_caso.php'; ?>
 
 

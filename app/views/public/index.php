@@ -1,4 +1,5 @@
 <?php $activePage = 'index'; ?>
+<!-- Vista publica de inicio (landing page) -->
 
 
 <!DOCTYPE html>
@@ -15,9 +16,11 @@
 
 <body class="public">
 
+  <!-- Header publico -->
   <?php include("../app/views/components/header_public.php"); ?>
 
   <main>
+    <!-- Seccion principal con titulo -->
     <section class="hero">
       <div class="hero-content">
         <h1>SISTEMA DE GESTIÓN</h1>
@@ -25,6 +28,7 @@
       </div>
     </section>
 
+    <!-- Texto institucional -->
     <section class="info">
       <p>
         ÓRGANO DE PARTICIPACIÓN CONFORMADO POR REPRESENTANTES DE LOS SERVIDORES PÚBLICOS Y DE LA ADMINISTRACIÓN.<br>
@@ -33,12 +37,14 @@
       </p>
     </section>
 
+    <!-- Franja decorativa -->
     <section class="color_azul"></section>
 
   </main>
 
 
 
+  <!-- Footer compartido -->
   <?php include('../app/views/components/footer.php'); ?>
 
 </body>

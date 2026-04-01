@@ -1,3 +1,4 @@
+<!-- Componente: detalle de caso (sidebar de filtros + panel de mensajes) -->
 <link rel="stylesheet" href="/project-cpr/public/assets/css/globals/caso.css">
 
 <div class="case-layout">

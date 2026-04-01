@@ -1,3 +1,4 @@
+<!-- Vista de gestionar casos para comisionado -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -11,12 +12,14 @@
 
 <body class="private">
 
+    <!-- Header del comisionado -->
     <?php include(__DIR__ . '/../components/header_comisionado.php'); ?>
 
     <div class="main-content">
         <div class="dashboard-container">
 
             <?php
+            // Filtro activo tomado desde la URL.
             $filtro_actual = $_GET['filtro'] ?? 'todos';
             ?>
 
@@ -133,7 +136,7 @@
                 <input
                     type="text"
                     name="demandante_documento"
-                    placeholder="Documento de identidad">
+                    placeholder="Documento de identidad (opcional)">
 
                 <label>Nombres y apellidos del demandante</label>
                 <input type="text" name="demandante_nombre" required>

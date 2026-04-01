@@ -1,3 +1,4 @@
+<!-- Componente: footer institucional -->
 <link rel="stylesheet" href="/PROJECT-CPR/public/assets/css/globals/footer.css">
 
 <footer class="footer">
