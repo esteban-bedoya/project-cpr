@@ -16,6 +16,7 @@
             <div class="filter-group">
                 <label class="filter-title">Comisionado</label>
 
+                <!-- Lista de comisionados (activos + asignado inactivo agregado desde el controller) -->
                 <select name="comisionado_id">
                     <option value="">— Comisionado asignado inactivo, revise historial —</option>
 
@@ -96,6 +97,7 @@
 
         <div class="case-info">
 
+            <!-- Usuario que creó el caso -->
             <?php if (!empty($caso['creado_por_nombre'])): ?>
                 <div class="info-item">
                     <strong>Caso creado por:</strong>
@@ -105,6 +107,7 @@
 
             <hr>
 
+            <!-- Datos del demandante -->
             <div class="info-item">
                 <strong>Demandante:</strong>
                 <?= htmlspecialchars($caso['demandante_nombre']) ?>
@@ -140,6 +143,7 @@
                      MENSAJES Y CAMBIOS DE ESTADO ORDENADOS
                 ==================================================== -->
                 <?php
+                // Mezcla mensajes e historial en una sola lista para ordenarlos por fecha
                 $eventos = array_merge(
                     array_map(
                         fn($m) => [
@@ -159,6 +163,7 @@
                     )
                 );
 
+                // Orden cronológico ascendente (más antiguos primero)
                 usort(
                     $eventos,
                     fn($a, $b) =>
@@ -236,6 +241,9 @@
         <?php endif; ?>
 
 
+        <?php $casoAtendido = ($caso['estado'] === 'Atendido'); ?>
+        <!-- Si el caso está atendido, se deshabilitan el input, adjunto y botón -->
+
         <form
             class="msg-input-box"
             method="POST"
@@ -245,22 +253,27 @@
             <input type="hidden" name="action" value="mensaje">
             <input type="hidden" name="caso_id" value="<?= $caso['id'] ?>">
 
+            <!-- Input bloqueado cuando el caso está atendido -->
             <input
                 type="text"
                 name="mensaje"
                 placeholder="Escribir mensaje y/o adjuntar un archivo"
-                class="msg-input">
+                class="msg-input"
+                <?= $casoAtendido ? 'disabled' : '' ?>>
 
             <label class="btn-attach">
                 📎
+                <!-- Adjuntos bloqueados cuando el caso está atendido -->
                 <input
                     type="file"
                     name="archivo"
                     accept=".pdf,.jpg,.jpeg,.png"
-                    hidden>
+                    hidden
+                    <?= $casoAtendido ? 'disabled' : '' ?>>
             </label>
 
-            <button class="btn-enviar">Enviar</button>
+            <!-- Botón bloqueado cuando el caso está atendido -->
+            <button class="btn-enviar" <?= $casoAtendido ? 'disabled' : '' ?>>Enviar</button>
         </form>
 
 
@@ -268,6 +281,7 @@
 </div>
 
 <script>
+    // Al cargar, desplaza el chat al final para ver lo más reciente
     window.addEventListener('load', () => {
         const messages = document.querySelector('.case-messages');
         if (!messages) return;
