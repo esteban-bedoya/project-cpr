@@ -1,6 +1,10 @@
 <link rel="stylesheet" href="/project-cpr/public/assets/css/globals/caso.css">
 
+
+
+
 <div class="case-layout">
+
 
     <!-- ============================================================
          SIDEBAR (Filtros de navegación)
@@ -22,7 +26,7 @@
                         </option>
                     <?php endforeach; ?>
                 </select>
-            </div>
+            </div><br>
 
             <!-- 2. Estado -->
             <div class="filter-group">
@@ -35,7 +39,7 @@
                         <span><?= $e ?></span>
                     </label>
                 <?php endforeach; ?>
-            </div>
+            </div><br>
 
             <!-- 3. Tipo de proceso -->
             <div class="filter-group">
@@ -47,17 +51,20 @@
                         </option>
                     <?php endforeach; ?>
                 </select>
-            </div>
+            </div><br>
 
             <!-- 4. Tipo de caso (solo mostrar) -->
             <div class="filter-group">
                 <label class="filter-title">Tipo de caso</label>
                 <input type="text" value="<?= htmlspecialchars($caso['tipo_caso_nombre']) ?>" disabled>
-            </div>
+            </div><br>
 
             <button type="submit" class="btn-actualizar">Actualizar</button>
         </form>
     </div>
+
+
+
 
 
     <!-- ============================================================
@@ -65,63 +72,89 @@
     ============================================================ -->
     <div class="case-content">
 
+
+
+
+
         <!-- Header -->
         <div class="case-header">
             #<?= $caso['numero_caso'] ?> | <?= htmlspecialchars($caso['asunto']) ?>
         </div>
 
-        <div class="case-box">
+        <div class="case-info">
+            <div class="info-item">
+                <strong>Demandante:</strong>
+                <?= htmlspecialchars($caso['demandante_nombre']) ?>
+            </div>
 
-            <!-- ====================================================
+            <div class="info-item">
+                <strong>Contacto:</strong>
+                <?= htmlspecialchars($caso['demandante_contacto']) ?>
+            </div>
+
+            <?php if (!empty($caso['detalles'])): ?>
+                <div class="info-item info-detalles">
+                    <strong>Detalles:</strong><br>
+                    <?= nl2br(htmlspecialchars($caso['detalles'])) ?>
+                </div>
+            <?php endif; ?>
+        </div>
+
+
+
+
+        <div class="case-box">
+            <div class="case-messages">
+                <!-- ====================================================
                  MENSAJES Y CAMBIOS DE ESTADO ORDENADOS
             ==================================================== -->
-            <?php
-            // Mezclar mensajes y historial en un solo arreglo de eventos
-            $eventos = array_merge(
-                array_map(fn($m) => ['tipo' => 'mensaje', 'data' => $m, 'fecha' => $m['fecha']], $mensajes),
-                array_map(fn($h) => ['tipo' => 'historial', 'data' => $h, 'fecha' => $h['fecha']], $historial)
-            );
+                <?php
+                // Mezclar mensajes y historial en un solo arreglo de eventos
+                $eventos = array_merge(
+                    array_map(fn($m) => ['tipo' => 'mensaje', 'data' => $m, 'fecha' => $m['fecha']], $mensajes),
+                    array_map(fn($h) => ['tipo' => 'historial', 'data' => $h, 'fecha' => $h['fecha']], $historial)
+                );
 
-            // Ordenar cronológicamente
-            usort($eventos, fn($a, $b) => strtotime($a['fecha']) <=> strtotime($b['fecha']));
-            ?>
+                // Ordenar cronológicamente
+                usort($eventos, fn($a, $b) => strtotime($a['fecha']) <=> strtotime($b['fecha']));
+                ?>
 
-            <?php foreach ($eventos as $e): ?>
-                <div class="msg-entry">
-                    <div class="msg-date"><?= date("d/m/Y H:i", strtotime($e['fecha'])) ?></div>
+                <?php foreach ($eventos as $e): ?>
+                    <div class="msg-entry">
+                        <div class="msg-date"><?= date("d/m/Y H:i", strtotime($e['fecha'])) ?></div>
 
 
 
-                    <?php if ($e['tipo'] == 'mensaje'): ?>
-                        <div class="msg-user"><?= htmlspecialchars($e['data']['username']) ?></div>
+                        <?php if ($e['tipo'] == 'mensaje'): ?>
+                            <div class="msg-user"><?= htmlspecialchars($e['data']['username']) ?></div>
 
-                        <div class="msg-body">
-                            <?= nl2br(htmlspecialchars($e['data']['mensaje'])) ?>
-                        </div>
+                            <div class="msg-body">
+                                <?= nl2br(htmlspecialchars($e['data']['mensaje'])) ?>
+                            </div>
 
-                        <?php if (!empty($e['data']['archivo'])): ?>
-                            <div class="msg-archivo">
-                                <a href="/project-cpr/public/uploads/casos/<?= htmlspecialchars($e['data']['archivo']) ?>"
-                                    target="_blank">
-                                    📎 Ver archivo
-                                </a>
+                            <?php if (!empty($e['data']['archivo'])): ?>
+                                <div class="msg-archivo">
+                                    <a href="/project-cpr/public/uploads/casos/<?= htmlspecialchars($e['data']['archivo']) ?>"
+                                        target="_blank">
+                                        📎 Ver archivo
+                                    </a>
+                                </div>
+                            <?php endif; ?>
+
+                        <?php else: ?>
+
+
+
+
+                            <div class="msg-status-change">
+                                <strong><?= htmlspecialchars($e['data']['username']) ?></strong> —
+                                <?= htmlspecialchars($e['data']['descripcion']) ?>
                             </div>
                         <?php endif; ?>
-
-                    <?php else: ?>
-
-
-
-
-                        <div class="msg-status-change">
-                            <strong><?= htmlspecialchars($e['data']['username']) ?></strong> —
-                            <?= htmlspecialchars($e['data']['descripcion']) ?>
-                        </div>
-                    <?php endif; ?>
-                </div>
-                <div class="divider"></div>
-            <?php endforeach; ?>
-
+                    </div>
+                    <div class="divider"></div>
+                <?php endforeach; ?>
+            </div>
         </div>
 
         <!-- ============================================================
