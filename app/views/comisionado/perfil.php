@@ -1,7 +1,6 @@
 <?php $activePage = 'perfil';?>
 <!-- // Vista de perfil para comisionado. -->
 
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -20,10 +19,7 @@
     <!-- Contenido de perfil -->
     <div class="main-content">
 
-
         <?php include __DIR__ . '/../components/perfil.php'; ?>
-
-
 
     </div>
 

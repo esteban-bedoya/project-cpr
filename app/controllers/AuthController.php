@@ -4,6 +4,8 @@
 require_once __DIR__ . '/../../config/db.php';
 require_once __DIR__ . '/../models/User.php';
 
+//Comentario para revisar el PUSH
+
 class AuthController
 {
 
@@ -53,7 +55,7 @@ class AuthController
                     header("Location: /project-cpr/public/reportes.php");
                     break;
                 case 2:
-                    header("Location: /project-cpr/public/gestionar.php");
+                    header("Location: /project-cpr/public/casos.php");
                     break;
                 default:
                     header("Location: /project-cpr/public/index.php");

@@ -5,6 +5,19 @@ require_once __DIR__ . '/../models/User.php';
 
 class CasoController
 {
+    private function calcularDiasRestantes($fecha_cierre)
+    {
+        if (empty($fecha_cierre)) return null;
+        try {
+            $hoy = new DateTime();
+            $cierre = new DateTime($fecha_cierre);
+            $interval = $hoy->diff($cierre);
+            return (int)$interval->format('%r%a');
+        } catch (Exception $e) {
+            return null;
+        }
+    }
+
     private function getSystemUserId()
     {
         // Usa el usuario "Sistema" para cambios automáticos.
@@ -24,8 +37,93 @@ class CasoController
         $rol = $_SESSION['user']['rol'];
         if (!in_array($rol, [1, 2])) header("Location: /project-cpr/public/login.php");
 
-        // Obtiene todos los casos desde el modelo.
+        // Datos base para filtros y tabla.
         $casos = Caso::all();
+        $tiposCaso = Caso::getTiposCaso();
+        $tiposProceso = Caso::getTiposProceso();
+        $comisionados = User::getComisionadosAll();
+
+        // ===============================
+        // FILTROS (via GET)
+        // ===============================
+        $filtro_estado = $_GET['estado'] ?? 'todos';
+        $filtro_tipo_caso = $_GET['tipo_caso'] ?? 'todos';
+        $filtro_tipo_proceso = $_GET['tipo_proceso'] ?? 'todos';
+        $filtro_comisionado = $_GET['comisionado'] ?? 'todos';
+        $fecha_inicio = trim($_GET['fecha_inicio'] ?? '');
+        $fecha_fin = trim($_GET['fecha_fin'] ?? '');
+
+        $fecha_inicio_dt = $fecha_inicio !== '' ? DateTime::createFromFormat('Y-m-d', $fecha_inicio) : null;
+        $fecha_fin_dt = $fecha_fin !== '' ? DateTime::createFromFormat('Y-m-d', $fecha_fin) : null;
+
+        $casos_filtrados = [];
+        $hoy = new DateTime();
+
+        foreach ($casos as $caso) {
+            // Auto actualizar a No atendido si vencido y pendiente
+            if (!empty($caso['fecha_cierre']) && $caso['estado'] === 'Pendiente') {
+                try {
+                    $fc = new DateTime($caso['fecha_cierre']);
+                    if ($fc < $hoy) {
+                        Caso::update($caso['id'], [
+                            'tipo_caso_id' => $caso['tipo_caso_id'],
+                            'tipo_proceso_id' => $caso['tipo_proceso_id'],
+                            'asunto' => $caso['asunto'],
+                            'detalles' => $caso['detalles'],
+                            'estado' => 'No atendido'
+                        ]);
+                        Caso::guardarHistorial([
+                            'caso_id' => $caso['id'],
+                            'usuario_id' => $this->getSystemUserId(),
+                            'descripcion' => "Cambio de estado automático del sistema de Pendiente a No atendido"
+                        ]);
+                        $caso['estado'] = 'No atendido';
+                    }
+                } catch (Exception $e) {
+                    // Sin accion si falla la fecha
+                }
+            }
+
+            // Rango de fechas (fecha_creacion)
+            if ($fecha_inicio_dt || $fecha_fin_dt) {
+                $fc = !empty($caso['fecha_creacion']) ? new DateTime($caso['fecha_creacion']) : null;
+                if ($fc) {
+                    if ($fecha_inicio_dt && $fc < $fecha_inicio_dt) continue;
+                    if ($fecha_fin_dt && $fc > (clone $fecha_fin_dt)->setTime(23, 59, 59)) continue;
+                }
+            }
+
+            // Tipo de caso
+            if ($filtro_tipo_caso !== 'todos' && (string)$caso['tipo_caso_id'] !== (string)$filtro_tipo_caso) {
+                continue;
+            }
+
+            // Tipo de proceso
+            if ($filtro_tipo_proceso !== 'todos' && (string)$caso['tipo_proceso_id'] !== (string)$filtro_tipo_proceso) {
+                continue;
+            }
+
+            // Comisionado asignado
+            if ($filtro_comisionado !== 'todos' && (string)$caso['asignado_a'] !== (string)$filtro_comisionado) {
+                continue;
+            }
+
+            // Estado del caso / proximos a vencer
+            if ($filtro_estado !== 'todos') {
+                if ($filtro_estado === 'proximos') {
+                    $dias = $this->calcularDiasRestantes($caso['fecha_cierre'] ?? null);
+                    if (!($dias !== null && $dias >= 0 && $dias <= 2 && $caso['estado'] !== 'Atendido')) {
+                        continue;
+                    }
+                } else if ($caso['estado'] !== $filtro_estado) {
+                    continue;
+                }
+            }
+
+            $casos_filtrados[] = $caso;
+        }
+
+        $casos = $casos_filtrados;
 
         // Selecciona la vista segun el rol.
         $view = $rol == 1 ? 'admin' : 'comisionado';
@@ -267,7 +365,7 @@ class CasoController
         // 2. VALIDAR MÉTODO
         // ===============================
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header("Location: /project-cpr/public/gestionar.php");
+            header("Location: /project-cpr/public/casos.php");
             exit;
         }
 
@@ -301,7 +399,7 @@ class CasoController
             !$tipo_proceso_id ||
             !$fecha_cierre
         ) {
-            header("Location: /project-cpr/public/gestionar.php?error=campos");
+            header("Location: /project-cpr/public/casos.php?error=campos");
             exit;
         }
 
@@ -319,7 +417,7 @@ class CasoController
                 'fecha_cierre' => $fecha_cierre
             ];
             $_SESSION['error'] = "La fecha de cierre no puede ser anterior a hoy.";
-            header("Location: /project-cpr/public/gestionar.php?error=fechacierre");
+            header("Location: /project-cpr/public/casos.php?error=fechacierre");
             exit;
         }
 
@@ -346,9 +444,9 @@ class CasoController
         // 7. RESULTADO
         // ===============================
         if ($resultado) {
-            header("Location: /project-cpr/public/gestionar.php?success=1");
+            header("Location: /project-cpr/public/casos.php?success=1");
         } else {
-            header("Location: /project-cpr/public/gestionar.php?error=db");
+            header("Location: /project-cpr/public/casos.php?error=db");
         }
 
         exit;

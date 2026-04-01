@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Casos - CPR</title>
     <link rel="stylesheet" href="/project-cpr/public/assets/css/globals/base.css">
-    <link rel="stylesheet" href="/project-cpr/public/assets/css/globals/busqueda_caso.css">
+    <link rel="stylesheet" href="/project-cpr/public/assets/css/globals/casos.css">
 </head>
 
 <body class="private">
@@ -19,7 +19,7 @@
 
     <div class="main-content">
         <!-- Contenido del modulo de busqueda de casos -->
-        <?php include __DIR__ . '/../components/busqueda_caso.php'; ?>
+        <?php include __DIR__ . '/../components/casos.php'; ?>
 
 
     </div>

@@ -153,4 +153,13 @@ public static function updatePerfil($id, $correo, $password = null)
     return $stmt->execute([$correo, $id]);
 }
 
+public static function getComisionadosAll()
+{
+    // Lista todos los comisionados (activos e inactivos).
+    global $pdo;
+    $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE rol = 2");
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
 }

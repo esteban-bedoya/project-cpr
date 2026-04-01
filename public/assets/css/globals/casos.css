@@ -71,6 +71,22 @@
     color: #adb5bd;
 }
 
+.date-range {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 8px;
+}
+
+.date-range-vertical {
+    grid-template-columns: 1fr;
+}
+
+.date-sep {
+    color: #6c757d;
+    font-weight: 600;
+}
+
 /* Checkbox Options */
 .filter-options {
     display: flex;
@@ -78,8 +94,16 @@
     gap: 10px;
     margin-top: 12px;
     max-height: 500px;
-    overflow: hidden;
+    overflow-y: auto;
     transition: max-height 0.3s ease;
+}
+
+.filter-options.collapsed {
+    max-height: 0;
+    margin-top: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    overflow: hidden;
 }
 
 .filter-options.collapsed {
@@ -87,7 +111,8 @@
     margin-top: 0;
 }
 
-.checkbox-label {
+.checkbox-label,
+.radio-label {
     display: flex;
     align-items: center;
     padding: 10px 15px;
@@ -98,7 +123,8 @@
     font-size: 15px;
 }
 
-.checkbox-label:hover {
+.checkbox-label:hover,
+.radio-label:hover {
     background-color: #e9ecef;
 }
 
@@ -136,6 +162,72 @@
     color: white;
     font-size: 14px;
     font-weight: bold;
+}
+
+.radio-label input[type="radio"] {
+    display: none;
+}
+
+.radio-custom {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #6c757d;
+    border-radius: 50%;
+    margin-right: 12px;
+    display: inline-block;
+    position: relative;
+    background-color: white;
+    flex-shrink: 0;
+}
+
+.radio-label input[type="radio"]:checked + .radio-custom {
+    border-color: #28a745;
+}
+
+.radio-label input[type="radio"]:checked + .radio-custom::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    background-color: #28a745;
+    border-radius: 50%;
+}
+
+.filters-form .filter-options {
+    background-color: #fff;
+    padding: 6px 0;
+    border-radius: 8px;
+}
+
+.filter-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.btn-filter,
+.btn-clear {
+    display: inline-block;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn-filter {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.btn-clear {
+    background-color: #e9ecef;
+    color: #1e1e1e;
 }
 
 /* ===========================
@@ -191,6 +283,15 @@
     border-collapse: collapse;
 }
 
+.cases-table thead th {
+    text-align: left;
+    background-color: #f1f3f5;
+    padding: 14px 20px;
+    font-size: 14px;
+    color: #495057;
+    border-bottom: 1px solid #e9ecef;
+}
+
 .cases-table tbody {
     display: table-row-group;
 }
@@ -236,6 +337,36 @@
     text-align: right;
 }
 
+.col-rad {
+    width: 140px;
+}
+
+.col-time {
+    width: 170px;
+}
+
+.time-overdue {
+    color: #d00000;
+    font-weight: 600;
+}
+
+.time-soon {
+    color: #b45309;
+    font-weight: 600;
+}
+
+.time-ok {
+    color: #1e1e1e;
+    font-weight: 500;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 24px 16px;
+    color: #6c757d;
+    font-size: 14px;
+}
+
 /* ===========================
    RESPONSIVE DESIGN
    =========================== */
@@ -272,5 +403,9 @@
 
     .filters-sidebar {
         padding: 20px;
+    }
+
+    .filter-actions {
+        flex-direction: column;
     }
 }

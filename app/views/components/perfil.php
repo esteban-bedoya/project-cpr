@@ -56,10 +56,7 @@
             </div>
         </form>
 
-
     <?php endif; ?>
-
-
 
     <hr class="divisor">
 
@@ -80,12 +77,7 @@
 
     <hr class="divisor">
 
-
-
-
-
     <h2 class="titulo-seccion">Cambiar correo</h2>
-
 
     <!-- Formulario principal de actualizacion de perfil -->
     <form id="form-perfil" action="/project-cpr/public/perfil.php?action=update" method="POST">
@@ -144,3 +136,4 @@
         }
     </script>
 <?php endif; ?>
+
