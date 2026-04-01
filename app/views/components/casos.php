@@ -7,7 +7,6 @@
 ?>
 
 <div class="search-container">
-
     <!-- ================= SIDEBAR DE FILTROS ================= -->
     <aside class="filters-sidebar">
         <h2 class="filters-title">Filtros</h2>
