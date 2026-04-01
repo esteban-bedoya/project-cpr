@@ -152,21 +152,29 @@ class Caso
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // ===============================
-    // OBTENER CASOS ASIGNADOS A UN COMISIONADO
-    // ===============================
-    public static function getByComisionado($comisionado_id)
-    {
-        $sql = "SELECT c.*, tc.nombre AS tipo_caso_nombre, tp.nombre AS tipo_proceso_nombre
-            FROM casos c
-            JOIN tipos_caso tc ON tc.id = c.tipo_caso_id
-            JOIN tipos_proceso tp ON tp.id = c.tipo_proceso_id
-            LEFT JOIN casos_asignaciones ca ON ca.caso_id = c.id
-            WHERE ca.comisionado_id = :comisionado_id
-            ORDER BY c.id DESC";
+// ===============================
+// OBTENER CASOS ASIGNADOS A UN COMISIONADO
+// ===============================
+public static function getByComisionado($comisionado_id)
+{
+    $sql = "
+        SELECT c.*, tc.nombre AS tipo_caso_nombre, tp.nombre AS tipo_proceso_nombre
+        FROM casos c
+        JOIN tipos_caso tc ON tc.id = c.tipo_caso_id
+        JOIN tipos_proceso tp ON tp.id = c.tipo_proceso_id
+        WHERE c.asignado_a = :comisionado_id
+        ORDER BY c.id DESC
+    ";
 
-        $stmt = self::db()->prepare($sql);
-        $stmt->execute([':comisionado_id' => $comisionado_id]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
+    $stmt = self::db()->prepare($sql);
+    $stmt->execute([':comisionado_id' => $comisionado_id]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+
+
+
+
+
+
 }

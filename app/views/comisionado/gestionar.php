@@ -1,13 +1,3 @@
-<?php
-require_once __DIR__ . '/../../models/Caso.php';
-
-$activePage = 'gestionar';
-
-
-// Obtener casos del comisionado logueado
-$casos = Caso::getByComisionado($_SESSION['user']['id']);
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -24,45 +14,51 @@ $casos = Caso::getByComisionado($_SESSION['user']['id']);
     <?php include(__DIR__ . '/../components/header_comisionado.php'); ?>
 
     <div class="main-content">
-
         <div class="dashboard-container">
 
             <!-- SIDEBAR -->
             <aside class="sidebar">
                 <button class="btn-agregar">Agregar caso</button>
 
-                <button class="btn-sidebar">
-                    <span>Asignados</span>
-                    <span class="num"><?= count($casos) ?></span>
-                </button>
+                <a href="?filtro=urgentes" class="btn-sidebar">
+                    <span>Urgentes</span>
+                    <span class="num"><?= count($casos_urgentes) ?></span>
+                </a>
 
-                <button class="btn-sidebar">
-                    <span>No atendido</span>
-                    <span class="num"><?= count(array_filter($casos, fn($c) => $c['estado'] === 'No atendido')) ?></span>
-                </button>
+                <a href="?filtro=no_atendido" class="btn-sidebar">
+                    <span>No atendidos</span>
+                    <span class="num"><?= count($casos_no_atendidos) ?></span>
+                </a>
 
-                <button class="btn-sidebar">
-                    <span>Pendiente</span>
-                    <span class="num"><?= count(array_filter($casos, fn($c) => $c['estado'] === 'Pendiente')) ?></span>
-                </button>
+                <a href="?filtro=pendiente" class="btn-sidebar">
+                    <span>Pendientes</span>
+                    <span class="num"><?= count($casos_pendiente) ?></span>
+                </a>
 
-                <button class="btn-sidebar">
-                    <span>Últimos atendidos</span>
-                    <span class="num"><?= count(array_filter($casos, fn($c) => $c['estado'] === 'Atendido')) ?></span>
-                </button>
+                <a href="?filtro=resueltos" class="btn-sidebar">
+                    <span>Resueltos</span>
+                    <span class="num"><?= count($casos_resueltos) ?></span>
+                </a>
+
+                <a href="?filtro=todos" class="btn-sidebar">
+                    <span>Todos</span>
+                    <span class="num"><?= count($casos_todos) ?></span>
+                </a>
+
             </aside>
 
             <!-- CONTENIDO PRINCIPAL -->
             <section class="dashboard-content">
-
                 <div class="table-container">
                     <table class="cases-table">
                         <thead>
                             <tr>
-                                <th>#Caso</th>
+                                <th>#</th>
                                 <th>Asunto</th>
-                                <th>Fecha</th>
-                                <th>Tipo</th>
+                                <th>Fecha creación</th>
+                                <th>Caso</th>
+                                <th>Proceso</th>
+                                <th>Tiempos</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -71,27 +67,36 @@ $casos = Caso::getByComisionado($_SESSION['user']['id']);
                                     <tr>
                                         <td>
                                             <a href="/project-cpr/public/caso.php?id=<?= $caso['id'] ?>">
-                                                    <?= htmlspecialchars($caso['numero_caso']) ?>
+                                                <?= htmlspecialchars($caso['numero_caso']) ?>
                                             </a>
                                         </td>
                                         <td><?= htmlspecialchars($caso['asunto']) ?></td>
-                                        <td><?= date("d-m-Y", strtotime($caso['created_at'] ?? $caso['fecha'] ?? '')) ?></td>
+                                        <td><?= date("d-m-Y", strtotime($caso['fecha_creacion'] ?? '')) ?></td>
                                         <td><?= htmlspecialchars($caso['tipo_caso_nombre']) ?></td>
+                                        <td><?= htmlspecialchars($caso['tipo_proceso_nombre']) ?></td>
+                                        <td>
+                                            <?php
+                                            $dias = $caso['dias_restantes'];
+                                            if ($dias < 0) {
+                                                echo "<span style='color:red'>{$dias}</span>";
+                                            } else {
+                                                echo $dias;
+                                            }
+                                            ?>
+                                        </td>
                                     </tr>
                                 <?php endforeach; ?>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="4">No hay casos asignados.</td>
+                                    <td colspan="6">No hay casos para este filtro.</td>
                                 </tr>
                             <?php endif; ?>
                         </tbody>
                     </table>
                 </div>
-
             </section>
 
         </div>
-
     </div>
 
 </body>

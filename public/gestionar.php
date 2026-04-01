@@ -16,4 +16,4 @@ if (!isset($_SESSION['logged']) || $_SESSION['user']['rol'] != 2) {
 require_once __DIR__ . '/../app/controllers/CasoController.php';
 
 $controller = new CasoController();
-$controller->gestionar();
+$controller->gestionarFiltrado();
