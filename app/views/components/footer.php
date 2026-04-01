@@ -3,22 +3,28 @@
 
 <footer class="footer">
     <div class="footer-column">
-        <h4>Enlaces útiles:</h4>
+        <h4>Enlaces útiles</h4>
         <ul>
+            <li>Política de Privacidad</li>
             <li>Manual de Usuario</li>
             <li>Soporte</li>
-            <li>Política de Privacidad</li>
         </ul>
     </div>
 
     <div class="footer-column">
-        <p>Dirección: Calle XX # XX-XX, Bogotá, Colombia<br>
-            Conmutador: (601) 5461500<br>
-            comisionpersonal@sena.edu.co</p>
+        <h4>Contacto</h4>
+        <ul>
+            <li>Dirección: Calle XX # XX-XX, Bogotá, Colombia</li>
+            <li>Correo: comisionpersonal@sena.admin.co</li>
+            <li>Conmutador: (601) 5461500</li>
+        </ul>
     </div>
 
     <div class="footer-column">
-        <p>© 2026 SENA – Comisión de Personal<br>
-            Todos los derechos reservados</p>
+        <h4>Aviso legal</h4>
+        <ul>
+            <li>© Copyright 2026 - SENA CPR</li>
+            <li>Todos los derechos reservados</li>
+        </ul>
     </div>
 </footer>

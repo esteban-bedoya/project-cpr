@@ -47,6 +47,7 @@
   z-index: 2;
 }
 
+
 /* Botones */
 .nav-item {
   background-color: #000;
@@ -71,6 +72,7 @@
   font-weight: 700;
   font-style: italic;
 }
+
 
 /* RESPONSIVE → MENOR A 900px */
 /* Logo arriba / botones abajo */

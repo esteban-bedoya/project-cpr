@@ -23,8 +23,7 @@
     <!-- Seccion principal con titulo -->
     <section class="hero">
       <div class="hero-content">
-        <h1>SISTEMA DE GESTIÓN</h1>
-        <h2>COMISIÓN DE PERSONAL</h2>
+        <h1>SISTEMA DE GESTIÓN <span>COMISIÓN DE PERSONAL</span></h1>
       </div>
     </section>
 
