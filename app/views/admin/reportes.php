@@ -1,8 +1,6 @@
 <?php $activePage = 'reportes';
 // Vista de reportes para administrador.
 
-session_start();
-
 // Seguridad: solo admin.
 if (!isset($_SESSION['logged']) || $_SESSION['user']['rol'] != 1) {
     header("Location: /project-cpr/public/login.php");
@@ -20,7 +18,7 @@ if (!isset($_SESSION['logged']) || $_SESSION['user']['rol'] != 1) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reportes - CPR</title>
     <link rel="stylesheet" href="/project-cpr/public/assets/css/globals/base.css">
-    <link rel="stylesheet" href="/project-cpr/public/assets/css/comisionado/________">
+    <link rel="stylesheet" href="/project-cpr/public/assets/css/globals/reportes.css">
 </head>
 
 <body class="private">
