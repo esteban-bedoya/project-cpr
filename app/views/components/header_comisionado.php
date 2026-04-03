@@ -27,7 +27,7 @@ if (!isset($_SESSION['logged'])) {
     <nav class="nav-menu" aria-label="Menú de navegación">
     <!--   <a href="/project-cpr/public/casos.php" class="nav-item <?php echo ($activePage === 'gestionar') ? 'active' : ''; ?>">Gestionar</a> -->
       <a href="/project-cpr/public/casos.php" class="nav-item <?php echo ($activePage === 'casos') ? 'active' : ''; ?>">Casos</a>
-      <a href="/project-cpr/public/reportes.php" class="nav-item <?php echo ($activePage === 'reportes') ? 'active' : ''; ?>">Reportes*</a>
+      <a href="/project-cpr/public/reportes.php" class="nav-item <?php echo ($activePage === 'reportes') ? 'active' : ''; ?>">Reportes</a>
       <a href="/project-cpr/public/perfil.php" class="nav-item <?php echo ($activePage === 'perfil') ? 'active' : ''; ?>">
         Comisionado,<br>
         <strong><?php echo $_SESSION['user']['username'] ?? 'Comisionado'; ?></strong>
