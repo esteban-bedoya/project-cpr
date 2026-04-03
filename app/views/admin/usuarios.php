@@ -20,6 +20,27 @@
 
     <div class="main-content">
         <div class="usuarios-container">
+            <?php if (isset($_SESSION['success'])): ?>
+                <div class="alert success">
+                    <?= htmlspecialchars($_SESSION['success']); ?>
+                </div>
+                <?php unset($_SESSION['success']); ?>
+            <?php endif; ?>
+
+            <?php if (isset($_SESSION['error'])): ?>
+                <div class="alert error">
+                    <?php if (is_array($_SESSION['error'])): ?>
+                        <ul>
+                            <?php foreach ($_SESSION['error'] as $mensaje): ?>
+                                <li><?= htmlspecialchars($mensaje) ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php else: ?>
+                        <?= htmlspecialchars($_SESSION['error']); ?>
+                    <?php endif; ?>
+                </div>
+                <?php unset($_SESSION['error']); ?>
+            <?php endif; ?>
 
             <!-- ENCABEZADO -->
             <div class="top-actions">
@@ -166,33 +187,37 @@
         <div class="modal-content">
             <h3>Agregar usuario</h3>
 
-            <form action="/project-cpr/public/usuarios.php?action=store" method="POST">
+            <?php $old = $_SESSION['old'] ?? []; ?>
+            <form action="/project-cpr/public/usuarios.php?action=store" method="POST" id="form-agregar">
 
                 <label>Nombre completo</label>
-                <input type="text" name="username" required>
+                <input type="text" name="username" value="<?= htmlspecialchars($old['username'] ?? '') ?>" required>
 
                 <label>Documento</label>
-                <input type="text" name="documento" required>
+                <input type="text" name="documento" value="<?= htmlspecialchars($old['documento'] ?? '') ?>" required>
 
                 <label>Correo</label>
-                <input type="email" name="correo">
+                <input type="email" name="correo" value="<?= htmlspecialchars($old['correo'] ?? '') ?>">
 
                 <label>Teléfono</label>
-                <input type="text" name="telefono">
+                <input type="text" name="telefono" value="<?= htmlspecialchars($old['telefono'] ?? '') ?>">
 
                 <label>Contraseña</label>
-                <input type="password" name="password" required>
+                <input type="password" name="password" id="add-password" required>
+
+                <label>Confirmar contraseña</label>
+                <input type="password" name="password_confirm" id="add-password-confirm" required>
 
                 <label>Rol</label>
                 <select name="rol">
-                    <option value="1">Administrador</option>
-                    <option value="2" selected>Comisionado</option>
+                    <option value="1" <?= (($old['rol'] ?? '2') === '1') ? 'selected' : '' ?>>Administrador</option>
+                    <option value="2" <?= (($old['rol'] ?? '2') === '2') ? 'selected' : '' ?>>Comisionado</option>
                 </select>
 
                 <label>Estado</label>
                 <select name="estado">
-                    <option value="1" selected>Activo</option>
-                    <option value="2">Inactivo</option>
+                    <option value="1" <?= (($old['estado'] ?? '1') === '1') ? 'selected' : '' ?>>Activo</option>
+                    <option value="2" <?= (($old['estado'] ?? '1') === '2') ? 'selected' : '' ?>>Inactivo</option>
                 </select>
 
                 <div class="modal-buttons">
@@ -200,6 +225,7 @@
                     <button type="button" class="btn-cerrar" onclick="cerrarModalAgregar()">Cerrar</button>
                 </div>
             </form>
+            <?php unset($_SESSION['old']); ?>
         </div>
     </div>
 
@@ -212,16 +238,16 @@
         <div class="modal-content">
             <h3>Editar usuario</h3>
 
-            <form action="/project-cpr/public/usuarios.php?action=update" method="POST">
+            <form action="/project-cpr/public/usuarios.php?action=update" method="POST" id="form-editar">
 
                 <!-- ID interno oculto (PK autoincrement) -->
                 <input type="hidden" name="id" id="edit-id">
 
                 <label>Nombre completo</label>
-                <input type="text" name="username" id="edit-username" required>
+                <input type="text" id="edit-username" disabled>
 
                 <label>Documento</label>
-                <input type="text" name="documento" id="edit-documento" required>
+                <input type="text" id="edit-documento" disabled>
 
                 <label>Correo</label>
                 <input type="email" name="correo" id="edit-correo">
@@ -242,7 +268,10 @@
                 </select>
 
                 <label>Nueva contraseña</label>
-                <input type="password" name="password">
+                <input type="password" name="password" id="edit-password">
+
+                <label>Confirmar nueva contraseña</label>
+                <input type="password" name="password_confirm" id="edit-password-confirm">
 
                 <div class="modal-buttons">
                     <button type="submit" class="btn-guardar">Guardar</button>
@@ -270,6 +299,23 @@
             modalAgregar.style.display = "none";
         }
 
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('modal') === 'agregar') {
+            abrirModalAgregar();
+        }
+
+        // Validacion de contrasena en registro
+        const formAgregar = document.getElementById("form-agregar");
+        formAgregar.addEventListener("submit", (e) => {
+            const pass = document.getElementById("add-password").value.trim();
+            const passConfirm = document.getElementById("add-password-confirm").value.trim();
+
+            if (pass !== passConfirm) {
+                e.preventDefault();
+                alert("Las contraseñas no coinciden.");
+            }
+        });
+
         // Modal editar
         const modalEditar = document.getElementById("modal-editar");
 
@@ -289,6 +335,18 @@
         function cerrarModalEditar() {
             modalEditar.style.display = "none";
         }
+
+        // Validacion de contrasena en edicion
+        const formEditar = document.getElementById("form-editar");
+        formEditar.addEventListener("submit", (e) => {
+            const pass = document.getElementById("edit-password").value.trim();
+            const passConfirm = document.getElementById("edit-password-confirm").value.trim();
+
+            if ((pass !== "" || passConfirm !== "") && pass !== passConfirm) {
+                e.preventDefault();
+                alert("Las contraseñas no coinciden.");
+            }
+        });
     </script>
 
     <script>

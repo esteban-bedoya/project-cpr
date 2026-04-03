@@ -59,19 +59,23 @@ class Caso
         (
             tipo_caso_id,
             tipo_proceso_id,
+            radicado_sena,
             asunto,
             detalles,
             estado,
-            asignado_a
+            asignado_a,
+            fecha_cierre
         )
         VALUES
         (
             :tipo_caso_id,
             :tipo_proceso_id,
+            :radicado_sena,
             :asunto,
             :detalles,
             :estado,
-            :asignado_a
+            :asignado_a,
+            :fecha_cierre
         )
     ";
 
@@ -80,10 +84,12 @@ class Caso
         return $stmt->execute([
             ':tipo_caso_id'         => $data['tipo_caso_id'],
             ':tipo_proceso_id'      => $data['tipo_proceso_id'],
+            ':radicado_sena'        => $data['radicado_sena'] ?? null,
             ':asunto'               => $data['asunto'],
             ':detalles'             => $data['detalles'],
-            ':estado'               => $data['estado'] ?? 'No atendido',
-            ':asignado_a'           => $data['asignado_a']
+            ':estado'               => $data['estado'] ?? 'Pendiente',
+            ':asignado_a'           => $data['asignado_a'],
+            ':fecha_cierre'         => $data['fecha_cierre'] ?? null
         ]);
     }
 
@@ -271,7 +277,8 @@ class Caso
         $sql = "UPDATE casos SET 
         estado = :estado,
         tipo_proceso_id = :tipo_proceso_id,
-        tipo_caso_id = :tipo_caso_id
+        tipo_caso_id = :tipo_caso_id,
+        fecha_cierre = :fecha_cierre
         WHERE id = :id";
 
         $stmt = self::db()->prepare($sql);
@@ -279,7 +286,52 @@ class Caso
             ':estado' => $data['estado'],
             ':tipo_proceso_id' => $data['tipo_proceso_id'],
             ':tipo_caso_id' => $data['tipo_caso_id'],
+            ':fecha_cierre' => $data['fecha_cierre'],
             ':id' => $id
         ]);
+    }
+
+    public static function updateCampos($id, $data)
+    {
+        // Actualiza radicado y fecha de cierre.
+        $sql = "UPDATE casos SET 
+        radicado_sena = :radicado_sena,
+        fecha_cierre = :fecha_cierre
+        WHERE id = :id";
+
+        $stmt = self::db()->prepare($sql);
+        return $stmt->execute([
+            ':radicado_sena' => $data['radicado_sena'],
+            ':fecha_cierre' => $data['fecha_cierre'],
+            ':id' => $id
+        ]);
+    }
+
+    public static function guardarHistorialCampo($data)
+    {
+        $sql = "INSERT INTO casos_historial_campos 
+            (caso_id, usuario_id, campo, valor_anterior, valor_nuevo, motivo)
+            VALUES (:caso_id, :usuario_id, :campo, :valor_anterior, :valor_nuevo, :motivo)";
+        $stmt = self::db()->prepare($sql);
+        return $stmt->execute([
+            ':caso_id' => $data['caso_id'],
+            ':usuario_id' => $data['usuario_id'],
+            ':campo' => $data['campo'],
+            ':valor_anterior' => $data['valor_anterior'],
+            ':valor_nuevo' => $data['valor_nuevo'],
+            ':motivo' => $data['motivo'] ?? 'manual'
+        ]);
+    }
+
+    public static function getHistorialCampos($caso_id)
+    {
+        $sql = "SELECT h.*, u.username 
+                FROM casos_historial_campos h
+                JOIN usuarios u ON u.id = h.usuario_id
+                WHERE h.caso_id = ?
+                ORDER BY h.fecha DESC";
+        $stmt = self::db()->prepare($sql);
+        $stmt->execute([$caso_id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

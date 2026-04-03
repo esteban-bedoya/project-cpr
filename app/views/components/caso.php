@@ -108,6 +108,18 @@
 
         <div class="case-info">
 
+            <?php if (isset($_SESSION['success'])): ?>
+                <p style="color:#2e7d32; font-size:14px; margin-bottom:8px;">
+                    <?= $_SESSION['success']; ?>
+                </p>
+                <?php unset($_SESSION['success']); ?>
+            <?php endif; ?>
+
+            <div class="info-item">
+                <strong>Radicado SENA:</strong>
+                <?= !empty($caso['radicado_sena']) ? htmlspecialchars($caso['radicado_sena']) : 'No registrado' ?>
+            </div>
+
             <!-- Usuario asignado (creador actual) -->
             <?php if (!empty($caso['asignado_a_nombre'])): ?>
                 <div class="info-item">
@@ -121,16 +133,25 @@
                     <?= date("d/m/Y H:i", strtotime($caso['fecha_creacion'])) ?>
                 </div>
             <?php endif; ?>
-
+            <?php if (!empty($caso['fecha_cierre'])): ?>
+                <div class="info-item">
+                    <strong>Fecha de cierre:</strong>
+                    <?= date("d/m/Y H:i", strtotime($caso['fecha_cierre'])) ?>
+                </div>
+            <?php endif; ?>
             <hr>
 
             <?php if (!empty($caso['detalles'])): ?>
                 <div class="info-item info-detalles">
-                    <strong>Detalles:</strong><br>
+                    <strong>Detalles del caso:</strong><br>
                     <?= nl2br(htmlspecialchars($caso['detalles'])) ?>
                 </div>
             <?php endif; ?>
 
+            <div class="info-actions">
+                <button type="button" class="btn-editar" onclick="abrirModalEditarCampos()">Editar datos del caso</button>
+                <button type="button" class="btn-editar-sec" onclick="abrirModalHistorialCampos()">Ver historial</button>
+            </div>
         </div>
 
         <div class="case-box">
@@ -277,6 +298,92 @@
     </div>
 </div>
 
+<!-- ============================
+     MODAL EDITAR CAMPOS
+============================ -->
+<div class="modal" id="modal-editar-campos">
+    <div class="modal-content">
+        <h3>Editar datos del caso</h3>
+        <form method="POST" action="/project-cpr/public/caso.php">
+            <input type="hidden" name="action" value="updateCampos">
+            <input type="hidden" name="caso_id" value="<?= $caso['id'] ?>">
+
+            <?php if (isset($_SESSION['error']) && ($_GET['error'] ?? '') === 'fechacierre'): ?>
+                <p style="color:#b00020; font-size:14px; margin-bottom:10px;">
+                    <?= $_SESSION['error']; ?>
+                </p>
+                <?php unset($_SESSION['error']); ?>
+            <?php endif; ?>
+
+            <label>Radicado SENA</label>
+            <input type="text" name="radicado_sena" maxlength="10" value="<?= htmlspecialchars($caso['radicado_sena'] ?? '') ?>">
+
+            <label>Fecha de cierre</label>
+            <input type="date" name="fecha_cierre"
+                value="<?= !empty($caso['fecha_cierre']) ? date('Y-m-d', strtotime($caso['fecha_cierre'])) : '' ?>"
+                min="<?= date('Y-m-d') ?>">
+
+            <div class="modal-buttons">
+                <button type="submit" class="btn-guardar">Guardar</button>
+                <button type="button" class="btn-cerrar" onclick="cerrarModalEditarCampos()">Cerrar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ============================
+     MODAL HISTORIAL DE CAMBIOS
+============================ -->
+<div class="modal" id="modal-historial-campos">
+    <div class="modal-content">
+        <h3>Historial de cambios</h3>
+        <div class="historial-lista">
+            <?php if (!empty($historialCampos)): ?>
+                <?php foreach ($historialCampos as $h): ?>
+                    <?php
+                    $labelsCampos = [
+                        'radicado_sena' => 'Radicado SENA',
+                        'asunto' => 'Asunto',
+                        'detalles' => 'Detalles del caso',
+                        'fecha_cierre' => 'Fecha de cierre'
+                    ];
+                    $campoLabel = $labelsCampos[$h['campo']] ?? $h['campo'];
+                    ?>
+                    <div class="historial-item">
+                        <div class="historial-fecha">
+                            <?= date("d/m/Y H:i", strtotime($h['fecha'])) ?>
+                        </div>
+                        <div class="historial-texto">
+                            <strong><?= htmlspecialchars($h['username']) ?></strong>
+                            <?php if ($h['campo'] === 'fecha_cierre'): ?>
+                                <?php if (($h['motivo'] ?? '') === 'auto_estado'): ?>
+                                    cambio de <strong><?= htmlspecialchars($campoLabel) ?></strong>
+                                    de "<?= htmlspecialchars($h['valor_anterior'] ?? '') ?>"
+                                    a "<?= htmlspecialchars($h['valor_nuevo'] ?? '') ?>"
+                                    por actualización de estado
+                                <?php else: ?>
+                                    cambió <strong><?= htmlspecialchars($campoLabel) ?></strong>
+                                    de "<?= htmlspecialchars($h['valor_anterior'] ?? '') ?>"
+                                    a "<?= htmlspecialchars($h['valor_nuevo'] ?? '') ?>"
+                                <?php endif; ?>
+                            <?php else: ?>
+                                cambió <strong><?= htmlspecialchars($campoLabel) ?></strong>
+                                de "<?= htmlspecialchars($h['valor_anterior'] ?? '') ?>"
+                                a "<?= htmlspecialchars($h['valor_nuevo'] ?? '') ?>"
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <p>No hay cambios registrados.</p>
+            <?php endif; ?>
+        </div>
+        <div class="modal-buttons">
+            <button type="button" class="btn-cerrar" onclick="cerrarModalHistorialCampos()">Cerrar</button>
+        </div>
+    </div>
+</div>
+
 <script>
     // Al cargar, desplaza el chat al final para ver lo más reciente
     window.addEventListener('load', () => {
@@ -285,3 +392,35 @@
         messages.scrollTop = messages.scrollHeight;
     });
 </script>
+
+<script>
+    const modalEditarCampos = document.getElementById('modal-editar-campos');
+    const modalHistorialCampos = document.getElementById('modal-historial-campos');
+
+    function abrirModalEditarCampos() {
+        if (modalEditarCampos) modalEditarCampos.style.display = 'flex';
+    }
+    function cerrarModalEditarCampos() {
+        if (modalEditarCampos) modalEditarCampos.style.display = 'none';
+    }
+
+    function abrirModalHistorialCampos() {
+        if (modalHistorialCampos) modalHistorialCampos.style.display = 'flex';
+    }
+    function cerrarModalHistorialCampos() {
+        if (modalHistorialCampos) modalHistorialCampos.style.display = 'none';
+    }
+
+    window.addEventListener('click', e => {
+        if (e.target === modalEditarCampos) cerrarModalEditarCampos();
+        if (e.target === modalHistorialCampos) cerrarModalHistorialCampos();
+    });
+
+</script>
+
+<?php if (($_GET['error'] ?? '') === 'fechacierre'): ?>
+<script>
+    // Mantener el modal abierto si hubo error de fecha
+    if (modalEditarCampos) modalEditarCampos.style.display = 'flex';
+</script>
+<?php endif; ?>

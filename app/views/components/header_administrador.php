@@ -14,7 +14,7 @@
     <!-- Navegación -->
     <nav class="nav-menu" aria-label="Menú de navegación">
       <a href="/project-cpr/public/reportes.php" class="nav-item <?= ($activePage === 'reportes') ? 'active' : ''; ?>">Reportes*</a>
-      <a href="/project-cpr/public/busqueda_caso.php" class="nav-item <?= ($activePage === 'casos') ? 'active' : ''; ?>">Casos*</a>
+      <a href="/project-cpr/public/casos.php" class="nav-item <?= ($activePage === 'casos') ? 'active' : ''; ?>">Casos</a>
       <a href="/project-cpr/public/usuarios.php" class="nav-item <?= ($activePage === 'usuarios') ? 'active' : ''; ?>">Usuarios</a>
       <a href="/project-cpr/public/perfil.php" class="nav-item <?= ($activePage === 'perfil') ? 'active' : ''; ?>">
         Administrador, <br>
