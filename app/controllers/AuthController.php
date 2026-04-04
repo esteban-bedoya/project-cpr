@@ -145,8 +145,8 @@ class AuthController
             if ($sent) {
                 $_SESSION['success'] = "Se envio un enlace de recuperacion al correo registrado.";
             } else {
-                $_SESSION['success'] = "No se pudo enviar el correo. Se genero el enlace para prueba local.";
-                $_SESSION['reset_demo_link'] = $link;
+                User::clearRememberToken($user['id']);
+                $_SESSION['error'] = "No fue posible enviar el correo de recuperacion. Intente nuevamente.";
             }
         } else {
             $_SESSION['success'] = "Si el correo existe, se genero un enlace de recuperacion.";

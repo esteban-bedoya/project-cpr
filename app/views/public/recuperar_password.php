@@ -41,17 +41,6 @@ $activePage = 'login';
                 <?php unset($_SESSION['success']); ?>
             <?php endif; ?>
 
-            <?php if (isset($_SESSION['reset_demo_link'])): ?>
-                <div class="alert info demo-link">
-                    Link generado para prueba local:
-                    <br>
-                    <a href="<?= htmlspecialchars($_SESSION['reset_demo_link']); ?>">
-                        <?= htmlspecialchars($_SESSION['reset_demo_link']); ?>
-                    </a>
-                </div>
-                <?php unset($_SESSION['reset_demo_link']); ?>
-            <?php endif; ?>
-
             <form action="/project-cpr/public/recuperar_password_procesar.php" method="POST">
                 <label for="correo">Correo:</label>
                 <input type="email" id="correo" name="correo" placeholder="Ingrese su correo" required>
