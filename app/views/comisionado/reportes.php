@@ -16,6 +16,7 @@ if (!isset($_SESSION['logged']) || $_SESSION['user']['rol'] != 2) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reportes - CPR</title>
+    <?php include __DIR__ . '/../components/favicon.php'; ?>
     <link rel="stylesheet" href="/project-cpr/public/assets/css/globals/base.css">
     <link rel="stylesheet" href="/project-cpr/public/assets/css/globals/reportes.css">
 </head>

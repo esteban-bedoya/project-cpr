@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Usuarios - CPR</title>
+    <?php include __DIR__ . '/../components/favicon.php'; ?>
 
     <!-- Estilos generales -->
     <link rel="stylesheet" href="/project-cpr/public/assets/css/globals/base.css">
