@@ -162,4 +162,38 @@ public static function getComisionadosAll()
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+public static function saveRememberToken($id, $token)
+{
+    // Guarda un token temporal para recuperacion de contraseña.
+    global $pdo;
+    $stmt = $pdo->prepare("UPDATE usuarios SET remember_token = ? WHERE id = ?");
+    return $stmt->execute([$token, $id]);
+}
+
+public static function findByRememberToken($token)
+{
+    // Busca usuario por token de recuperacion.
+    global $pdo;
+    $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE remember_token = ? LIMIT 1");
+    $stmt->execute([$token]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+public static function clearRememberToken($id)
+{
+    // Limpia el token despues de usarlo.
+    global $pdo;
+    $stmt = $pdo->prepare("UPDATE usuarios SET remember_token = NULL WHERE id = ?");
+    return $stmt->execute([$id]);
+}
+
+public static function updatePasswordById($id, $password)
+{
+    // Actualiza solo la contraseña del usuario.
+    global $pdo;
+    $hashed = password_hash($password, PASSWORD_DEFAULT);
+    $stmt = $pdo->prepare("UPDATE usuarios SET password = ? WHERE id = ?");
+    return $stmt->execute([$hashed, $id]);
+}
+
 }

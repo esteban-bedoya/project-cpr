@@ -96,3 +96,24 @@ form label {
     background: #fdecea;
     color: #a71d2a;
 }
+
+.alert.success {
+    background: #e8f8ec;
+    color: #176b2c;
+}
+
+.alert.info {
+    background: #e9f3ff;
+    color: #0d4d8b;
+}
+
+.helper-text {
+    margin: 0 0 18px;
+    font-size: 14px;
+    color: #37506a;
+    text-align: center;
+}
+
+.demo-link {
+    word-break: break-word;
+}
