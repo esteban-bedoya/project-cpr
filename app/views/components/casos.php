@@ -7,17 +7,20 @@
 ?>
 
 <div class="search-container">
-    <!-- ================= SIDEBAR DE FILTROS ================= -->
-    <aside class="filters-sidebar">
-        <h2 class="filters-title">Filtros</h2>
+    <!-- ================= BLOQUE DE FILTROS ================= -->
+    <section class="filters-sidebar">
+        <h2 class="filters-title">Aplique los filtros de los casos que desea ubicar</h2>
 
         <form class="filters-form" method="GET" action="/project-cpr/public/casos.php">
+            <input type="hidden" name="aplicar" value="1">
             <!-- Rango de fechas -->
-            <div class="filter-group">
-                <label class="filter-label">Rango de fechas</label>
-                <div class="date-range date-range-vertical">
+            <div class="filter-group filter-group-dates">
+                <label class="filter-label filter-label-inline">Rango de fechas</label>
+                <div class="date-range">
+                    <span class="date-inline-label">Desde</span>
                     <input type="date" name="fecha_inicio" class="date-input"
                         value="<?= htmlspecialchars($fecha_inicio ?? '') ?>">
+                    <span class="date-inline-label">Hasta</span>
                     <input type="date" name="fecha_fin" class="date-input"
                         value="<?= htmlspecialchars($fecha_fin ?? '') ?>">
                 </div>
@@ -25,11 +28,8 @@
 
             <!-- Estado del caso -->
             <div class="filter-group">
-                <label class="filter-label filter-toggle">
-                    Estado del caso
-                    <span class="toggle-icon">∧</span>
-                </label>
-                <div class="filter-options collapsed">
+                <label class="filter-select-label" for="filtro_estado">Estado del caso</label>
+                <select id="filtro_estado" name="estado" class="filter-select">
                     <?php
                     $estado_options = [
                         'todos' => 'Todos',
@@ -40,79 +40,53 @@
                     ];
                     foreach ($estado_options as $val => $label) {
                         $checked = ($filtro_estado ?? 'todos') === $val ? 'checked' : '';
-                        echo "<label class='radio-label'><input type='radio' name='estado' value='{$val}' {$checked}><span class='radio-custom'></span>{$label}</label>";
+                        $selected = ($filtro_estado ?? 'todos') === $val ? 'selected' : '';
+                        echo "<option value='{$val}' {$selected}>{$label}</option>";
                     }
                     ?>
-                </div>
+                </select>
             </div>
 
             <!-- Tipo de casos -->
             <div class="filter-group">
-                <label class="filter-label filter-toggle">
-                    Tipo de casos
-                    <span class="toggle-icon">∧</span>
-                </label>
-                <div class="filter-options collapsed">
-                    <label class="radio-label">
-                        <input type="radio" name="tipo_caso" value="todos"
-                            <?= ($filtro_tipo_caso ?? 'todos') === 'todos' ? 'checked' : '' ?>>
-                        <span class="radio-custom"></span>Todos
-                    </label>
+                <label class="filter-select-label" for="filtro_tipo_caso">Tipo de casos</label>
+                <select id="filtro_tipo_caso" name="tipo_caso" class="filter-select">
+                    <option value="todos" <?= ($filtro_tipo_caso ?? 'todos') === 'todos' ? 'selected' : '' ?>>Todos</option>
                     <?php foreach (($tiposCaso ?? []) as $tc): ?>
-                        <label class="radio-label">
-                            <input type="radio" name="tipo_caso" value="<?= $tc['id'] ?>"
-                                <?= (string)($filtro_tipo_caso ?? 'todos') === (string)$tc['id'] ? 'checked' : '' ?>>
-                            <span class="radio-custom"></span><?= htmlspecialchars($tc['nombre']) ?>
-                        </label>
+                        <option value="<?= $tc['id'] ?>" <?= (string)($filtro_tipo_caso ?? 'todos') === (string)$tc['id'] ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($tc['nombre']) ?>
+                        </option>
                     <?php endforeach; ?>
-                </div>
+                </select>
             </div>
 
             <!-- Tipo de procesos -->
             <div class="filter-group">
-                <label class="filter-label filter-toggle">
-                    Tipo de procesos
-                    <span class="toggle-icon">∧</span>
-                </label>
-                <div class="filter-options collapsed">
-                    <label class="radio-label">
-                        <input type="radio" name="tipo_proceso" value="todos"
-                            <?= ($filtro_tipo_proceso ?? 'todos') === 'todos' ? 'checked' : '' ?>>
-                        <span class="radio-custom"></span>Todos
-                    </label>
+                <label class="filter-select-label" for="filtro_tipo_proceso">Tipo de procesos</label>
+                <select id="filtro_tipo_proceso" name="tipo_proceso" class="filter-select">
+                    <option value="todos" <?= ($filtro_tipo_proceso ?? 'todos') === 'todos' ? 'selected' : '' ?>>Todos</option>
                     <?php foreach (($tiposProceso ?? []) as $tp): ?>
-                        <label class="radio-label">
-                            <input type="radio" name="tipo_proceso" value="<?= $tp['id'] ?>"
-                                <?= (string)($filtro_tipo_proceso ?? 'todos') === (string)$tp['id'] ? 'checked' : '' ?>>
-                            <span class="radio-custom"></span><?= htmlspecialchars($tp['nombre']) ?>
-                        </label>
+                        <option value="<?= $tp['id'] ?>" <?= (string)($filtro_tipo_proceso ?? 'todos') === (string)$tp['id'] ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($tp['nombre']) ?>
+                        </option>
                     <?php endforeach; ?>
-                </div>
+                </select>
             </div>
 
             <!-- Comisionado asignado -->
             <div class="filter-group">
-                <label class="filter-label filter-toggle">
-                    Comisionado asignado
-                    <span class="toggle-icon">∧</span>
-                </label>
-                <div class="filter-options collapsed">
-                    <label class="radio-label">
-                        <input type="radio" name="comisionado" value="todos"
-                            <?= ($filtro_comisionado ?? 'todos') === 'todos' ? 'checked' : '' ?>>
-                        <span class="radio-custom"></span>Todos
-                    </label>
+                <label class="filter-select-label" for="filtro_comisionado">Comisionado asignado</label>
+                <select id="filtro_comisionado" name="comisionado" class="filter-select">
+                    <option value="todos" <?= ($filtro_comisionado ?? 'todos') === 'todos' ? 'selected' : '' ?>>Todos</option>
                     <?php foreach (($comisionados ?? []) as $c): ?>
                         <?php
                         $estado_label = ((int)$c['estado'] === 1) ? '' : ' (Inactivo)';
                         ?>
-                        <label class="radio-label">
-                            <input type="radio" name="comisionado" value="<?= $c['id'] ?>"
-                                <?= (string)($filtro_comisionado ?? 'todos') === (string)$c['id'] ? 'checked' : '' ?>>
-                            <span class="radio-custom"></span><?= htmlspecialchars($c['username']) ?><?= $estado_label ?>
-                        </label>
+                        <option value="<?= $c['id'] ?>" <?= (string)($filtro_comisionado ?? 'todos') === (string)$c['id'] ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($c['username']) ?><?= $estado_label ?>
+                        </option>
                     <?php endforeach; ?>
-                </div>
+                </select>
             </div>
 
             <div class="filter-actions">
@@ -120,15 +94,17 @@
                 <a class="btn-clear" href="/project-cpr/public/casos.php">Limpiar</a>
             </div>
         </form>
-    </aside>
+    </section>
 
     <!-- ================= ÁREA PRINCIPAL ================= -->
     <section class="search-main">
         <!-- Barra de busqueda (front end) -->
-        <div class="search-bar">
-            <span class="search-icon">🔍</span>
-            <input type="text" class="search-input" placeholder="Buscar por asunto, detalles, radicado, #caso...">
-        </div>
+        <?php if (!empty($filtros_aplicados)): ?>
+            <div class="search-bar">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" placeholder="Buscar por asunto, detalles, radicado, #caso...">
+            </div>
+        <?php endif; ?>
 
         <!-- Tabla de resultados -->
         <div class="results-table">
@@ -143,7 +119,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <?php if (!empty($casos)): ?>
+                    <?php if (!empty($filtros_aplicados) && !empty($casos)): ?>
                         <?php foreach ($casos as $caso): ?>
                             <tr class="table-row">
                                 <td class="col-id">
@@ -175,9 +151,13 @@
                                 </td>
                             </tr>
                         <?php endforeach; ?>
-                    <?php else: ?>
+                    <?php elseif (!empty($filtros_aplicados)): ?>
                         <tr>
                             <td colspan="5" class="empty-state">No hay casos para este filtro.</td>
+                        </tr>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="5" class="empty-state empty-state-initial">Aplique filtros para visualizar los casos.</td>
                         </tr>
                     <?php endif; ?>
                 </tbody>
@@ -188,19 +168,6 @@
 </div>
 
 <script>
-    // ============================
-    // TOGGLES DE FILTROS
-    // ============================
-    document.querySelectorAll('.filter-toggle').forEach(toggle => {
-        toggle.addEventListener('click', function () {
-            const icon = this.querySelector('.toggle-icon');
-            const options = this.parentElement.querySelector('.filter-options');
-            if (!options) return;
-            options.classList.toggle('collapsed');
-            icon.textContent = options.classList.contains('collapsed') ? '∧' : '∨';
-        });
-    });
-
     // ============================
     // BUSCADOR EN VIVO (CLIENTE)
     // ============================

@@ -52,6 +52,7 @@ class CasoController
         $filtro_comisionado = $_GET['comisionado'] ?? 'todos';
         $fecha_inicio = trim($_GET['fecha_inicio'] ?? '');
         $fecha_fin = trim($_GET['fecha_fin'] ?? '');
+        $filtros_aplicados = isset($_GET['aplicar']) && $_GET['aplicar'] === '1';
 
         $fecha_inicio_dt = $fecha_inicio !== '' ? DateTime::createFromFormat('Y-m-d', $fecha_inicio) : null;
         $fecha_fin_dt = $fecha_fin !== '' ? DateTime::createFromFormat('Y-m-d', $fecha_fin) : null;
@@ -59,68 +60,70 @@ class CasoController
         $casos_filtrados = [];
         $hoy = new DateTime();
 
-        foreach ($casos as $caso) {
-            // Auto actualizar a No atendido si vencido y pendiente
-            if (!empty($caso['fecha_cierre']) && $caso['estado'] === 'Pendiente') {
-                try {
-                    $fc = new DateTime($caso['fecha_cierre']);
-                    if ($fc < $hoy) {
-                        Caso::update($caso['id'], [
-                            'tipo_caso_id' => $caso['tipo_caso_id'],
-                            'tipo_proceso_id' => $caso['tipo_proceso_id'],
-                            'asunto' => $caso['asunto'],
-                            'detalles' => $caso['detalles'],
-                            'estado' => 'No atendido'
-                        ]);
-                        Caso::guardarHistorial([
-                            'caso_id' => $caso['id'],
-                            'usuario_id' => $this->getSystemUserId(),
-                            'descripcion' => "Cambio de estado automático del sistema de Pendiente a No atendido"
-                        ]);
-                        $caso['estado'] = 'No atendido';
+        if ($filtros_aplicados) {
+            foreach ($casos as $caso) {
+                // Auto actualizar a No atendido si vencido y pendiente
+                if (!empty($caso['fecha_cierre']) && $caso['estado'] === 'Pendiente') {
+                    try {
+                        $fc = new DateTime($caso['fecha_cierre']);
+                        if ($fc < $hoy) {
+                            Caso::update($caso['id'], [
+                                'tipo_caso_id' => $caso['tipo_caso_id'],
+                                'tipo_proceso_id' => $caso['tipo_proceso_id'],
+                                'asunto' => $caso['asunto'],
+                                'detalles' => $caso['detalles'],
+                                'estado' => 'No atendido'
+                            ]);
+                            Caso::guardarHistorial([
+                                'caso_id' => $caso['id'],
+                                'usuario_id' => $this->getSystemUserId(),
+                                'descripcion' => "Cambio de estado automático del sistema de Pendiente a No atendido"
+                            ]);
+                            $caso['estado'] = 'No atendido';
+                        }
+                    } catch (Exception $e) {
+                        // Sin accion si falla la fecha
                     }
-                } catch (Exception $e) {
-                    // Sin accion si falla la fecha
                 }
-            }
 
-            // Rango de fechas (fecha_creacion)
-            if ($fecha_inicio_dt || $fecha_fin_dt) {
-                $fc = !empty($caso['fecha_creacion']) ? new DateTime($caso['fecha_creacion']) : null;
-                if ($fc) {
-                    if ($fecha_inicio_dt && $fc < $fecha_inicio_dt) continue;
-                    if ($fecha_fin_dt && $fc > (clone $fecha_fin_dt)->setTime(23, 59, 59)) continue;
-                }
-            }
-
-            // Tipo de caso
-            if ($filtro_tipo_caso !== 'todos' && (string)$caso['tipo_caso_id'] !== (string)$filtro_tipo_caso) {
-                continue;
-            }
-
-            // Tipo de proceso
-            if ($filtro_tipo_proceso !== 'todos' && (string)$caso['tipo_proceso_id'] !== (string)$filtro_tipo_proceso) {
-                continue;
-            }
-
-            // Comisionado asignado
-            if ($filtro_comisionado !== 'todos' && (string)$caso['asignado_a'] !== (string)$filtro_comisionado) {
-                continue;
-            }
-
-            // Estado del caso / proximos a vencer
-            if ($filtro_estado !== 'todos') {
-                if ($filtro_estado === 'proximos') {
-                    $dias = $this->calcularDiasRestantes($caso['fecha_cierre'] ?? null);
-                    if (!($dias !== null && $dias >= 0 && $dias <= 2 && $caso['estado'] !== 'Atendido')) {
-                        continue;
+                // Rango de fechas (fecha_creacion)
+                if ($fecha_inicio_dt || $fecha_fin_dt) {
+                    $fc = !empty($caso['fecha_creacion']) ? new DateTime($caso['fecha_creacion']) : null;
+                    if ($fc) {
+                        if ($fecha_inicio_dt && $fc < $fecha_inicio_dt) continue;
+                        if ($fecha_fin_dt && $fc > (clone $fecha_fin_dt)->setTime(23, 59, 59)) continue;
                     }
-                } else if ($caso['estado'] !== $filtro_estado) {
+                }
+
+                // Tipo de caso
+                if ($filtro_tipo_caso !== 'todos' && (string)$caso['tipo_caso_id'] !== (string)$filtro_tipo_caso) {
                     continue;
                 }
-            }
 
-            $casos_filtrados[] = $caso;
+                // Tipo de proceso
+                if ($filtro_tipo_proceso !== 'todos' && (string)$caso['tipo_proceso_id'] !== (string)$filtro_tipo_proceso) {
+                    continue;
+                }
+
+                // Comisionado asignado
+                if ($filtro_comisionado !== 'todos' && (string)$caso['asignado_a'] !== (string)$filtro_comisionado) {
+                    continue;
+                }
+
+                // Estado del caso / proximos a vencer
+                if ($filtro_estado !== 'todos') {
+                    if ($filtro_estado === 'proximos') {
+                        $dias = $this->calcularDiasRestantes($caso['fecha_cierre'] ?? null);
+                        if (!($dias !== null && $dias >= 0 && $dias <= 2 && $caso['estado'] !== 'Atendido')) {
+                            continue;
+                        }
+                    } else if ($caso['estado'] !== $filtro_estado) {
+                        continue;
+                    }
+                }
+
+                $casos_filtrados[] = $caso;
+            }
         }
 
         $casos = $casos_filtrados;
