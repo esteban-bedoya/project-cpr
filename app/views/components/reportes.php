@@ -19,23 +19,30 @@ $resumenTexto = $filtroComisionadoTodos ? 'Todos los comisionados' : ($comisiona
         </div>
     </div>
 
-    <form class="reports-filters no-print" method="GET" action="/project-cpr/public/reportes.php">
+    <form class="reports-filters no-print" id="reports-filters-form" method="GET" action="/project-cpr/public/reportes.php">
         <div class="report-field">
             <label for="fecha_inicio">Desde</label>
-            <input id="fecha_inicio" type="date" name="fecha_inicio" value="<?= htmlspecialchars($fecha_inicio ?? '') ?>">
+            <input id="fecha_inicio" type="date" name="fecha_inicio" max="<?= htmlspecialchars($fechaMaximaFiltro ?? '') ?>" value="<?= htmlspecialchars($fecha_inicio ?? '') ?>">
         </div>
 
         <div class="report-field">
             <label for="fecha_fin">Hasta</label>
-            <input id="fecha_fin" type="date" name="fecha_fin" value="<?= htmlspecialchars($fecha_fin ?? '') ?>">
+            <input id="fecha_fin" type="date" name="fecha_fin" max="<?= htmlspecialchars($fechaMaximaFiltro ?? '') ?>" value="<?= htmlspecialchars($fecha_fin ?? '') ?>">
         </div>
 
         <?php if ($esAdmin): ?>
+            <div class="report-field report-field-toggle">
+                <label class="report-checkbox">
+                    <input type="checkbox" name="mostrar_inactivos" value="1" <?= !empty($mostrar_inactivos) ? 'checked' : '' ?>>
+                    <span>Mostrar comisionados inactivos</span>
+                </label>
+            </div>
+
             <div class="report-field">
                 <label for="comisionado">Comisionado</label>
                 <select id="comisionado" name="comisionado">
                     <option value="todos" <?= $filtroComisionadoTodos ? 'selected' : '' ?>>Todos</option>
-                    <?php foreach (($comisionados ?? []) as $comisionado): ?>
+                    <?php foreach (($comisionadosVisibles ?? []) as $comisionado): ?>
                         <option value="<?= (int)$comisionado['id'] ?>" <?= (string)$filtro_comisionado === (string)$comisionado['id'] ? 'selected' : '' ?>>
                             <?= htmlspecialchars($comisionado['username']) ?><?= (int)$comisionado['estado'] === 1 ? '' : ' (Inactivo)' ?>
                         </option>
@@ -60,11 +67,13 @@ $resumenTexto = $filtroComisionadoTodos ? 'Todos los comisionados' : ($comisiona
         <div class="reports-alert no-print"><?= htmlspecialchars($error_reporte) ?></div>
     <?php endif; ?>
 
+    <div class="reports-alert no-print" id="reports-alert-inline" hidden></div>
+
     <div class="print-header only-print">
         <img src="/project-cpr/public/assets/img/logo-sena-cpr.png" alt="Logo SENA CPR">
         <div>
             <h2>Reporte de casos - Comisión de Personal</h2>
-            <p>SENA Colombia</p>
+            <p>SENA</p>
             <p><?= htmlspecialchars($rangoTexto) ?></p>
         </div>
     </div>
@@ -83,6 +92,8 @@ $resumenTexto = $filtroComisionadoTodos ? 'Todos los comisionados' : ($comisiona
             <strong><?= htmlspecialchars($fechaGeneracion) ?></strong>
         </div>
     </div>
+
+    <div class="print-divider only-print"></div>
 
     <div class="report-cards">
         <article class="report-card">
@@ -166,6 +177,35 @@ $resumenTexto = $filtroComisionadoTodos ? 'Todos los comisionados' : ($comisiona
 
 <script src="/project-cpr/public/assets/libs/chartjs/chart.umd.min.js"></script>
 <script>
+    const reportsFiltersForm = document.getElementById('reports-filters-form');
+    const fechaInicioInput = document.getElementById('fecha_inicio');
+    const fechaFinInput = document.getElementById('fecha_fin');
+    const reportsAlertInline = document.getElementById('reports-alert-inline');
+
+    if (reportsFiltersForm && fechaInicioInput && fechaFinInput && reportsAlertInline) {
+        reportsFiltersForm.addEventListener('submit', (event) => {
+            const fechaInicio = fechaInicioInput.value;
+            const fechaFin = fechaFinInput.value;
+
+            if (fechaInicio && fechaFin && fechaInicio > fechaFin) {
+                event.preventDefault();
+                reportsAlertInline.textContent = 'La fecha inicial no puede ser mayor que la fecha final.';
+                reportsAlertInline.hidden = false;
+                return;
+            }
+
+            reportsAlertInline.hidden = true;
+            reportsAlertInline.textContent = '';
+        });
+    }
+
+    const toggleMostrarInactivos = document.querySelector('input[name="mostrar_inactivos"]');
+    if (toggleMostrarInactivos) {
+        toggleMostrarInactivos.addEventListener('change', () => {
+            toggleMostrarInactivos.form.submit();
+        });
+    }
+
     const labelsComisionados = <?= json_encode(array_column($reportePorComisionado, 'nombre'), JSON_UNESCAPED_UNICODE) ?>;
     const dataComisionados = <?= json_encode(array_map('intval', array_column($reportePorComisionado, 'total'))) ?>;
     const dataEstados = <?= json_encode([

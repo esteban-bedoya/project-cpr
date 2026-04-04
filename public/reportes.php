@@ -36,10 +36,13 @@ if ($fecha_fin !== '' && !$fecha_fin_dt) {
 
 if ($fecha_inicio_dt && $fecha_fin_dt && $fecha_inicio_dt > $fecha_fin_dt) {
     $error_reporte = 'La fecha inicial no puede ser mayor que la fecha final.';
+    $fecha_inicio_dt = null;
+    $fecha_fin_dt = null;
 }
 
 $comisionados = User::getComisionadosAll();
 $filtro_comisionado = $_GET['comisionado'] ?? 'todos';
+$mostrar_inactivos = isset($_GET['mostrar_inactivos']) && $_GET['mostrar_inactivos'] === '1';
 
 if ($rol == 2) {
     $filtro_comisionado = (string)$usuarioId;
@@ -105,6 +108,10 @@ usort($comisionados, function ($a, $b) {
     return strcasecmp($a['username'], $b['username']);
 });
 
+$comisionadosVisibles = array_values(array_filter($comisionados, function ($comisionado) use ($mostrar_inactivos) {
+    return $mostrar_inactivos || (int)($comisionado['estado'] ?? 0) === 1;
+}));
+
 $reportePorComisionado = array_values($reporteAgrupado);
 usort($reportePorComisionado, function ($a, $b) {
     return strcasecmp($a['nombre'], $b['nombre']);
@@ -119,7 +126,8 @@ foreach ($comisionados as $comisionado) {
     }
 }
 
-$fechaGeneracion = (new DateTime('now'))->format('d/m/Y H:i');
+$fechaGeneracion = (new DateTime('now', new DateTimeZone('America/Bogota')))->format('d/m/Y H:i');
+$fechaMaximaFiltro = (new DateTime('now', new DateTimeZone('America/Bogota')))->format('Y-m-d');
 $desdeTexto = $fecha_inicio_dt ? $fecha_inicio_dt->format('d/m/Y') : 'el inicio del histórico';
 $hastaTexto = $fecha_fin_dt ? $fecha_fin_dt->format('d/m/Y') : 'la fecha actual';
 $rangoTexto = "Desde {$desdeTexto} hasta {$hastaTexto}";
