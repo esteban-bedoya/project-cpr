@@ -306,12 +306,6 @@
                     <option value="2">Inactivo</option>
                 </select>
 
-                <label>Nueva contraseña</label>
-                <input type="password" name="password" id="edit-password">
-
-                <label>Confirmar nueva contraseña</label>
-                <input type="password" name="password_confirm" id="edit-password-confirm">
-
                 <div class="modal-buttons">
                     <button type="submit" class="btn-guardar">Guardar</button>
                     <button type="button" class="btn-cerrar" onclick="cerrarModalEditar()">Cerrar</button>
@@ -402,18 +396,6 @@
         function cerrarModalEditar() {
             modalEditar.style.display = "none";
         }
-
-        // Validacion de contrasena en edicion
-        const formEditar = document.getElementById("form-editar");
-        formEditar.addEventListener("submit", (e) => {
-            const pass = document.getElementById("edit-password").value.trim();
-            const passConfirm = document.getElementById("edit-password-confirm").value.trim();
-
-            if ((pass !== "" || passConfirm !== "") && pass !== passConfirm) {
-                e.preventDefault();
-                alert("Las contraseñas no coinciden.");
-            }
-        });
 
         if (editRol) {
             editRol.addEventListener('change', actualizarVigenciaEditar);

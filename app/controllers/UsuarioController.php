@@ -137,15 +137,13 @@ class UsuarioController
 
     public function update()
     {
-        // Datos de edicion (incluye password opcional).
+        // Datos de edicion del usuario.
         $id = $_POST['id'];
         $rol       = $_POST['rol'];
         $correo    = $_POST['correo'];
         $telefono  = $_POST['telefono'];
         $estado    = $_POST['estado'];
         $vigenciaInicio = trim($_POST['vigencia_inicio'] ?? '');
-        $password  = $_POST['password'] ?? null;
-        $passwordConfirm = $_POST['password_confirm'] ?? null;
         [$erroresVigencia, $anioInicio] = $this->validarVigenciaComisionado($rol, $estado, $vigenciaInicio, $id);
 
         if (!empty($erroresVigencia)) {
@@ -154,16 +152,8 @@ class UsuarioController
             exit;
         }
 
-        if ($password !== null && trim($password) !== '') {
-            if ($passwordConfirm === null || $password !== $passwordConfirm) {
-                $_SESSION['error'] = "Las contraseñas no coinciden.";
-                header("Location: /project-cpr/public/usuarios.php");
-                exit;
-            }
-        }
-
         // Actualiza en BD y vuelve al listado.
-        User::updateById($id, $rol, $correo, $telefono, $estado, $anioInicio, $password);
+        User::updateById($id, $rol, $correo, $telefono, $estado, $anioInicio);
 
         header("Location: /project-cpr/public/usuarios.php");
         exit;

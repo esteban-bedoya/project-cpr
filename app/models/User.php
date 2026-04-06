@@ -48,29 +48,18 @@ class User
         ]);
     }
 
-    public static function updateById($id, $rol, $correo, $telefono, $estado, $vigenciaInicio = null, $password = null)
+    public static function updateById($id, $rol, $correo, $telefono, $estado, $vigenciaInicio = null)
     {
-        // La contraseña es opcional en la edicion.
+        // Actualiza los datos administrativos editables del usuario.
         global $pdo;
-
-        if ($password === null || trim($password) === '') {
-            $stmt = $pdo->prepare("
-                UPDATE usuarios
-                SET rol = ?, correo = ?, telefono = ?, estado = ?, vigencia_inicio = ?
-                WHERE id = ?
-            ");
-            return $stmt->execute([$rol, $correo, $telefono, $estado, $vigenciaInicio, $id]);
-        }
-
-        $hashed = password_hash($password, PASSWORD_DEFAULT);
 
         $stmt = $pdo->prepare("
             UPDATE usuarios
-            SET rol = ?, correo = ?, telefono = ?, estado = ?, vigencia_inicio = ?, password = ?
+            SET rol = ?, correo = ?, telefono = ?, estado = ?, vigencia_inicio = ?
             WHERE id = ?
         ");
 
-        return $stmt->execute([$rol, $correo, $telefono, $estado, $vigenciaInicio, $hashed, $id]);
+        return $stmt->execute([$rol, $correo, $telefono, $estado, $vigenciaInicio, $id]);
     }
 
     public static function delete($id)
