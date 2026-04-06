@@ -2,6 +2,7 @@
 <link rel="stylesheet" href="/PROJECT-CPR/public/assets/css/globals/footer.css">
 
 <footer class="footer">
+    <!-- Columnas informativas del pie -->
     <div class="footer-column">
         <h4>Enlaces útiles:</h4>
         <ul>

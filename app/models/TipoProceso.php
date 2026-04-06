@@ -5,7 +5,7 @@ class TipoProceso
 {
     private static function db()
     {
-        // Conexion PDO.
+        // Conexion local del catalogo.
         static $db = null;
         if ($db === null) {
             $db = new PDO("mysql:host=localhost;dbname=project-cpr;charset=utf8", "root", "");
@@ -16,7 +16,7 @@ class TipoProceso
 
     public static function all()
     {
-        // Lista tipos de proceso (independientes).
+        // Lista completa del catalogo.
         $sql = "SELECT * FROM tipos_proceso ORDER BY nombre";
         $stmt = self::db()->prepare($sql);
         $stmt->execute();
@@ -62,7 +62,7 @@ class TipoProceso
 
     public static function getCasosAsignados($tipo_proceso_id)
     {
-        // Lista casos asociados (para mensaje de bloqueo).
+        // Se usa para explicar el bloqueo al eliminar.
         $stmt = self::db()->prepare("SELECT id, numero_caso FROM casos WHERE tipo_proceso_id = ? ORDER BY id DESC");
         $stmt->execute([$tipo_proceso_id]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);

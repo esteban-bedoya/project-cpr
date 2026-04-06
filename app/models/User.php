@@ -33,7 +33,7 @@ class User
 
     public static function create($documento, $username, $password, $rol, $correo, $telefono, $estado = 1, $vigenciaInicio = null)
     {
-        // Inserta un nuevo usuario con password hasheada.
+        // Crea usuario y protege la contraseña con hash.
         global $pdo;
 
         $hashed = password_hash($password, PASSWORD_DEFAULT);
@@ -50,7 +50,7 @@ class User
 
     public static function updateById($id, $rol, $correo, $telefono, $estado, $vigenciaInicio = null, $password = null)
     {
-        // Actualiza usuario; la contraseña es opcional.
+        // La contraseña es opcional en la edicion.
         global $pdo;
 
         if ($password === null || trim($password) === '') {
@@ -89,7 +89,7 @@ class User
         $sql = "SELECT * FROM usuarios WHERE 1 = 1";
         $params = [];
 
-        // Oculta usuario del sistema en listados admin
+        // Oculta el usuario tecnico usado por el sistema.
         $sql .= " AND NOT (username = ? AND documento = ?)";
         $params[] = 'Sistema';
         $params[] = 'SYSTEM-000';
@@ -183,6 +183,7 @@ public static function getComisionadosAll()
 
 public static function contarComisionadosActivos($ignorarId = null)
 {
+    // Cuenta activos para validar el tope.
     global $pdo;
 
     $sql = "SELECT COUNT(*) FROM usuarios WHERE rol = 2 AND estado = 1";
@@ -201,7 +202,7 @@ public static function contarComisionadosActivos($ignorarId = null)
 
 public static function saveRememberToken($id, $token)
 {
-    // Guarda un token temporal para recuperacion de contraseña.
+    // Guarda el token temporal de recuperacion.
     global $pdo;
     $stmt = $pdo->prepare("UPDATE usuarios SET remember_token = ? WHERE id = ?");
     return $stmt->execute([$token, $id]);
@@ -226,7 +227,7 @@ public static function clearRememberToken($id)
 
 public static function updatePasswordById($id, $password)
 {
-    // Actualiza solo la contraseña del usuario.
+    // Actualiza la contraseña y vuelve a aplicar hash.
     global $pdo;
     $hashed = password_hash($password, PASSWORD_DEFAULT);
     $stmt = $pdo->prepare("UPDATE usuarios SET password = ? WHERE id = ?");

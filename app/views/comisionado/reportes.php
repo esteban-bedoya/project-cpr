@@ -27,7 +27,7 @@ if (!isset($_SESSION['logged']) || $_SESSION['user']['rol'] != 2) {
     <?php include __DIR__ . '/../components/header_comisionado.php'; ?>
 
     <div class="main-content">
-        <!-- Contenido del modulo de reportes -->
+        <!-- Usa el mismo componente de reportes -->
         <?php include __DIR__ . '/../components/reportes.php'; ?>
 
 

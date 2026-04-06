@@ -8,10 +8,9 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-//Comentario para revisar el PUSH
-
 class AuthController
 {
+    // Envia el enlace de recuperacion por SMTP.
     private function sendResetEmail($correo, $nombreUsuario, $link)
     {
         // Envia el correo usando PHPMailer y Gmail SMTP.
@@ -131,6 +130,7 @@ class AuthController
         $user = User::findByEmail($correo);
 
         if ($user && (int) $user['estado'] === 1) {
+            // El token se guarda antes de enviar el correo.
             $token = bin2hex(random_bytes(32));
             User::saveRememberToken($user['id'], $token);
 
@@ -149,6 +149,7 @@ class AuthController
                 $_SESSION['error'] = "No fue posible enviar el correo de recuperacion. Intente nuevamente.";
             }
         } else {
+            // Respuesta generica para no revelar usuarios validos.
             $_SESSION['success'] = "Si el correo existe, se genero un enlace de recuperacion.";
         }
 
@@ -186,6 +187,7 @@ class AuthController
             exit;
         }
 
+        // El token funciona como llave temporal.
         $user = User::findByRememberToken($token);
 
         if (!$user) {

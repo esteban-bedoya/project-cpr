@@ -19,7 +19,7 @@
     <?php include __DIR__ . '/../components/header_comisionado.php'; ?>
 
     <div class="main-content">
-        <!-- Contenido del modulo de busqueda de casos -->
+        <!-- Aqui se carga la vista de busqueda del rol -->
         <?php include __DIR__ . '/../components/busqueda_caso.php'; ?>
 
 

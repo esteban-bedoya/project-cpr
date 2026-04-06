@@ -1,11 +1,11 @@
 <?php
-// Este bloque prepara textos y banderas para que la vista no tenga
-// demasiadas condiciones mezcladas dentro del HTML.
+// Prepara banderas simples para la vista.
 $estadoActual = $caso['estado'] ?? 'Pendiente';
 $fechaCierre = !empty($caso['fecha_cierre']) ? new DateTime($caso['fecha_cierre']) : null;
 $hoy = new DateTime();
 $estaVencido = $fechaCierre ? $fechaCierre < $hoy : false;
 
+// Clases visuales por estado.
 $estadoClases = [
     'Pendiente' => 'status-badge pendiente',
     'Atendido' => 'status-badge atendido',
@@ -32,7 +32,7 @@ $estadoSeguimientoTexto = match ($estadoActual) {
 
 $actividad = [];
 
-// Primero se normaliza el historial de estados.
+// Normaliza historial de estado.
 foreach ($historial as $item) {
     $actividad[] = [
         'tipo' => 'estado',
@@ -43,8 +43,7 @@ foreach ($historial as $item) {
     ];
 }
 
-// Luego se normalizan los cambios de campos para mostrarlos con el mismo
-// formato visual del historial, sin crear otra sección aparte.
+// Normaliza cambios de campos.
 foreach ($historialCampos as $item) {
     $labelsCampos = [
         'radicado_sena' => 'Radicado SENA',
@@ -74,8 +73,7 @@ usort($actividad, fn($a, $b) => strtotime($b['fecha']) <=> strtotime($a['fecha']
 
 $lineaTiempo = [];
 
-// Los mensajes y las actualizaciones se mezclan en una sola línea de tiempo
-// para que la trazabilidad quede centralizada y más fácil de seguir.
+// Mensajes y actividad comparten la misma linea de tiempo.
 foreach ($mensajes as $mensaje) {
     $lineaTiempo[] = [
         'tipo' => 'mensaje',
@@ -96,8 +94,7 @@ foreach ($actividad as $item) {
     ];
 }
 
-// Se ordena de más antiguo a más reciente para que el scroll termine abajo,
-// como un chat.
+// Se ordena como chat: viejo arriba, nuevo abajo.
 usort($lineaTiempo, fn($a, $b) => strtotime($a['fecha']) <=> strtotime($b['fecha']));
 ?>
 

@@ -33,7 +33,7 @@ class PerfilController
 
     $usuario = User::findById($idUsuario);
 
-    // 1️ Validar contraseña actual
+    // Primero confirma la identidad del usuario.
     if (!password_verify($actualContra, $usuario['password'])) {
         $_SESSION['error'] = "La contraseña actual es incorrecta.";
         header("Location: /project-cpr/public/perfil.php");
@@ -43,7 +43,7 @@ class PerfilController
     $cambioCorreo = false;
     $cambioContra = false;
 
-    // 2️ Validar y preparar correo
+    // Si cambia el correo, debe confirmarlo.
     if ($nuevoCorreo !== '') {
         if ($nuevoCorreo !== $confirmCorreo) {
             $_SESSION['error'] = "Los correos no coinciden.";
@@ -53,7 +53,7 @@ class PerfilController
         $cambioCorreo = true;
     }
 
-    // 3️ Validar y preparar contraseña
+    // Si cambia la clave, tambien debe confirmarla.
     if ($nuevaContra !== '') {
         if ($nuevaContra !== $confirmContra) {
             $_SESSION['error'] = "Las contraseñas no coinciden.";
@@ -63,21 +63,21 @@ class PerfilController
         $cambioContra = true;
     }
 
-    // 4️ Si no cambió nada
+    // Evita guardar si no hubo cambios.
     if (!$cambioCorreo && !$cambioContra) {
         $_SESSION['error'] = "No se realizaron cambios.";
         header("Location: /project-cpr/public/perfil.php");
         exit;
     }
 
-    // 5️ Actualizar
+    // Solo se envia lo que realmente cambio.
     User::updatePerfil(
         $idUsuario,
         $cambioCorreo ? $nuevoCorreo : $usuario['correo'],
         $cambioContra ? $nuevaContra : null
     );
 
-    // 6️ Mensaje final claro
+    // Mensaje segun el resultado final.
     if ($cambioCorreo && $cambioContra) {
         $_SESSION['success'] = "Correo y contraseña actualizados correctamente.";
     } elseif ($cambioCorreo) {

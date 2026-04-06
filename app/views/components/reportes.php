@@ -1,4 +1,5 @@
 <?php
+// Banderas cortas para simplificar condiciones.
 $esAdmin = (int)($_SESSION['user']['rol'] ?? 0) === 1;
 $filtroComisionadoTodos = ($filtro_comisionado ?? 'todos') === 'todos';
 $resumenTexto = $filtroComisionadoTodos ? 'Todos los comisionados' : ($comisionadoSeleccionado['username'] ?? 'Comisionado seleccionado');
@@ -94,6 +95,7 @@ $resumenTexto = $filtroComisionadoTodos ? 'Todos los comisionados' : ($comisiona
 
     <div class="print-divider only-print"></div>
 
+    <!-- Tarjetas resumen del periodo -->
     <div class="report-cards">
         <article class="report-card">
             <span>Total de casos</span>

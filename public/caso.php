@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    // Acciones del detalle (actualizar o enviar mensaje).
+    // En POST se resuelven acciones del detalle.
     $action = $_POST['action'] ?? null;
     $id = $_POST['caso_id'] ?? null;
 

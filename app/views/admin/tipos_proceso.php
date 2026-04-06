@@ -23,7 +23,7 @@ if (!isset($_SESSION['logged']) || $_SESSION['user']['rol'] != 1) {
     <?php include __DIR__ . '/../components/header_administrador.php'; ?>
 
     <div class="main-content">
-        <!-- Contenido del modulo de tipos de procesos -->
+        <!-- Componente compartido del catalogo -->
         <?php include __DIR__ . '/../components/tipos_proceso.php'; ?>
     </div>
 </body>

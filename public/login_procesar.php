@@ -6,6 +6,6 @@ session_start();
 
 require_once '../app/controllers/AuthController.php';
 
-// Ejecuta la accion de autenticacion.
+// Delega el login en el controlador.
 $controller = new AuthController();
 $controller->login();

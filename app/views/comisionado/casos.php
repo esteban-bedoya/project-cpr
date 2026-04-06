@@ -24,10 +24,11 @@
     <div class="main-content">
         <button type="button" class="btn-agregar">Agregar caso</button>
 
-        <!-- Contenido del modulo de busqueda de casos -->
+        <!-- Tabla y filtros compartidos -->
         <?php include __DIR__ . '/../components/casos.php'; ?>
     </div>
 
+    <!-- Modal para crear casos del comisionado -->
     <div class="modal" id="modal-agregar">
         <div class="modal-content">
             <h3>Agregar caso</h3>
@@ -51,6 +52,7 @@
                 <select name="tipo_caso_id" id="add-tipo-caso" required>
                     <option value="">- Seleccione -</option>
                     <?php
+                    // Tipos disponibles para el formulario.
                     $tiposCaso = Caso::getTiposCaso();
                     foreach ($tiposCaso as $tc) {
                         $selected = ((string)($form_gestionar['tipo_caso_id'] ?? '') === (string)$tc['id']) ? 'selected' : '';
@@ -63,6 +65,7 @@
                 <select name="tipo_proceso_id" id="add-tipo-proceso" required>
                     <option value="">- Seleccione -</option>
                     <?php
+                    // Solo se muestran procesos activos al crear.
                     $tiposProceso = Caso::getTiposProcesoActivos();
                     foreach ($tiposProceso as $proceso) {
                         if ($proceso['estado'] == 1) {
@@ -91,6 +94,7 @@
     </div>
 
     <script>
+        // Apertura y cierre del modal local.
         const btnAgregar = document.querySelector('.btn-agregar');
         const modalAgregar = document.getElementById('modal-agregar');
 

@@ -18,6 +18,7 @@
         <?php unset($_SESSION['error']); ?>
     <?php endif; ?>
 
+    <!-- Selector para editar un proceso existente -->
     <form class="form-procesos" action="/project-cpr/public/tipos_proceso.php" method="GET">
         <div class="grupo">
             <label for="proceso_id" class="oculto">Seleccionar proceso</label>
@@ -32,6 +33,7 @@
         </div>
     </form>
 
+    <!-- Formulario principal de alta o edicion -->
     <form class="form-procesos" action="/project-cpr/public/tipos_proceso.php?action=guardar" method="POST">
         <input type="hidden" name="proceso_id" value="<?= $procesoSeleccionado['id'] ?? '' ?>">
 
@@ -68,6 +70,7 @@
 </div>
 
 <script>
+    // Cambiar el select recarga el formulario en modo edicion.
     const selectProceso = document.getElementById('proceso_id');
     if (selectProceso) {
         selectProceso.addEventListener('change', () => {

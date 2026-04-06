@@ -11,7 +11,7 @@
       </a>
     </div>
 
-    <!-- Navegación -->
+    <!-- Menu principal del panel -->
     <nav class="nav-menu" aria-label="Menú de navegación">
       <a href="/project-cpr/public/reportes.php" class="nav-item <?= ($activePage === 'reportes') ? 'active' : ''; ?>">Reportes</a>
       <a href="/project-cpr/public/casos.php" class="nav-item <?= ($activePage === 'casos') ? 'active' : ''; ?>">Casos</a>

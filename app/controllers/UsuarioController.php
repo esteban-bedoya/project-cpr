@@ -5,8 +5,7 @@ require_once __DIR__ . '/../models/User.php';
 
 class UsuarioController
 {
-    // Se deja como constante porque este texto también se usa para decidir
-    // si el modal debe cerrarse o volver a abrirse.
+    // Se reutiliza en validacion y en la vista.
     private const MENSAJE_MAXIMO_COMISIONADOS = "No se puede crear este comisionado porque ya hay 4 comisionados activos, y ese es el maximo permitido.";
 
     private function validarVigenciaComisionado($rol, $estado, $vigenciaInicio, $usuarioId = null)
@@ -15,7 +14,7 @@ class UsuarioController
         $esComisionado = (int)$rol === 2;
         $estaActivo = (int)$estado === 1;
 
-        // La vigencia solo aplica para comisionados; en admin no se valida.
+        // La vigencia solo aplica a comisionados.
         if (!$esComisionado) {
             return [$errores, null];
         }
@@ -36,8 +35,7 @@ class UsuarioController
             $errores[] = "El año de vigencia debe estar en un rango válido.";
         }
 
-        // Aqui se controla la regla del negocio: maximo 4 comisionados activos.
-        // En edicion se ignora el usuario actual para no contarlo dos veces.
+        // Regla del negocio: maximo 4 activos.
         if ($estaActivo && User::contarComisionadosActivos($usuarioId) >= 4) {
             $errores[] = self::MENSAJE_MAXIMO_COMISIONADOS;
         }
@@ -55,8 +53,7 @@ class UsuarioController
         $filtro_rol    = $_GET['filtro_rol'] ?? 'todos';
         $filtro_vigencia_inicio = $_GET['filtro_vigencia_inicio'] ?? 'todas';
 
-        // El filtro de vigencia se arma aparte para que el select solo muestre
-        // años que realmente existen en la base de datos.
+        // El select de vigencias sale de años reales en BD.
         $usuarios = User::filtrar($filtro_estado, $filtro_rol, $filtro_vigencia_inicio);
         $vigenciasInicio = User::getVigenciasInicio();
 
@@ -118,8 +115,7 @@ class UsuarioController
                 'estado' => $estado,
                 'vigencia_inicio' => $vigenciaInicio,
             ];
-            // Si el problema es el tope de comisionados, conviene cerrar el modal
-            // y mostrar la alerta arriba para que el mensaje se note más.
+            // Si falla el tope, el mensaje se muestra fuera del modal.
             $debeCerrarModal = in_array(self::MENSAJE_MAXIMO_COMISIONADOS, $errores, true);
             $urlRedireccion = $debeCerrarModal
                 ? "/project-cpr/public/usuarios.php"

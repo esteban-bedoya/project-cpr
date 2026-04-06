@@ -48,7 +48,7 @@ error_reporting(E_ALL);
 
 
 
-            <!-- Formulario que envia a login_procesar.php -->
+            <!-- Formulario principal de acceso -->
             <form action="/project-cpr/public/login_procesar.php" method="POST">
 
                 <label for="correo">Correo:</label>

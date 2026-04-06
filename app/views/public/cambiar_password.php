@@ -7,6 +7,7 @@ require_once __DIR__ . '/../../../app/models/User.php';
 
 $activePage = 'login';
 $token = trim($_GET['token'] ?? '');
+// Si el token no existe, se devuelve al login.
 $user = $token !== '' ? User::findByRememberToken($token) : null;
 
 if (!$user) {
@@ -44,6 +45,7 @@ if (!$user) {
                 <?php unset($_SESSION['error']); ?>
             <?php endif; ?>
 
+            <!-- El token viaja oculto para validar el cambio -->
             <form action="/project-cpr/public/cambiar_password_procesar.php" method="POST">
                 <input type="hidden" name="token" value="<?= htmlspecialchars($token); ?>">
 

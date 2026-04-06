@@ -20,7 +20,7 @@
 
     <div class="main-content">
 
-        <!-- Componente reutilizable del detalle de caso -->
+        <!-- Comparte el mismo detalle que admin -->
         <?php include __DIR__ . '/../components/caso.php'; ?>
 
     </div>

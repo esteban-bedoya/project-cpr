@@ -19,7 +19,7 @@ class Caso
     // ===============================
     public static function all()
     {
-        // Lista casos con datos de usuario y catalogos (joins).
+        // Devuelve casos con nombres listos para mostrar.
         $sql = "SELECT c.*, u.username AS asignado_a_nombre, tc.nombre AS tipo_caso_nombre, tp.nombre AS tipo_proceso_nombre
                 FROM casos c
                 LEFT JOIN usuarios u ON u.id = c.asignado_a
@@ -36,7 +36,7 @@ class Caso
     // ===============================
     public static function find($id)
     {
-        // Busca un caso y sus relaciones principales.
+        // Igual que all(), pero para un solo caso.
         $sql = "SELECT c.*, u.username AS asignado_a_nombre, tc.nombre AS tipo_caso_nombre, tp.nombre AS tipo_proceso_nombre
                 FROM casos c
                 LEFT JOIN usuarios u ON u.id = c.asignado_a
@@ -214,7 +214,9 @@ class Caso
     // Guardar un cambio en el historial (solo descripción)
     public static function guardarHistorial($data)
     {
-        // Inserta un registro de historial textual.
+        // Inserta un registro textual libre.
+        // Este historial guarda eventos narrados en lenguaje humano
+        // como cambios de estado o transiciones automáticas.
         $sql = "INSERT INTO casos_historial_estado (caso_id, usuario_id, descripcion) 
             VALUES (:caso_id, :usuario_id, :descripcion)";
         $stmt = self::db()->prepare($sql);
@@ -257,7 +259,8 @@ class Caso
     // ===============================
     public static function guardarMensaje($data)
     {
-        // Guarda mensaje y archivo asociado (si aplica).
+        // Guarda el mensaje del hilo del caso.
+        // El archivo se almacena como nombre/ruta, no como binario en BD.
         $sql = "INSERT INTO casos_mensajes 
             (caso_id, usuario_id, mensaje, archivo)
             VALUES (:caso_id, :usuario_id, :mensaje, :archivo)";
@@ -273,7 +276,9 @@ class Caso
 
     public static function updateDetalle($id, $data)
     {
-        // Actualiza campos especificos desde la vista detalle.
+        // Esta actualización es más acotada que update():
+        // se usa cuando el usuario modifica el caso desde la vista detalle,
+        // donde además puede tocar la fecha de cierre operativa.
         $sql = "UPDATE casos SET 
         estado = :estado,
         tipo_proceso_id = :tipo_proceso_id,
@@ -293,7 +298,8 @@ class Caso
 
     public static function updateCampos($id, $data)
     {
-        // Actualiza radicado y fecha limite.
+        // Separa la actualización de campos administrativos puntuales
+        // del resto de cambios del caso para no mezclar responsabilidades.
         $sql = "UPDATE casos SET 
         radicado_sena = :radicado_sena,
         fecha_cierre = :fecha_cierre
@@ -309,6 +315,8 @@ class Caso
 
     public static function guardarHistorialCampo($data)
     {
+        // A diferencia de guardarHistorial(), este método registra el
+        // antes y después de un campo específico para auditoría detallada.
         $sql = "INSERT INTO casos_historial_campos 
             (caso_id, usuario_id, campo, valor_anterior, valor_nuevo)
             VALUES (:caso_id, :usuario_id, :campo, :valor_anterior, :valor_nuevo)";
@@ -324,6 +332,8 @@ class Caso
 
     public static function getHistorialCampos($caso_id)
     {
+        // Devuelve los cambios de campos en orden inverso para mostrar
+        // primero la edición más reciente en la interfaz.
         $sql = "SELECT h.*, u.username 
                 FROM casos_historial_campos h
                 JOIN usuarios u ON u.id = h.usuario_id

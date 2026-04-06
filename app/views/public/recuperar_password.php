@@ -20,6 +20,7 @@ $activePage = 'login';
 
 <body class="public">
 
+    <!-- Header compartido -->
     <?php include('../app/views/components/header_public.php'); ?>
 
     <div class="login-container">
@@ -41,6 +42,7 @@ $activePage = 'login';
                 <?php unset($_SESSION['success']); ?>
             <?php endif; ?>
 
+            <!-- Solicita el correo para generar el enlace -->
             <form action="/project-cpr/public/recuperar_password_procesar.php" method="POST">
                 <label for="correo">Correo:</label>
                 <input type="email" id="correo" name="correo" placeholder="Ingrese su correo" required>

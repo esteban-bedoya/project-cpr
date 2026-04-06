@@ -2,6 +2,7 @@
 <link rel="stylesheet" href="/PROJECT-CPR/public/assets/css/globals/perfil.css">
 
 <?php
+// Ayuda a resaltar el bloque que dio error.
 $perfil_error = $_SESSION['error'] ?? '';
 $perfil_error_tipo = 'ninguno';
 if ($perfil_error !== '') {
@@ -15,7 +16,7 @@ if ($perfil_error !== '') {
 
 <div class="perfil-container">
 
-    <!-- Mensajes de estado -->
+    <!-- Alertas del ultimo intento -->
     <?php if (isset($_SESSION['success'])): ?>
         <div class="alert success">
             <?= $_SESSION['success']; ?>
@@ -30,6 +31,7 @@ if ($perfil_error !== '') {
         <?php unset($_SESSION['error']); ?>
     <?php endif; ?>
 
+    <!-- Bloque para cambio de correo -->
     <section class="perfil-card accordion" data-accordion="cuenta">
         <button class="accordion-toggle" type="button" aria-expanded="false">
             <span>Información de la cuenta</span>
@@ -79,6 +81,7 @@ if ($perfil_error !== '') {
         </div>
     </section>
 
+    <!-- Bloque para cambio de contraseña -->
     <section class="perfil-card accordion" data-accordion="seguridad">
         <button class="accordion-toggle" type="button" aria-expanded="false">
             <span>Seguridad</span>
@@ -110,6 +113,7 @@ if ($perfil_error !== '') {
         </div>
     </section>
 
+    <!-- Bloque para cierre de sesion -->
     <section class="perfil-card accordion" data-accordion="sesion">
         <button class="accordion-toggle" type="button" aria-expanded="false">
             <span>Sesión</span>

@@ -4,6 +4,7 @@
 // $casos, $tiposCaso, $tiposProceso, $comisionados
 // $filtro_estado, $filtro_tipo_caso, $filtro_tipo_proceso, $filtro_comisionado
 // $fecha_inicio, $fecha_fin
+// Este componente lo usan ambos roles.
 ?>
 
 <div class="search-container">
@@ -31,6 +32,7 @@
                 <label class="filter-select-label" for="filtro_estado">Estado del caso</label>
                 <select id="filtro_estado" name="estado" class="filter-select">
                     <?php
+                    // Estados fijos del filtro.
                     $estado_options = [
                         'todos' => 'Todos',
                         'Atendido' => 'Atendido',
@@ -79,6 +81,7 @@
                     <option value="todos" <?= ($filtro_comisionado ?? 'todos') === 'todos' ? 'selected' : '' ?>>Todos</option>
                     <?php foreach (($comisionados ?? []) as $c): ?>
                         <?php
+                        // Si esta inactivo, se marca en el nombre.
                         $estado_label = ((int)$c['estado'] === 1) ? '' : ' (Inactivo)';
                         ?>
                         <option value="<?= $c['id'] ?>" <?= (string)($filtro_comisionado ?? 'todos') === (string)$c['id'] ? 'selected' : '' ?>>
@@ -155,9 +158,7 @@
 </div>
 
 <script>
-    // ============================
-    // BUSCADOR EN VIVO (CLIENTE)
-    // ============================
+    // Filtro rapido sobre filas ya cargadas.
     const buscadorInput = document.querySelector('.search-input');
     const filas = document.querySelectorAll('.cases-table tbody tr');
 

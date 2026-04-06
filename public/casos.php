@@ -16,6 +16,7 @@ require_once __DIR__ . '/../app/controllers/CasoController.php';
 $controller = new CasoController();
 $action = $_GET['action'] ?? ($_POST['action'] ?? null);
 
+// Esta entrada sirve para listar y para guardar desde el modal.
 switch ($action) {
     case 'storeGestionar':
         $controller->storeGestionar();

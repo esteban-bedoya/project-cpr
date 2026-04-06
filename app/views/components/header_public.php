@@ -3,7 +3,7 @@
 
 
 <div class="header-background">
-  <!-- Contenedor principal del header -->
+  <!-- Header minimo del sitio -->
   <header class="header">
     <!-- Logo y enlace a inicio -->
     <div class="logo"> <a href="index.php"> <img src="assets/img/logo-sena-cpr.png" alt="Logo SENA CPR"> </a> </div>

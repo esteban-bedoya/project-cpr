@@ -21,14 +21,14 @@
   <?php include("../app/views/components/header_public.php"); ?>
 
   <main>
-    <!-- Seccion principal con titulo -->
+    <!-- Presentacion principal -->
     <section class="hero">
       <div class="hero-content">
         <h1>SISTEMA DE GESTIÓN <span>COMISIÓN DE PERSONAL</span></h1>
       </div>
     </section>
 
-    <!-- Texto institucional -->
+    <!-- Resumen institucional -->
     <section class="info">
       <p>
         Órgano de participación conformado por representantes de los servidores públicos y de la administración.<br>

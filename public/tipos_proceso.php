@@ -13,6 +13,7 @@ require_once __DIR__ . '/../app/controllers/TipoProcesoController.php';
 $controller = new TipoProcesoController();
 $action = $_GET['action'] ?? 'index';
 
+// Cada accion apunta a una operacion del catalogo.
 if (method_exists($controller, $action)) {
     $controller->$action();
 } else {

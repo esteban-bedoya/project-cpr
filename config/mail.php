@@ -1,5 +1,6 @@
 <?php
 // Configuracion basica para enviar correos con Gmail SMTP.
+// Este archivo solo expone un arreglo de configuracion.
 // Reemplace estos valores por los de su cuenta de Gmail.
 
 return [

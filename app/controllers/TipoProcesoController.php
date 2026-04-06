@@ -7,8 +7,7 @@ class TipoProcesoController
 {
     private function validarAccesoAdmin()
     {
-        // Esta vista no depende del perfil. Se separó para que quede más claro
-        // que es una configuración del sistema y no un dato personal del usuario.
+        // Este modulo es exclusivo del admin.
         if (!isset($_SESSION['logged']) || ($_SESSION['user']['rol'] ?? null) != 1) {
             header("Location: /project-cpr/public/login.php");
             exit;
@@ -23,7 +22,7 @@ class TipoProcesoController
         $tiposProceso = TipoProceso::all();
         $procesoSeleccionado = null;
 
-        // Si llega un id por GET, el formulario carga en modo edición.
+        // Si llega un id, el formulario entra en modo edicion.
         $procesoId = $_GET['proceso_id'] ?? null;
         if ($procesoId) {
             $procesoSeleccionado = TipoProceso::find($procesoId);
@@ -46,7 +45,7 @@ class TipoProcesoController
             exit;
         }
 
-        // Con id actualiza; sin id crea uno nuevo.
+        // Con id edita; sin id crea.
         if ($id) {
             TipoProceso::update($id, $nombre, $estado);
             $_SESSION['success'] = "Proceso actualizado correctamente.";
@@ -70,8 +69,7 @@ class TipoProcesoController
             exit;
         }
 
-        // No se deja eliminar un proceso si ya está ligado a casos,
-        // porque eso rompería la consistencia del historial.
+        // No se elimina si ya tiene casos asociados.
         $cantidadCasosAsignados = TipoProceso::countCasosAsignados($id);
         if ($cantidadCasosAsignados > 0) {
             $casosAsignados = TipoProceso::getCasosAsignados($id);

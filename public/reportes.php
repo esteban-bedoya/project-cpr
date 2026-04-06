@@ -45,6 +45,7 @@ $filtro_comisionado = $_GET['comisionado'] ?? 'todos';
 $mostrar_inactivos = isset($_GET['mostrar_inactivos']) && $_GET['mostrar_inactivos'] === '1';
 
 if ($rol == 2) {
+    // El comisionado solo puede verse a si mismo.
     $filtro_comisionado = (string)$usuarioId;
 }
 
@@ -57,6 +58,7 @@ $totalesEstado = [
 ];
 
 foreach ($casos as $caso) {
+    // El admin puede limitar el reporte a un comisionado.
     if ($rol == 1 && $filtro_comisionado !== 'todos' && (string)($caso['asignado_a'] ?? '') !== (string)$filtro_comisionado) {
         continue;
     }

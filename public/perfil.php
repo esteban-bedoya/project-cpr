@@ -15,7 +15,7 @@ $controller = new PerfilController();
 $action = $_GET['action'] ?? 'index';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // En POST se mantiene la accion definida.
+    // En POST normalmente se llama a update.
     $action = $_GET['action'] ?? $action;
 }
 

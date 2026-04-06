@@ -6,7 +6,7 @@ class IndexController
     // Punto de entrada para la ruta principal del sitio.
     public function index()
     {
-        // Carga la vista publica de inicio.
+        // La landing publica no necesita datos previos.
         require '../app/views/public/index.php';
     }
 }

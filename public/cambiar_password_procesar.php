@@ -5,5 +5,6 @@ session_start();
 
 require_once '../app/controllers/AuthController.php';
 
+// El controlador centraliza la validacion del token.
 $controller = new AuthController();
 $controller->resetPassword();

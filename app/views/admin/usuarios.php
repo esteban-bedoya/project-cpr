@@ -21,6 +21,7 @@
 
     <div class="main-content">
         <div class="usuarios-container">
+            <!-- Mensajes de resultado -->
             <?php if (isset($_SESSION['success'])): ?>
                 <div class="alert success">
                     <?= htmlspecialchars($_SESSION['success']); ?>
@@ -43,7 +44,7 @@
                 <?php unset($_SESSION['error']); ?>
             <?php endif; ?>
 
-            <!-- ENCABEZADO -->
+            <!-- Acciones y filtros -->
             <div class="top-actions">
                 <button class="btn-agregar" onclick="abrirModalAgregar()">Agregar usuario</button>
 

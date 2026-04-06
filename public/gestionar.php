@@ -19,7 +19,7 @@ require_once __DIR__ . '/../app/controllers/CasoController.php';
 // Instancia del controlador de casos.
 $controller = new CasoController();
 
-// Detectar acción enviada desde formulario o enlace
+// Detecta si debe listar o crear.
 $action = $_GET['action'] ?? ($_POST['action'] ?? null);
 
 switch ($action) {

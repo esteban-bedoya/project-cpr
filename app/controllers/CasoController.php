@@ -5,11 +5,13 @@ require_once __DIR__ . '/../models/User.php';
 
 class CasoController
 {
+    // Texto comun para cierres automaticos por vencimiento.
     private function descripcionNoAtendidoAutomatico($fechaCierre)
     {
         return 'Cambio de estado automático del sistema de Pendiente a No atendido porque no recibió atención dentro del plazo establecido';
     }
 
+    // Solo el comisionado asignado puede editar.
     private function puedeEditarCaso($caso)
     {
         $usuario = $_SESSION['user'] ?? [];
@@ -62,6 +64,7 @@ class CasoController
         $hoy = new DateTime();
 
         if ($filtros_aplicados) {
+            // Aqui tambien se actualizan casos vencidos.
             foreach ($casos as $caso) {
                 // Auto actualizar a No atendido si vencido y pendiente
                 if (!empty($caso['fecha_cierre']) && $caso['estado'] === 'Pendiente') {
@@ -122,6 +125,7 @@ class CasoController
             }
         }
 
+        // La tabla solo se llena si el usuario aplica filtros.
         $casos = $casos_filtrados;
 
         // Selecciona la vista segun el rol.
@@ -400,7 +404,8 @@ class CasoController
             exit;
         }
 
-        // Guardar la fecha de cierre con hora 23:59:59.
+        // Guardar la fecha con la hora final del día evita que el caso se marque
+        // como vencido desde la medianoche del mismo día ingresado por el usuario.
         if ($fecha_cierre !== null) {
             $fecha_cierre = $fecha_cierre . ' 23:59:59';
         }
@@ -433,6 +438,8 @@ class CasoController
 
     public function updateDetalle($id)
     {
+        // Esta acción maneja la edición desde la ficha del caso, donde además
+        // de guardar los cambios se construye el historial legible para auditoría.
         $caso = Caso::find($id);
         if (!$caso) {
             die("Caso no encontrado.");
@@ -451,6 +458,8 @@ class CasoController
         $fechaCierreAnterior = $caso['fecha_cierre'] ?? null;
         $cambiosHistorial = [];
 
+        // Si el caso ya venció, no se permite dejarlo abierto sin antes
+        // corregir la fecha de cierre. Eso obliga a reabrirlo explícitamente.
         if ($estado !== 'Atendido' && !empty($caso['fecha_cierre'])) {
             $hoy = new DateTime();
             $fechaCierreActual = new DateTime($caso['fecha_cierre']);
@@ -461,10 +470,14 @@ class CasoController
             }
         }
 
+        // Al marcar como atendido, la fecha de cierre pasa a ser la fecha real
+        // de resolución. Así el historial refleja cuándo terminó de verdad.
         if ($estado === 'Atendido' && $caso['estado'] !== 'Atendido') {
             $fechaCierre = (new DateTime())->format('Y-m-d H:i:s');
         }
 
+        // Cada cambio relevante se convierte en un texto de historial.
+        // Luego todos se insertan antes del update final para dejar trazabilidad.
         if ($caso['estado'] != $estado) {
             $descripcionEstado = "Cambio de estado de {$caso['estado']} a {$estado}";
 

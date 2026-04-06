@@ -2,7 +2,7 @@
 <link rel="stylesheet" href="/PROJECT-CPR/public/assets/css/globals/header.css">
 
 <?php 
-// Bloque comentado: validacion de sesion que se maneja en los front controllers.
+// La sesion se valida antes de cargar este componente.
 /*
 if (!isset($_SESSION)) { session_start(); }
 if (!isset($_SESSION['logged'])) {
@@ -23,7 +23,7 @@ if (!isset($_SESSION['logged'])) {
     </div>
 
 
-    <!-- Navegación / Botones -->
+    <!-- Menu visible del comisionado -->
     <nav class="nav-menu" aria-label="Menú de navegación">
     <!--   <a href="/project-cpr/public/casos.php" class="nav-item <?php echo ($activePage === 'gestionar') ? 'active' : ''; ?>">Gestionar</a> -->
       <a href="/project-cpr/public/casos.php" class="nav-item <?php echo ($activePage === 'casos') ? 'active' : ''; ?>">Casos</a>

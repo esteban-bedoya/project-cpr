@@ -19,7 +19,7 @@
     <?php include __DIR__ . '/../components/header_administrador.php'; ?>
 
     <div class="main-content">
-        <!-- Contenido del modulo de busqueda de casos -->
+        <!-- Reutiliza el listado compartido -->
         <?php include __DIR__ . '/../components/casos.php'; ?>
 
 

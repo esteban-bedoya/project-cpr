@@ -1,31 +1,28 @@
 <?php
 // Archivo de cierre de sesion (logout).
-/**
- * Logout adaptado para PROJECT-CPR
- * Cierra sesión, elimina cookies y remember_token si aplica, y redirige a login.php
- */
+// Limpia sesion y token persistente si existe.
 
 session_start();
 
-// Determinar si necesitamos conexión a la base de datos
+// Solo consulta BD si hay cookie persistente.
 $require_db = isset($_COOKIE['remember_token']) && isset($_SESSION['user_id']);
 
-// Incluir db.php solo si es necesario
+// La conexion se carga solo cuando hace falta.
 if ($require_db) {
     require '../config/db.php'; // ruta desde public/logout.php hacia config/db.php
 }
 
 try {
     if ($require_db) {
-        // Eliminar remember_token de la cookie
+        // Borra la cookie del navegador.
         setcookie('remember_token', '', time() - 3600, '/', '', true, true);
 
-        // Eliminar remember_token de la base de datos
+        // Borra el token guardado en BD.
         $stmt = $pdo->prepare("UPDATE users SET remember_token = NULL WHERE id = ?");
         $stmt->execute([$_SESSION['user_id']]);
     }
 
-    // Destruir sesión
+    // Cierra la sesion actual.
     session_destroy();
 
     // Eliminar cookies de sesión si existen

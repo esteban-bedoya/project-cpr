@@ -1,5 +1,5 @@
 <?php $activePage = 'perfil';?>
-<!-- // Vista de perfil para comisionado. -->
+<!-- Vista de perfil para comisionado -->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -20,6 +20,7 @@
     <!-- Contenido de perfil -->
     <div class="main-content">
 
+        <!-- Formulario compartido de perfil -->
         <?php include __DIR__ . '/../components/perfil.php'; ?>
 
     </div>

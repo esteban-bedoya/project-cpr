@@ -13,4 +13,5 @@ require_once __DIR__ . '/../app/controllers/UsuarioController.php';
 // Enruta acciones dinamicamente al controlador.
 $controller = new UsuarioController();
 $action = $_GET['action'] ?? 'index';
+// La accion por defecto abre el listado.
 $controller->$action();

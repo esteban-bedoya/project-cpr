@@ -15,6 +15,7 @@ if (!isset($_SESSION['user'])) {
 // ===============================
 $rol = $_SESSION['user']['rol'];
 
+// Segun el rol, cambia la vista final.
 if ($rol == 1) {
     require __DIR__ . '/../app/views/admin/casos.php';
 } else if ($rol == 2) {

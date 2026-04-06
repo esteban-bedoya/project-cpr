@@ -20,7 +20,7 @@
         <div class="dashboard-container">
 
             <?php
-            // Filtro activo tomado desde la URL.
+            // El boton activo sale de la URL.
             $filtro_actual = $_GET['filtro'] ?? 'todos';
             $form_gestionar = $_SESSION['form_gestionar'] ?? [];
             ?>
@@ -51,7 +51,7 @@
 
             </aside>
 
-            <!-- CONTENIDO PRINCIPAL -->
+            <!-- Tabla principal -->
             <section class="dashboard-content">
                 <div class="table-container">
                     <table class="cases-table">
@@ -92,9 +92,7 @@
         </div>
     </div>
 
-    <!-- =========================================================== -->
-    <!-- ================== MODAL AGREGAR CASO ==================== -->
-    <!-- =========================================================== -->
+    <!-- Modal para crear un nuevo caso -->
     <div class="modal" id="modal-agregar">
         <div class="modal-content">
             <h3>Agregar caso</h3>
