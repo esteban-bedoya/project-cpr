@@ -79,7 +79,7 @@
                 <label>Detalles del caso</label>
                 <textarea name="detalles" rows="4" required><?= htmlspecialchars($form_gestionar['detalles'] ?? '') ?></textarea>
 
-                <label>Fecha de cierre (posterior a la fecha actual)</label>
+                <label>Fecha limite (posterior a la fecha actual)</label>
                 <input type="date" name="fecha_cierre" required value="<?= htmlspecialchars($form_gestionar['fecha_cierre'] ?? '') ?>">
 
                 <div class="modal-buttons">

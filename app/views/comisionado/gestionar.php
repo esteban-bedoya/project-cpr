@@ -29,11 +29,6 @@
             <aside class="sidebar">
                 <button class="btn-agregar">Agregar caso</button>
 
-                <a href="?filtro=proximos" class="btn-sidebar urgente <?= $filtro_actual === 'proximos' ? 'active' : '' ?>">
-                    <span>Próximos a vencer</span>
-                    <span class="num"><?= count($casos_proximos) ?></span>
-                </a>
-
                 <a href="?filtro=no_atendido" class="btn-sidebar <?= $filtro_actual === 'no_atendido' ? 'active' : '' ?>">
                     <span>No atendidos</span>
                     <span class="num"><?= count($casos_no_atendidos) ?></span>
@@ -67,7 +62,6 @@
                                 <th>Fecha creación</th>
                                 <th>Caso</th>
                                 <th>Proceso</th>
-                                <th>Tiempo</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -83,34 +77,11 @@
                                         <td><?= date("d-m-Y", strtotime($caso['fecha_creacion'] ?? '')) ?></td>
                                         <td><?= htmlspecialchars($caso['tipo_caso_nombre']) ?></td>
                                         <td><?= htmlspecialchars($caso['tipo_proceso_nombre']) ?></td>
-                                        <!-- Columna de tiempos -->
-                                        <td>
-                                            <?php
-                                            if ($caso['estado'] === 'Atendido') {
-                                                echo "Resuelto";
-                                            } else {
-                                                if (!empty($caso['fecha_cierre'])) {
-                                                    $fecha_cierre = new DateTime($caso['fecha_cierre']);
-                                                    $hoy = new DateTime();
-                                                    $interval = $hoy->diff($fecha_cierre);
-                                                    $dias_restantes = (int)$interval->format('%r%a');
-
-                                                    if ($dias_restantes < 0) {
-                                                        echo "<span style='color:red;'>$dias_restantes días</span>";
-                                                    } else {
-                                                        echo "$dias_restantes días";
-                                                    }
-                                                } else {
-                                                    echo "Sin fecha";
-                                                }
-                                            }
-                                            ?>
-                                        </td>
                                     </tr>
                                 <?php endforeach; ?>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="6">No hay casos para este filtro.</td>
+                                    <td colspan="5">No hay casos para este filtro.</td>
                                 </tr>
                             <?php endif; ?>
                         </tbody>
@@ -172,7 +143,7 @@
                 <label>Detalles del caso</label>
                 <textarea name="detalles" rows="4" required><?= htmlspecialchars($form_gestionar['detalles'] ?? '') ?></textarea>
 
-                <label>Fecha de cierre (posterior a la fecha actual)</label>
+                <label>Fecha limite (posterior a la fecha actual)</label>
                 <input type="date" name="fecha_cierre" required
                     value="<?= htmlspecialchars($form_gestionar['fecha_cierre'] ?? '') ?>">
 

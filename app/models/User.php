@@ -31,7 +31,7 @@ class User
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public static function create($documento, $username, $password, $rol, $correo, $telefono, $estado = 1)
+    public static function create($documento, $username, $password, $rol, $correo, $telefono, $estado = 1, $vigenciaInicio = null)
     {
         // Inserta un nuevo usuario con password hasheada.
         global $pdo;
@@ -39,16 +39,16 @@ class User
         $hashed = password_hash($password, PASSWORD_DEFAULT);
 
         $stmt = $pdo->prepare("
-            INSERT INTO usuarios (documento, username, password, rol, correo, telefono, estado)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO usuarios (documento, username, password, rol, correo, telefono, estado, vigencia_inicio)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         ");
 
         return $stmt->execute([
-            $documento, $username, $hashed, $rol, $correo, $telefono, $estado
+            $documento, $username, $hashed, $rol, $correo, $telefono, $estado, $vigenciaInicio
         ]);
     }
 
-    public static function updateById($id, $rol, $correo, $telefono, $estado, $password = null)
+    public static function updateById($id, $rol, $correo, $telefono, $estado, $vigenciaInicio = null, $password = null)
     {
         // Actualiza usuario; la contraseña es opcional.
         global $pdo;
@@ -56,21 +56,21 @@ class User
         if ($password === null || trim($password) === '') {
             $stmt = $pdo->prepare("
                 UPDATE usuarios
-                SET rol = ?, correo = ?, telefono = ?, estado = ?
+                SET rol = ?, correo = ?, telefono = ?, estado = ?, vigencia_inicio = ?
                 WHERE id = ?
             ");
-            return $stmt->execute([$rol, $correo, $telefono, $estado, $id]);
+            return $stmt->execute([$rol, $correo, $telefono, $estado, $vigenciaInicio, $id]);
         }
 
         $hashed = password_hash($password, PASSWORD_DEFAULT);
 
         $stmt = $pdo->prepare("
             UPDATE usuarios
-            SET rol = ?, correo = ?, telefono = ?, estado = ?, password = ?
+            SET rol = ?, correo = ?, telefono = ?, estado = ?, vigencia_inicio = ?, password = ?
             WHERE id = ?
         ");
 
-        return $stmt->execute([$rol, $correo, $telefono, $estado, $hashed, $id]);
+        return $stmt->execute([$rol, $correo, $telefono, $estado, $vigenciaInicio, $hashed, $id]);
     }
 
     public static function delete($id)
@@ -81,40 +81,59 @@ class User
         return $stmt->execute([$id]);
     }
 
-    public static function filtrar($estado, $rol)
-{
-    // Filtrado dinamico por estado y rol (usado en admin).
-    global $pdo;
+    public static function filtrar($estado, $rol, $vigenciaInicio = 'todas')
+    {
+        // Filtrado dinamico por estado, rol y vigencia (usado en admin).
+        global $pdo;
 
-    // Base SQL
-    $sql = "SELECT * FROM usuarios WHERE 1 = 1";
-    $params = [];
+        $sql = "SELECT * FROM usuarios WHERE 1 = 1";
+        $params = [];
 
-    // Oculta usuario del sistema en listados admin
-    $sql .= " AND NOT (username = ? AND documento = ?)";
-    $params[] = 'Sistema';
-    $params[] = 'SYSTEM-000';
+        // Oculta usuario del sistema en listados admin
+        $sql .= " AND NOT (username = ? AND documento = ?)";
+        $params[] = 'Sistema';
+        $params[] = 'SYSTEM-000';
 
-    // Filtrar por estado
-    if ($estado !== 'todos') {
-        if ($estado === 'activos') {
-            $sql .= " AND estado = 1";
-        } elseif ($estado === 'inactivos') {
-            $sql .= " AND estado = 2";
+        if ($estado !== 'todos') {
+            if ($estado === 'activos') {
+                $sql .= " AND estado = 1";
+            } elseif ($estado === 'inactivos') {
+                $sql .= " AND estado = 2";
+            }
         }
+
+        if ($rol !== 'todos') {
+            $sql .= " AND rol = ?";
+            $params[] = $rol;
+        }
+
+        if ($vigenciaInicio !== 'todas' && ctype_digit((string)$vigenciaInicio)) {
+            $sql .= " AND vigencia_inicio = ?";
+            $params[] = (int)$vigenciaInicio;
+        }
+
+        $sql .= " ORDER BY username ASC";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Filtrar por rol
-    if ($rol !== 'todos') {
-        $sql .= " AND rol = ?";
-        $params[] = $rol;
+    public static function getVigenciasInicio()
+    {
+        // Retorna las vigencias existentes para el filtro.
+        global $pdo;
+
+        $stmt = $pdo->query("
+            SELECT DISTINCT vigencia_inicio
+            FROM usuarios
+            WHERE vigencia_inicio IS NOT NULL
+            ORDER BY vigencia_inicio DESC
+        ");
+
+        return $stmt->fetchAll(PDO::FETCH_COLUMN);
     }
-
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute($params);
-
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
 
 public static function findById($id)
 {
@@ -160,6 +179,24 @@ public static function getComisionadosAll()
     $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE rol = 2");
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+public static function contarComisionadosActivos($ignorarId = null)
+{
+    global $pdo;
+
+    $sql = "SELECT COUNT(*) FROM usuarios WHERE rol = 2 AND estado = 1";
+    $params = [];
+
+    if ($ignorarId !== null) {
+        $sql .= " AND id <> ?";
+        $params[] = $ignorarId;
+    }
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+
+    return (int)$stmt->fetchColumn();
 }
 
 public static function saveRememberToken($id, $token)

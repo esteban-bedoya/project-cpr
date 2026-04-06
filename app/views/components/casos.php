@@ -9,7 +9,7 @@
 <div class="search-container">
     <!-- ================= BLOQUE DE FILTROS ================= -->
     <section class="filters-sidebar">
-        <h2 class="filters-title">Aplique los filtros de los casos que desea ubicar</h2>
+        <h2 class="filters-title">Aplique los filtros de los casos que desea visualizar</h2>
 
         <form class="filters-form" method="GET" action="/project-cpr/public/casos.php">
             <input type="hidden" name="aplicar" value="1">
@@ -35,8 +35,7 @@
                         'todos' => 'Todos',
                         'Atendido' => 'Atendido',
                         'No atendido' => 'No atendido',
-                        'Pendiente' => 'Pendiente',
-                        'proximos' => 'Próximos a vencer'
+                        'Pendiente' => 'Pendiente'
                     ];
                     foreach ($estado_options as $val => $label) {
                         $checked = ($filtro_estado ?? 'todos') === $val ? 'checked' : '';
@@ -112,10 +111,12 @@
                 <thead>
                     <tr>
                         <th>#Caso</th>
-                        <th>Rad SENA</th>
+                        <th>#Rad SENA</th>
                         <th>Asunto</th>
+                        <th>Estado del caso</th>
+                        <th>Comisionado asignado</th>
                         <th>Fecha de creación</th>
-                        <th>Tiempo de cierre</th>
+                        <th>Fecha de cierre</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -129,35 +130,21 @@
                                 </td>
                                 <td class="col-rad"><?= htmlspecialchars($caso['radicado_sena'] ?? '—') ?></td>
                                 <td class="col-description"><?= htmlspecialchars($caso['asunto'] ?? '—') ?></td>
+                                <td class="col-status"><?= htmlspecialchars($caso['estado'] ?? '—') ?></td>
+                                <td class="col-comisionado"><?= htmlspecialchars($caso['asignado_a_nombre'] ?? 'Sin asignar') ?></td>
                                 <td class="col-date"><?= date('d-m-Y', strtotime($caso['fecha_creacion'] ?? '')) ?></td>
-                                <td class="col-time">
-                                    <?php
-                                    if (($caso['estado'] ?? '') === 'Atendido') {
-                                        echo "Atendido";
-                                    } else {
-                                        $fecha_cierre = $caso['fecha_cierre'] ?? null;
-                                        if ($fecha_cierre) {
-                                            $hoy = new DateTime();
-                                            $cierre = new DateTime($fecha_cierre);
-                                            $interval = $hoy->diff($cierre);
-                                            $dias = (int)$interval->format('%r%a');
-                                            $class = $dias < 0 ? 'time-overdue' : ($dias <= 2 ? 'time-soon' : 'time-ok');
-                                            echo "<span class='{$class}'>{$dias} días</span>";
-                                        } else {
-                                            echo "Sin fecha";
-                                        }
-                                    }
-                                    ?>
+                                <td class="col-date-close">
+                                    <?= !empty($caso['fecha_cierre']) ? date('d-m-Y', strtotime($caso['fecha_cierre'])) : '—' ?>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
                     <?php elseif (!empty($filtros_aplicados)): ?>
                         <tr>
-                            <td colspan="5" class="empty-state">No hay casos para este filtro.</td>
+                            <td colspan="7" class="empty-state">No hay casos para este filtro.</td>
                         </tr>
                     <?php else: ?>
                         <tr>
-                            <td colspan="5" class="empty-state empty-state-initial">Aplique filtros para visualizar los casos.</td>
+                            <td colspan="7" class="empty-state empty-state-initial">Aplique filtros para visualizar los casos.</td>
                         </tr>
                     <?php endif; ?>
                 </tbody>

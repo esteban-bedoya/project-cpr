@@ -9,58 +9,112 @@
     gap: 25px; /* espacio entre secciones */
 }
 
+.alert {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+.alert.error {
+    background: #fbe7e7;
+    border: 1px solid #d85b5b;
+    color: #9f1f1f;
+}
+
+.alert.success {
+    background: #e5f4e7;
+    border: 1px solid #6fbe77;
+    color: #1f6b2c;
+}
+
+.alert ul {
+    margin: 0;
+    padding-left: 18px;
+}
+
 /****************************************
           BOTÓN SUPERIOR
 ****************************************/
 .top-actions {
     display: flex;
-    flex-direction: column;     /* uno debajo del otro */
-    align-items: center;         /* centrado horizontal */
-    justify-content: center;     
-    gap: 15px;                   /* espacio entre cada elemento */
+    flex-direction: column;
+    align-items: stretch;
+    gap: 18px;
 }
 
+.filters-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+}
+
+.filters-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.filters-row-bottom {
+    justify-content: center;
+}
 
 .btn-agregar {
     background-color: #6fbe77;
-    padding: 10px 20px;
-    border-radius: 6px;
+    padding: 12px 18px;
+    border-radius: 12px;
     border: none;
     cursor: pointer;
-    font-weight: 600;
-    color: #000000;
-    transition: background 0.2s;
+    font-weight: 700;
+    color: #ffffff;
+    transition: background 0.2s, transform 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 12px 24px rgba(111, 190, 119, 0.18);
+    align-self: center;
 }
 
 .btn-agregar:hover {
     background-color: #5aa665;
+    transform: translateY(-1px);
 }
 
 /****************************************
              FILTROS
 ****************************************/
 .filtros {
-    background: #d9f0dd;
-    padding: 10px 20px;
-    border-radius: 10px;
-    color: #000; /* texto negro */
+    background: #f8fafc;
+    border: 1px solid #d9e4ef;
+    padding: 14px 18px;
+    border-radius: 16px;
+    color: #17324d;
     display: flex;
     align-items: center;
-    
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 .filtros .titulo-filtro {
     font-weight: 700;
-    margin-right: 10px;
+    margin-right: 4px;
 }
 
 .filtros label {
-    margin-left: 10px;
     cursor: pointer;
+    color: #17324d;
 }
 
 .filtros input {
     margin-right: 5px;
+}
+
+.filtros select {
+    min-width: 180px;
+    padding: 10px 12px;
+    border: 1px solid #c9d7e4;
+    border-radius: 12px;
+    background: #ffffff;
+    color: #17324d;
 }
 
 /****************************************
@@ -68,24 +122,30 @@
 ****************************************/
 .buscador {
     width: 100%;
-    background: #d4e9d4;
-    padding: 12px 15px;
-    border-radius: 10px;
+    background: #e3f5e6;
+    padding: 15px 25px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
+    gap: 15px;
 }
 
 .buscador .icon {
-    margin-right: 10px;
-    opacity: 0.7;
+    font-size: 24px;
 }
 
 .buscador input {
     width: 100%;
     border: none;
-    font-size: 15px;
+    font-size: 16px;
     background: transparent;
     outline: none;
+    color: #1e1e1e;
+}
+
+.buscador input::placeholder {
+    color: #495057;
+    opacity: 0.7;
 }
 
 /****************************************
@@ -98,18 +158,27 @@
 }
 
 .tabla-usuarios thead {
-    background: #a7d9a7;
+    background: #f1f3f5;
+}
+
+.tabla-usuarios thead th {
+    color: #495057;
+    border-bottom: 1px solid #e9ecef;
 }
 
 .tabla-usuarios th,
 .tabla-usuarios td {
-    padding: 12px;
+    padding: 14px 16px;
     text-align: left;
     font-size: 14px;
-    border-bottom: 1px solid #ccc;
-    color: #000;
+    border-bottom: 1px solid #e9ecef;
+    color: #1e1e1e;
     word-wrap: break-word;
     overflow-wrap: break-word;
+}
+
+.tabla-usuarios tbody tr:hover {
+    background-color: #f8f9fa;
 }
 
 .acciones span {

@@ -5,17 +5,18 @@ require_once __DIR__ . '/../models/User.php';
 
 class CasoController
 {
-    private function calcularDiasRestantes($fecha_cierre)
+    private function descripcionNoAtendidoAutomatico($fechaCierre)
     {
-        if (empty($fecha_cierre)) return null;
-        try {
-            $hoy = new DateTime();
-            $cierre = new DateTime($fecha_cierre);
-            $interval = $hoy->diff($cierre);
-            return (int)$interval->format('%r%a');
-        } catch (Exception $e) {
-            return null;
-        }
+        return 'Cambio de estado automático del sistema de Pendiente a No atendido porque no recibió atención dentro del plazo establecido';
+    }
+
+    private function puedeEditarCaso($caso)
+    {
+        $usuario = $_SESSION['user'] ?? [];
+        $esComisionado = (int)($usuario['rol'] ?? 0) === 2;
+        $esCreadorDelCaso = (int)($usuario['id'] ?? 0) === (int)($caso['asignado_a'] ?? 0);
+
+        return $esComisionado && $esCreadorDelCaso;
     }
 
     private function getSystemUserId()
@@ -77,7 +78,7 @@ class CasoController
                             Caso::guardarHistorial([
                                 'caso_id' => $caso['id'],
                                 'usuario_id' => $this->getSystemUserId(),
-                                'descripcion' => "Cambio de estado automático del sistema de Pendiente a No atendido"
+                                'descripcion' => $this->descripcionNoAtendidoAutomatico($caso['fecha_cierre'])
                             ]);
                             $caso['estado'] = 'No atendido';
                         }
@@ -110,14 +111,9 @@ class CasoController
                     continue;
                 }
 
-                // Estado del caso / proximos a vencer
+                // Estado del caso
                 if ($filtro_estado !== 'todos') {
-                    if ($filtro_estado === 'proximos') {
-                        $dias = $this->calcularDiasRestantes($caso['fecha_cierre'] ?? null);
-                        if (!($dias !== null && $dias >= 0 && $dias <= 2 && $caso['estado'] !== 'Atendido')) {
-                            continue;
-                        }
-                    } else if ($caso['estado'] !== $filtro_estado) {
+                    if ($caso['estado'] !== $filtro_estado) {
                         continue;
                     }
                 }
@@ -152,7 +148,7 @@ class CasoController
             exit;
         }
 
-        // Actualiza estado si la fecha de cierre ya pasó
+        // Actualiza el estado si la fecha de cierre ya vencio.
         if (!empty($caso['fecha_cierre'])) {
             $hoy = new DateTime();
             $fecha_cierre = new DateTime($caso['fecha_cierre']);
@@ -167,7 +163,7 @@ class CasoController
                 Caso::guardarHistorial([
                     'caso_id' => $caso['id'],
                     'usuario_id' => $this->getSystemUserId(),
-                    'descripcion' => "Cambio de estado automático del sistema de Pendiente a No atendido"
+                    'descripcion' => $this->descripcionNoAtendidoAutomatico($caso['fecha_cierre'])
                 ]);
                 $caso['estado'] = 'No atendido';
             }
@@ -200,6 +196,7 @@ class CasoController
         $historial    = Caso::getHistorial($id);
         $mensajes     = Caso::getMensajes($id);
         $historialCampos = Caso::getHistorialCampos($id);
+        $usuarioPuedeEditar = $this->puedeEditarCaso($caso);
 
         // =====================================
         // CARGAR VISTA SEGÚN ROL
@@ -279,22 +276,9 @@ class CasoController
         // Traemos todos los casos del comisionado logueado
         $casos_todos_comisionado = Caso::getByComisionado($comisionado_id);
 
-        // Calculamos días restantes y casos próximos a vencer
-        $casos_proximos = [];
         foreach ($casos_todos_comisionado as &$caso) {
-            $fecha_creacion = new DateTime($caso['fecha_creacion']);
             $hoy = new DateTime();
             $fecha_cierre = !empty($caso['fecha_cierre']) ? new DateTime($caso['fecha_cierre']) : null;
-
-            $dias_restantes = null;
-            if ($fecha_cierre) {
-                // Diferencia en dias con precisión por hora
-                $interval = $hoy->diff($fecha_cierre);
-                $dias_restantes = (int)$interval->format('%r%a');
-            }
-
-            // Guardamos días restantes en cada caso
-            $caso['dias_restantes'] = $dias_restantes;
 
             // Si se pasó el tiempo, pasa a No atendido
             if ($fecha_cierre !== null && $fecha_cierre < $hoy && $caso['estado'] === 'Pendiente') {
@@ -308,14 +292,9 @@ class CasoController
                 Caso::guardarHistorial([
                     'caso_id' => $caso['id'],
                     'usuario_id' => $this->getSystemUserId(),
-                    'descripcion' => "Cambio de estado automático del sistema de Pendiente a No atendido"
+                    'descripcion' => $this->descripcionNoAtendidoAutomatico($caso['fecha_cierre'])
                 ]);
                 $caso['estado'] = 'No atendido';
-            }
-
-            // Próximos a vencer: 0 a 5 días, no atendidos/pendientes
-            if ($dias_restantes !== null && $dias_restantes >= 0 && $dias_restantes <= 5 && $caso['estado'] !== 'Atendido') {
-                $casos_proximos[] = $caso;
             }
         }
         unset($caso); // romper referencia
@@ -337,9 +316,6 @@ class CasoController
                 break;
             case 'resueltos':
                 $casos = $casos_resueltos;
-                break;
-            case 'proximos':
-                $casos = $casos_proximos;
                 break;
             case 'todos':
             default:
@@ -406,7 +382,7 @@ class CasoController
             exit;
         }
 
-        // Validar que la fecha de cierre no sea anterior a hoy
+        // Validar que la fecha de cierre no sea anterior a hoy.
         $hoy = new DateTime();
         $fc = DateTime::createFromFormat('Y-m-d', $fecha_cierre);
         if (!$fc || $fc < $hoy->setTime(0, 0, 0)) {
@@ -424,7 +400,7 @@ class CasoController
             exit;
         }
 
-        // Guardar fecha de cierre con hora 23:59:59
+        // Guardar la fecha de cierre con hora 23:59:59.
         if ($fecha_cierre !== null) {
             $fecha_cierre = $fecha_cierre . ' 23:59:59';
         }
@@ -457,89 +433,81 @@ class CasoController
 
     public function updateDetalle($id)
     {
-        // Carga el caso actual para comparar cambios.
         $caso = Caso::find($id);
         if (!$caso) {
             die("Caso no encontrado.");
         }
 
-        $usuario_id = $_SESSION['user']['id'];
-
-        $estado = $_POST['estado'] ?? $caso['estado'];
-        $tipo_proceso_id = $_POST['tipo_proceso_id'] ?? $caso['tipo_proceso_id'];
-        $tipo_caso_id_nuevo = $_POST['tipo_caso_id'] ?? $caso['tipo_caso_id'];
-        $fecha_cierre = $caso['fecha_cierre'] ?? null;
-
-        // Si el usuario cambia manualmente a "No atendido", actualizar fecha_cierre a ahora
-        if ($estado === 'No atendido' && $caso['estado'] !== 'No atendido') {
-            $fecha_cierre = (new DateTime())->format('Y-m-d H:i:s');
-            Caso::guardarHistorialCampo([
-                'caso_id' => $id,
-                'usuario_id' => $usuario_id,
-                'campo' => 'fecha_cierre',
-                'valor_anterior' => $caso['fecha_cierre'] ?? null,
-                'valor_nuevo' => $fecha_cierre,
-                'motivo' => 'auto_estado'
-            ]);
+        if (!$this->puedeEditarCaso($caso)) {
+            header("Location: /project-cpr/public/caso.php?id=$id");
+            exit;
         }
 
-        $tipo_caso_id_actual = $caso['tipo_caso_id'];
+        $usuario_id = $_SESSION['user']['id'];
+        $estado = $_POST['estado'] ?? $caso['estado'];
+        $tipoProcesoId = $_POST['tipo_proceso_id'] ?? $caso['tipo_proceso_id'];
+        $tipoCasoId = $_POST['tipo_caso_id'] ?? $caso['tipo_caso_id'];
+        $fechaCierre = $caso['fecha_cierre'] ?? null;
+        $fechaCierreAnterior = $caso['fecha_cierre'] ?? null;
+        $cambiosHistorial = [];
 
-        // ============================================
-        // Guardar historial en una sola tabla
-        // ============================================
-        $historialCambios = [];
-
-        // Si intenta pasar a Pendiente con fecha vencida, bloquear
-        if ($estado === 'Pendiente' && !empty($caso['fecha_cierre'])) {
+        if ($estado !== 'Atendido' && !empty($caso['fecha_cierre'])) {
             $hoy = new DateTime();
-            $fecha_cierre = new DateTime($caso['fecha_cierre']);
-            if ($fecha_cierre < $hoy) {
-                $_SESSION['error'] = "La fecha de cierre está vencida, debe modificarla para cambiar el estado del caso a Pendiente.";
+            $fechaCierreActual = new DateTime($caso['fecha_cierre']);
+            if ($fechaCierreActual < $hoy) {
+                $_SESSION['error'] = "La fecha de cierre esta vencida. Actualizala para reabrir el caso.";
                 header("Location: /project-cpr/public/caso.php?id=$id&error=fechacierre");
                 exit;
             }
         }
 
+        if ($estado === 'Atendido' && $caso['estado'] !== 'Atendido') {
+            $fechaCierre = (new DateTime())->format('Y-m-d H:i:s');
+        }
+
         if ($caso['estado'] != $estado) {
-            $historialCambios[] = [
+            $descripcionEstado = "Cambio de estado de {$caso['estado']} a {$estado}";
+
+            if ($caso['estado'] === 'Pendiente' && $estado === 'Atendido') {
+                $descripcionEstado .= " con actualización de fecha de cierre, de \"{$fechaCierreAnterior}\" a \"{$fechaCierre}\"";
+            }
+
+            $cambiosHistorial[] = [
                 'caso_id' => $id,
                 'usuario_id' => $usuario_id,
-                'descripcion' => "Cambio de estado de {$caso['estado']} a {$estado}"
+                'descripcion' => $descripcionEstado
             ];
         }
 
-        if ($caso['tipo_proceso_id'] != $tipo_proceso_id) {
+        if ($caso['tipo_proceso_id'] != $tipoProcesoId) {
             $tipoProcesoAnt = Caso::getTipoProceso($caso['tipo_proceso_id']);
-            $tipoProcesoNuevo = Caso::getTipoProceso($tipo_proceso_id);
-            $historialCambios[] = [
+            $tipoProcesoNuevo = Caso::getTipoProceso($tipoProcesoId);
+            $cambiosHistorial[] = [
                 'caso_id' => $id,
                 'usuario_id' => $usuario_id,
                 'descripcion' => "Cambio de tipo de proceso de {$tipoProcesoAnt['nombre']} a {$tipoProcesoNuevo['nombre']}"
             ];
         }
 
-        if ($tipo_caso_id_actual != $tipo_caso_id_nuevo) {
-            $tipoCasoAnt = Caso::getTipoCaso($tipo_caso_id_actual);
-            $tipoCasoNuevo = Caso::getTipoCaso($tipo_caso_id_nuevo);
-            $historialCambios[] = [
+        if ($caso['tipo_caso_id'] != $tipoCasoId) {
+            $tipoCasoAnt = Caso::getTipoCaso($caso['tipo_caso_id']);
+            $tipoCasoNuevo = Caso::getTipoCaso($tipoCasoId);
+            $cambiosHistorial[] = [
                 'caso_id' => $id,
                 'usuario_id' => $usuario_id,
                 'descripcion' => "Cambio de tipo de caso de {$tipoCasoAnt['nombre']} a {$tipoCasoNuevo['nombre']}"
             ];
         }
 
-        // Guardar historial
-        foreach ($historialCambios as $h) {
-            Caso::guardarHistorial($h);
+        foreach ($cambiosHistorial as $cambio) {
+            Caso::guardarHistorial($cambio);
         }
 
-        // Actualizar datos en la tabla casos
         Caso::updateDetalle($id, [
             'estado' => $estado,
-            'tipo_proceso_id' => $tipo_proceso_id,
-            'tipo_caso_id' => $tipo_caso_id_nuevo,
-            'fecha_cierre' => $fecha_cierre
+            'tipo_proceso_id' => $tipoProcesoId,
+            'tipo_caso_id' => $tipoCasoId,
+            'fecha_cierre' => $fechaCierre
         ]);
 
         header("Location: /project-cpr/public/caso.php?id=$id");
@@ -559,6 +527,25 @@ class CasoController
         // ===============================
         // DATOS BASE
         // ===============================
+        $caso = Caso::find($caso_id);
+        if (!$caso) {
+            die("Caso no encontrado.");
+        }
+
+        if (!$this->puedeEditarCaso($caso)) {
+            header("Location: /project-cpr/public/caso.php?id=$caso_id");
+            exit;
+        }
+
+        if (($caso['estado'] ?? '') === 'Pendiente' && !empty($caso['fecha_cierre'])) {
+            $hoy = new DateTime();
+            $fechaCierreActual = new DateTime($caso['fecha_cierre']);
+            if ($fechaCierreActual < $hoy) {
+                header("Location: /project-cpr/public/caso.php?id=$caso_id");
+                exit;
+            }
+        }
+
         // Mensaje y archivo son opcionales, pero no pueden venir ambos vacios.
         $mensaje = trim($_POST['mensaje'] ?? '');
         $hayArchivo = isset($_FILES['archivo']) && $_FILES['archivo']['error'] === 0;
@@ -629,31 +616,34 @@ class CasoController
 
     public function updateCampos($id)
     {
-        // Actualiza asunto, detalles y radicado (con historial).
         $caso = Caso::find($id);
         if (!$caso) {
             die("Caso no encontrado.");
         }
 
-        $usuario_id = $_SESSION['user']['id'];
+        if (!$this->puedeEditarCaso($caso)) {
+            header("Location: /project-cpr/public/caso.php?id=$id");
+            exit;
+        }
 
+        $usuario_id = $_SESSION['user']['id'];
         $radicado_sena = trim($_POST['radicado_sena'] ?? '');
         $fecha_cierre_raw = trim($_POST['fecha_cierre'] ?? '');
-
         $radicado_sena = $radicado_sena !== '' ? $radicado_sena : null;
         $fecha_cierre = $caso['fecha_cierre'] ?? null;
+        $fecha_cierre_anterior = $caso['fecha_cierre'] ?? null;
         $fecha_cierre_actual = $fecha_cierre ? date('Y-m-d', strtotime($fecha_cierre)) : '';
-        $raw_ts = $fecha_cierre_raw !== '' ? strtotime($fecha_cierre_raw) : null;
-        $actual_ts = $fecha_cierre_actual !== '' ? strtotime($fecha_cierre_actual) : null;
+        $fecha_nueva_ts = $fecha_cierre_raw !== '' ? strtotime($fecha_cierre_raw) : null;
+        $fecha_actual_ts = $fecha_cierre_actual !== '' ? strtotime($fecha_cierre_actual) : null;
+        $fecha_cierre_cambio_real = false;
 
-        // Si el usuario cambia la fecha, validar y aplicar 23:59:59
         if ($fecha_cierre_raw !== '') {
-            $cambio_real = !($raw_ts !== null && $actual_ts !== null && $raw_ts === $actual_ts);
-            if ($cambio_real) {
-                $hoy = new DateTime();
+            $fecha_cierre_cambio_real = !($fecha_nueva_ts !== null && $fecha_actual_ts !== null && $fecha_nueva_ts === $fecha_actual_ts);
+            if ($fecha_cierre_cambio_real) {
+                $hoy = new DateTime('today');
                 $fc = DateTime::createFromFormat('Y-m-d', $fecha_cierre_raw);
-                if (!$fc || $fc < $hoy) {
-                    $_SESSION['error'] = "La fecha de cierre no puede ser anterior a hoy.";
+                if (!$fc || $fc <= $hoy) {
+                    $_SESSION['error'] = "La fecha de cierre debe ser posterior a hoy.";
                     header("Location: /project-cpr/public/caso.php?id=$id&error=fechacierre");
                     exit;
                 }
@@ -681,6 +671,10 @@ class CasoController
             ];
         }
 
+        $reabrePorFecha = !empty($fecha_cierre)
+            && $fecha_cierre_cambio_real
+            && $caso['estado'] !== 'Pendiente';
+
         if (!empty($cambios)) {
             Caso::updateCampos($id, [
                 'radicado_sena' => $radicado_sena,
@@ -688,18 +682,20 @@ class CasoController
             ]);
 
             foreach ($cambios as $c) {
+                if ($reabrePorFecha && $c['campo'] === 'fecha_cierre') {
+                    continue;
+                }
+
                 Caso::guardarHistorialCampo([
                     'caso_id' => $id,
                     'usuario_id' => $usuario_id,
                     'campo' => $c['campo'],
                     'valor_anterior' => $c['anterior'],
-                    'valor_nuevo' => $c['nuevo'],
-                    'motivo' => 'manual'
+                    'valor_nuevo' => $c['nuevo']
                 ]);
             }
         }
 
-        // Si la fecha estaba vencida y se corrige a futuro, pasar a Pendiente automáticamente
         if (!empty($fecha_cierre)) {
             $hoy = new DateTime();
             $fc = new DateTime($fecha_cierre);
@@ -714,9 +710,8 @@ class CasoController
                 Caso::guardarHistorial([
                     'caso_id' => $id,
                     'usuario_id' => $usuario_id,
-                    'descripcion' => "Cambio de estado de {$caso['estado']} a Pendiente por fecha de cierre ampliada"
+                    'descripcion' => "Cambio de estado de {$caso['estado']} a Pendiente con actualización de fecha de cierre, de \"{$fecha_cierre_anterior}\" a \"{$fecha_cierre}\""
                 ]);
-                $_SESSION['success'] = "Se actualizó la fecha de cierre y el caso pasó a Pendiente.";
             }
         }
 

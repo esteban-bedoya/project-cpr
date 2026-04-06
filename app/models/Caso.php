@@ -293,7 +293,7 @@ class Caso
 
     public static function updateCampos($id, $data)
     {
-        // Actualiza radicado y fecha de cierre.
+        // Actualiza radicado y fecha limite.
         $sql = "UPDATE casos SET 
         radicado_sena = :radicado_sena,
         fecha_cierre = :fecha_cierre
@@ -310,16 +310,15 @@ class Caso
     public static function guardarHistorialCampo($data)
     {
         $sql = "INSERT INTO casos_historial_campos 
-            (caso_id, usuario_id, campo, valor_anterior, valor_nuevo, motivo)
-            VALUES (:caso_id, :usuario_id, :campo, :valor_anterior, :valor_nuevo, :motivo)";
+            (caso_id, usuario_id, campo, valor_anterior, valor_nuevo)
+            VALUES (:caso_id, :usuario_id, :campo, :valor_anterior, :valor_nuevo)";
         $stmt = self::db()->prepare($sql);
         return $stmt->execute([
             ':caso_id' => $data['caso_id'],
             ':usuario_id' => $data['usuario_id'],
             ':campo' => $data['campo'],
             ':valor_anterior' => $data['valor_anterior'],
-            ':valor_nuevo' => $data['valor_nuevo'],
-            ':motivo' => $data['motivo'] ?? 'manual'
+            ':valor_nuevo' => $data['valor_nuevo']
         ]);
     }
 

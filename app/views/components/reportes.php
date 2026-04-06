@@ -7,10 +7,9 @@ $resumenTexto = $filtroComisionadoTodos ? 'Todos los comisionados' : ($comisiona
 <section class="reports-page">
     <div class="reports-toolbar no-print">
         <div>
-            <p class="reports-kicker">Panel de reportes</p>
             <h1>Seguimiento de casos por comisionado</h1>
             <p class="reports-lead">
-                Consulta el comportamiento de los casos dentro del rango de fechas seleccionado, con apoyo visual y resumen listo para impresión.
+                Consulta el comportamiento de los casos dentro del rango de fechas seleccionado, con apoyo visual y resumen listo para impresión o descargar en PDF.
             </p>
         </div>
 

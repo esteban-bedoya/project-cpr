@@ -1,426 +1,405 @@
-<!-- Componente: detalle de caso (sidebar de filtros + panel de mensajes) -->
+<?php
+$estadoActual = $caso['estado'] ?? 'Pendiente';
+$fechaCierre = !empty($caso['fecha_cierre']) ? new DateTime($caso['fecha_cierre']) : null;
+$hoy = new DateTime();
+$estaVencido = $fechaCierre ? $fechaCierre < $hoy : false;
+
+$estadoClases = [
+    'Pendiente' => 'status-badge pendiente',
+    'Atendido' => 'status-badge atendido',
+    'No atendido' => 'status-badge no-atendido'
+];
+$estadoClase = $estadoClases[$estadoActual] ?? 'status-badge';
+$casoEnGestion = $estadoActual === 'Pendiente';
+$puedeEditarCaso = $usuarioPuedeEditar ?? false;
+$puedeEditar = $puedeEditarCaso && $casoEnGestion && !$estaVencido;
+$tituloSeguimiento = match ($estadoActual) {
+    'Atendido' => 'Caso cerrado',
+    'No atendido' => 'Fuera de gestión',
+    default => 'Aún dentro del plazo'
+};
+$mostrarBotonAtender = $puedeEditarCaso && $estadoActual === 'Pendiente';
+$mostrarBotonReabrir = $puedeEditarCaso && in_array($estadoActual, ['Atendido', 'No atendido'], true);
+$mostrarFechaCierre = $fechaCierre !== null;
+$fechaCierreTexto = $fechaCierre ? $fechaCierre->format('d/m/Y H:i') : 'Sin definir';
+$estadoSeguimientoTexto = match ($estadoActual) {
+    'Atendido' => 'El caso se encuentra fuera de gestión porque ya fue atendido.',
+    'No atendido' => 'El sistema cerró el caso porque no recibió atención dentro del plazo establecido.',
+    default => 'El caso sigue en gestión y el encargado puede continuar con su seguimiento.'
+};
+
+$actividad = [];
+
+foreach ($historial as $item) {
+    $actividad[] = [
+        'tipo' => 'estado',
+        'fecha' => $item['fecha'],
+        'titulo' => 'Cambio de estado',
+        'descripcion' => $item['descripcion'],
+        'usuario' => $item['username']
+    ];
+}
+
+foreach ($historialCampos as $item) {
+    $labelsCampos = [
+        'radicado_sena' => 'Radicado SENA',
+        'asunto' => 'Asunto',
+        'detalles' => 'Detalles del caso',
+        'fecha_cierre' => 'Fecha de cierre'
+    ];
+
+    $campoLabel = $labelsCampos[$item['campo']] ?? $item['campo'];
+    $descripcion = $item['campo'] === 'radicado_sena'
+        ? 'Cambio de Radicado SENA'
+        : 'Cambio en ' . $campoLabel;
+    $detalleCambio = $item['campo'] === 'radicado_sena'
+        ? 'Cambio de Radicado SENA de ' . ($item['valor_anterior'] ?? 'Sin registrar') . ' a ' . ($item['valor_nuevo'] ?? 'Sin registrar')
+        : 'De "' . ($item['valor_anterior'] ?? '') . '" a "' . ($item['valor_nuevo'] ?? '') . '"';
+
+    $actividad[] = [
+        'tipo' => 'campo',
+        'fecha' => $item['fecha'],
+        'titulo' => $descripcion,
+        'descripcion' => $detalleCambio,
+        'usuario' => $item['username']
+    ];
+}
+
+usort($actividad, fn($a, $b) => strtotime($b['fecha']) <=> strtotime($a['fecha']));
+
+$lineaTiempo = [];
+
+foreach ($mensajes as $mensaje) {
+    $lineaTiempo[] = [
+        'tipo' => 'mensaje',
+        'fecha' => $mensaje['fecha'],
+        'usuario' => $mensaje['username'],
+        'mensaje' => $mensaje['mensaje'] ?? '',
+        'archivo' => $mensaje['archivo'] ?? ''
+    ];
+}
+
+foreach ($actividad as $item) {
+    $lineaTiempo[] = [
+        'tipo' => 'actividad',
+        'fecha' => $item['fecha'],
+        'usuario' => $item['usuario'],
+        'titulo' => $item['titulo'],
+        'descripcion' => $item['descripcion']
+    ];
+}
+
+usort($lineaTiempo, fn($a, $b) => strtotime($a['fecha']) <=> strtotime($b['fecha']));
+?>
+
 <link rel="stylesheet" href="/project-cpr/public/assets/css/globals/caso.css">
 
 <div class="case-layout">
+    <aside class="case-sidebar">
+        <div class="case-summary-card <?= $estaVencido ? 'is-expired' : '' ?>">
+            <h2>Estado del caso</h2>
+            <span class="<?= $estadoClase ?>"><?= htmlspecialchars($estadoActual) ?></span>
+            <span class="case-state-label"><?= htmlspecialchars($tituloSeguimiento) ?></span>
+            <p><?= htmlspecialchars($estadoSeguimientoTexto) ?></p>
 
-    <!-- ============================================================
-         SIDEBAR (Filtros de navegación)
-    ============================================================ -->
-    <div class="case-sidebar">
+            <?php if ($mostrarFechaCierre): ?>
+                <div class="case-date-box">
+                    <span class="case-date-label">Fecha de cierre</span>
+                    <strong><?= htmlspecialchars($fechaCierreTexto) ?></strong>
+                </div>
+            <?php endif; ?>
 
-        <form method="POST" action="/project-cpr/public/caso.php">
+            <?php if ($mostrarBotonAtender): ?>
+                <div class="case-primary-action">
+                    <form method="POST" action="/project-cpr/public/caso.php">
+                        <input type="hidden" name="action" value="updateDetalle">
+                        <input type="hidden" name="caso_id" value="<?= $caso['id'] ?>">
+                        <input type="hidden" name="tipo_caso_id" value="<?= htmlspecialchars((string)($caso['tipo_caso_id'] ?? '')) ?>">
+                        <input type="hidden" name="tipo_proceso_id" value="<?= htmlspecialchars((string)($caso['tipo_proceso_id'] ?? '')) ?>">
+                        <input type="hidden" name="estado" value="Atendido">
+                        <button type="submit" class="btn-primary-case-action">Marcar caso como atendido</button>
+                    </form>
+                </div>
+            <?php endif; ?>
 
-            <input type="hidden" name="action" value="updateDetalle">
-            <input type="hidden" name="caso_id" value="<?= $caso['id'] ?>">
+            <?php if ($mostrarBotonReabrir): ?>
+                <div class="case-primary-action">
+                    <button type="button" class="btn-primary-case-action reopen-toggle">Reabrir caso</button>
+                </div>
 
-            <!-- 1. Comisionado asignado (solo lectura) -->
-            <div class="filter-group">
-                <label class="filter-title">Comisionado asignado</label>
-                <input
-                    type="text"
-                    class="select-like"
-                    value="<?= htmlspecialchars($caso['asignado_a_nombre'] ?? '') ?>"
-                    disabled>
-            </div>
-            <br>
+                <form method="POST" action="/project-cpr/public/caso.php" class="reopen-form">
+                    <input type="hidden" name="action" value="updateCampos">
+                    <input type="hidden" name="caso_id" value="<?= $caso['id'] ?>">
+                    <input type="hidden" name="radicado_sena" value="<?= htmlspecialchars($caso['radicado_sena'] ?? '') ?>">
 
-            <!-- 2. Estado -->
-            <div class="filter-group">
-                <label class="filter-title">Estado</label>
+                    <label class="filter-title" for="fecha_cierre_reapertura">Fecha de cierre</label>
+                    <input
+                        type="date"
+                        id="fecha_cierre_reapertura"
+                        name="fecha_cierre"
+                        class="reopen-date-input"
+                        value="<?= !empty($caso['fecha_cierre']) ? date('Y-m-d', strtotime($caso['fecha_cierre'])) : '' ?>"
+                        min="<?= date('Y-m-d', strtotime('+1 day')) ?>">
 
-                <?php
-                $estados = ['Atendido', 'No atendido', 'Pendiente'];
-                foreach ($estados as $e):
-                ?>
-                    <label class="check-item">
-                        <input
-                            type="radio"
-                            name="estado"
-                            value="<?= $e ?>"
-                            <?= $caso['estado'] === $e ? 'checked' : '' ?>
-                            required>
-                        <span><?= $e ?></span>
-                    </label>
-                <?php endforeach; ?>
-            </div>
-            <br>
+                    <?php if (isset($_SESSION['error']) && ($_GET['error'] ?? '') === 'fechacierre'): ?>
+                        <p class="feedback error"><?= $_SESSION['error']; ?></p>
+                        <?php unset($_SESSION['error']); ?>
+                    <?php endif; ?>
 
-            <!-- 3. Tipo de caso -->
-            <div class="filter-group">
-                <label class="filter-title">Tipo de caso</label>
-                <select name="tipo_caso_id" required>
-                    <?php foreach ($tiposCaso as $tc): ?>
-                        <option value="<?= $tc['id'] ?>"
-                            <?= $caso['tipo_caso_id'] == $tc['id'] ? 'selected' : '' ?>>
-                            <?= htmlspecialchars($tc['nombre']) ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            <br>
+                    <button type="submit" class="btn-secondary-case-action">Guardar fecha de cierre</button>
+                </form>
+            <?php endif; ?>
+        </div>
 
-            <!-- 4. Tipo de proceso -->
-            <div class="filter-group">
-                <label class="filter-title">Tipo de proceso</label>
+        <div class="case-sidebar-card">
+            <div class="sidebar-section-title">Datos del caso</div>
 
-                <?php
-                $procesoInactivoActual = false;
-                foreach ($tiposProceso as $pCheck) {
-                    if (($caso['tipo_proceso_id'] == $pCheck['id']) && !empty($pCheck['_inactivo'])) {
-                        $procesoInactivoActual = true;
-                        break;
-                    }
-                }
-                ?>
+            <form method="POST" action="/project-cpr/public/caso.php" class="case-actions-form">
+                <input type="hidden" name="action" value="updateDetalle">
+                <input type="hidden" name="caso_id" value="<?= $caso['id'] ?>">
+                <input type="hidden" name="estado" value="<?= htmlspecialchars($estadoActual) ?>">
 
-                <select name="tipo_proceso_id" required>
-                    <?php foreach ($tiposProceso as $p): ?>
-                        <option value="<?= $p['id'] ?>"
-                            <?= $caso['tipo_proceso_id'] == $p['id'] ? 'selected' : '' ?>>
-                            <?= htmlspecialchars($p['nombre']) ?><?= !empty($p['_inactivo']) ? ' (inactivo)' : '' ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
+                <div class="filter-group">
+                    <label class="filter-title" for="tipo_caso_id">Tipo de caso</label>
+                    <select id="tipo_caso_id" name="tipo_caso_id" <?= !$puedeEditar ? 'disabled' : '' ?>>
+                        <?php foreach (($tiposCaso ?? []) as $tipoCaso): ?>
+                            <option
+                                value="<?= $tipoCaso['id'] ?>"
+                                <?= (string)($caso['tipo_caso_id'] ?? '') === (string)$tipoCaso['id'] ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($tipoCaso['nombre']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
 
-                <?php if ($procesoInactivoActual): ?>
-                    <small class="text-warning">Proceso inactivo por el admin.</small>
-                <?php endif; ?>
-            </div>
-            <br>
+                <div class="filter-group">
+                    <label class="filter-title" for="tipo_proceso_id">Tipo de proceso</label>
+                    <select id="tipo_proceso_id" name="tipo_proceso_id" <?= !$puedeEditar ? 'disabled' : '' ?>>
+                        <?php foreach (($tiposProceso ?? []) as $tipoProceso): ?>
+                            <?php $sufijoInactivo = !empty($tipoProceso['_inactivo']) ? ' (Inactivo)' : ''; ?>
+                            <option
+                                value="<?= $tipoProceso['id'] ?>"
+                                <?= (string)($caso['tipo_proceso_id'] ?? '') === (string)$tipoProceso['id'] ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($tipoProceso['nombre']) ?><?= $sufijoInactivo ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+            </form>
+        </div>
 
-            <button type="submit" class="btn-actualizar">
-                Actualizar
-            </button>
+    </aside>
 
-        </form>
-    </div>
-
-    <!-- ============================================================
-         PANEL PRINCIPAL DEL CASO
-    ============================================================ -->
     <div class="case-content">
-
-        <!-- Header -->
         <div class="case-header">
-            #<?= $caso['numero_caso'] ?> |
-            <?= htmlspecialchars($caso['asunto']) ?>
+            #<?= $caso['numero_caso'] ?> | <?= htmlspecialchars($caso['asunto']) ?>
         </div>
 
         <div class="case-info">
-
             <?php if (isset($_SESSION['success'])): ?>
-                <p style="color:#2e7d32; font-size:14px; margin-bottom:8px;">
-                    <?= $_SESSION['success']; ?>
-                </p>
+                <p class="feedback success"><?= $_SESSION['success']; ?></p>
                 <?php unset($_SESSION['success']); ?>
             <?php endif; ?>
 
-            <div class="info-item">
-                <strong>Radicado SENA:</strong>
-                <?= !empty($caso['radicado_sena']) ? htmlspecialchars($caso['radicado_sena']) : 'No registrado' ?>
-            </div>
-
-            <!-- Usuario asignado (creador actual) -->
-            <?php if (!empty($caso['asignado_a_nombre'])): ?>
-                <div class="info-item">
-                    <strong>Caso creado por:</strong>
-                    <?= htmlspecialchars($caso['asignado_a_nombre']) ?>
-                </div>
-            <?php endif; ?>
-            <?php if (!empty($caso['fecha_creacion'])): ?>
-                <div class="info-item">
-                    <strong>Fecha de creación:</strong>
-                    <?= date("d/m/Y H:i", strtotime($caso['fecha_creacion'])) ?>
-                </div>
-            <?php endif; ?>
-            <?php if (!empty($caso['fecha_cierre'])): ?>
-                <div class="info-item">
-                    <strong>Fecha de cierre:</strong>
-                    <?= date("d/m/Y H:i", strtotime($caso['fecha_cierre'])) ?>
-                </div>
-            <?php endif; ?>
-            <hr>
-
-            <?php if (!empty($caso['detalles'])): ?>
-                <div class="info-item info-detalles">
-                    <strong>Detalles del caso:</strong><br>
-                    <?= nl2br(htmlspecialchars($caso['detalles'])) ?>
-                </div>
-            <?php endif; ?>
-
-            <div class="info-actions">
-                <button type="button" class="btn-editar" onclick="abrirModalEditarCampos()">Editar datos del caso</button>
-                <button type="button" class="btn-editar-sec" onclick="abrirModalHistorialCampos()">Ver historial</button>
-            </div>
-        </div>
-
-        <div class="case-box">
-            <div class="case-messages">
-
-                <!-- ====================================================
-                     MENSAJES Y CAMBIOS DE ESTADO ORDENADOS
-                ==================================================== -->
-                <?php
-                // Mezcla mensajes e historial en una sola lista para ordenarlos por fecha
-                $eventos = array_merge(
-                    array_map(
-                        fn($m) => [
-                            'tipo'  => 'mensaje',
-                            'data'  => $m,
-                            'fecha' => $m['fecha']
-                        ],
-                        $mensajes
-                    ),
-                    array_map(
-                        fn($h) => [
-                            'tipo'  => 'historial',
-                            'data'  => $h,
-                            'fecha' => $h['fecha']
-                        ],
-                        $historial
-                    )
-                );
-
-                // Orden cronológico ascendente (más antiguos primero)
-                usort(
-                    $eventos,
-                    fn($a, $b) =>
-                    strtotime($a['fecha']) <=> strtotime($b['fecha'])
-                );
-                ?>
-
-                <?php foreach ($eventos as $e): ?>
-                    <div class="msg-entry">
-
-                        <div class="msg-date">
-                            <?= date("d/m/Y H:i", strtotime($e['fecha'])) ?>
-                        </div>
-
-                        <?php if ($e['tipo'] == 'mensaje'): ?>
-
-                            <div class="msg-user">
-                                <?= htmlspecialchars($e['data']['username']) ?>
-                            </div>
-
-                            <div class="msg-body">
-                                <?= nl2br(htmlspecialchars($e['data']['mensaje'])) ?>
-                            </div>
-
-                            <?php if (!empty($e['data']['archivo'])): ?>
-                                <div class="msg-archivo">
-                                    <a
-                                        href="/project-cpr/public/uploads/casos/<?= htmlspecialchars($e['data']['archivo']) ?>"
-                                        target="_blank">
-                                        📎 Ver archivo
-                                    </a>
-                                </div>
-                            <?php endif; ?>
-
-                        <?php else: ?>
-
-                            <div class="msg-status-change">
-                                <strong><?= htmlspecialchars($e['data']['username']) ?></strong>
-                                —
-                                <?= htmlspecialchars($e['data']['descripcion']) ?>
-                            </div>
-
-                        <?php endif; ?>
-                    </div>
-
-                    <div class="divider"></div>
-                <?php endforeach; ?>
-
-            </div>
-        </div>
-
-        <!-- ============================================================
-             INPUT PARA NUEVO MENSAJE
-        ============================================================ -->
-
-        <?php if (isset($_GET['error'])): ?>
-            <p style="color:red; font-size:14px;">
-                <?php
-                switch ($_GET['error']) {
-                    case 'vacio':
-                        echo 'Debes escribir un mensaje o adjuntar un archivo.';
-                        break;
-                    case 'tipo':
-                        echo 'Tipo de archivo no permitido.';
-                        break;
-                    case 'tamano':
-                        echo 'El archivo supera el tamaño permitido.';
-                        break;
-                    case 'subida':
-                        echo 'Error al subir el archivo.';
-                        break;
-                }
-                ?>
-            </p>
-        <?php endif; ?>
-
-
-        <?php $casoAtendido = ($caso['estado'] === 'Atendido'); ?>
-        <!-- Si el caso está atendido, se deshabilitan el input, adjunto y botón -->
-
-        <form
-            class="msg-input-box"
-            method="POST"
-            enctype="multipart/form-data"
-            action="/project-cpr/public/caso.php">
-
-            <input type="hidden" name="action" value="mensaje">
-            <input type="hidden" name="caso_id" value="<?= $caso['id'] ?>">
-
-            <!-- Input bloqueado cuando el caso está atendido -->
-            <input
-                type="text"
-                name="mensaje"
-                placeholder="Escribir mensaje y/o adjuntar un archivo"
-                class="msg-input"
-                <?= $casoAtendido ? 'disabled' : '' ?>>
-
-            <label class="btn-attach">
-                📎
-                <!-- Adjuntos bloqueados cuando el caso está atendido -->
-                <input
-                    type="file"
-                    name="archivo"
-                    accept=".pdf,.jpg,.jpeg,.png"
-                    hidden
-                    <?= $casoAtendido ? 'disabled' : '' ?>>
-            </label>
-
-            <!-- Botón bloqueado cuando el caso está atendido -->
-            <button class="btn-enviar" <?= $casoAtendido ? 'disabled' : '' ?>>Enviar</button>
-        </form>
-
-
-    </div>
-</div>
-
-<!-- ============================
-     MODAL EDITAR CAMPOS
-============================ -->
-<div class="modal" id="modal-editar-campos">
-    <div class="modal-content">
-        <h3>Editar datos del caso</h3>
-        <form method="POST" action="/project-cpr/public/caso.php">
-            <input type="hidden" name="action" value="updateCampos">
-            <input type="hidden" name="caso_id" value="<?= $caso['id'] ?>">
-
-            <?php if (isset($_SESSION['error']) && ($_GET['error'] ?? '') === 'fechacierre'): ?>
-                <p style="color:#b00020; font-size:14px; margin-bottom:10px;">
-                    <?= $_SESSION['error']; ?>
-                </p>
+            <?php if (isset($_SESSION['error']) && ($_GET['error'] ?? '') !== 'fechacierre'): ?>
+                <p class="feedback error"><?= $_SESSION['error']; ?></p>
                 <?php unset($_SESSION['error']); ?>
             <?php endif; ?>
 
-            <label>Radicado SENA</label>
-            <input type="text" name="radicado_sena" maxlength="10" value="<?= htmlspecialchars($caso['radicado_sena'] ?? '') ?>">
-
-            <label>Fecha de cierre</label>
-            <input type="date" name="fecha_cierre"
-                value="<?= !empty($caso['fecha_cierre']) ? date('Y-m-d', strtotime($caso['fecha_cierre'])) : '' ?>"
-                min="<?= date('Y-m-d') ?>">
-
-            <div class="modal-buttons">
-                <button type="submit" class="btn-guardar">Guardar</button>
-                <button type="button" class="btn-cerrar" onclick="cerrarModalEditarCampos()">Cerrar</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- ============================
-     MODAL HISTORIAL DE CAMBIOS
-============================ -->
-<div class="modal" id="modal-historial-campos">
-    <div class="modal-content">
-        <h3>Historial de cambios</h3>
-        <div class="historial-lista">
-            <?php if (!empty($historialCampos)): ?>
-                <?php foreach ($historialCampos as $h): ?>
-                    <?php
-                    $labelsCampos = [
-                        'radicado_sena' => 'Radicado SENA',
-                        'asunto' => 'Asunto',
-                        'detalles' => 'Detalles del caso',
-                        'fecha_cierre' => 'Fecha de cierre'
-                    ];
-                    $campoLabel = $labelsCampos[$h['campo']] ?? $h['campo'];
-                    ?>
-                    <div class="historial-item">
-                        <div class="historial-fecha">
-                            <?= date("d/m/Y H:i", strtotime($h['fecha'])) ?>
-                        </div>
-                        <div class="historial-texto">
-                            <strong><?= htmlspecialchars($h['username']) ?></strong>
-                            <?php if ($h['campo'] === 'fecha_cierre'): ?>
-                                <?php if (($h['motivo'] ?? '') === 'auto_estado'): ?>
-                                    cambio de <strong><?= htmlspecialchars($campoLabel) ?></strong>
-                                    de "<?= htmlspecialchars($h['valor_anterior'] ?? '') ?>"
-                                    a "<?= htmlspecialchars($h['valor_nuevo'] ?? '') ?>"
-                                    por actualización de estado
-                                <?php else: ?>
-                                    cambió <strong><?= htmlspecialchars($campoLabel) ?></strong>
-                                    de "<?= htmlspecialchars($h['valor_anterior'] ?? '') ?>"
-                                    a "<?= htmlspecialchars($h['valor_nuevo'] ?? '') ?>"
-                                <?php endif; ?>
-                            <?php else: ?>
-                                cambió <strong><?= htmlspecialchars($campoLabel) ?></strong>
-                                de "<?= htmlspecialchars($h['valor_anterior'] ?? '') ?>"
-                                a "<?= htmlspecialchars($h['valor_nuevo'] ?? '') ?>"
-                            <?php endif; ?>
-                        </div>
+            <div class="case-overview">
+                <div class="summary-field summary-field-editable">
+                    <span>Radicado SENA</span>
+                    <div class="summary-field-header">
+                        <strong><?= !empty($caso['radicado_sena']) ? htmlspecialchars($caso['radicado_sena']) : 'No registrado' ?></strong>
+                        <?php if ($puedeEditarCaso): ?>
+                            <button type="button" class="btn-summary-edit" id="toggle-radicado">Editar</button>
+                        <?php endif; ?>
                     </div>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <p>No hay cambios registrados.</p>
+
+                    <?php if ($puedeEditarCaso): ?>
+                        <form method="POST" action="/project-cpr/public/caso.php" class="summary-edit-form" id="form-radicado">
+                            <input type="hidden" name="action" value="updateCampos">
+                            <input type="hidden" name="caso_id" value="<?= $caso['id'] ?>">
+                            <input type="text" name="radicado_sena" maxlength="10" value="<?= htmlspecialchars($caso['radicado_sena'] ?? '') ?>" class="summary-edit-input" placeholder="Escribe el radicado">
+                            <button type="submit" class="btn-summary-save">Guardar</button>
+                        </form>
+                    <?php endif; ?>
+                </div>
+                <div class="summary-field">
+                    <span>Creado por</span>
+                    <strong><?= htmlspecialchars($caso['asignado_a_nombre'] ?? 'Sin asignar') ?></strong>
+                </div>
+                <div class="summary-field">
+                    <span>Fecha de creación</span>
+                    <strong><?= !empty($caso['fecha_creacion']) ? date('d/m/Y H:i', strtotime($caso['fecha_creacion'])) : 'No registrada' ?></strong>
+                </div>
+            </div>
+
+            <?php if (!empty($caso['detalles'])): ?>
+                <div class="info-item info-detalles">
+                    <strong>Detalles del caso</strong><br>
+                    <?= nl2br(htmlspecialchars($caso['detalles'])) ?>
+                </div>
             <?php endif; ?>
         </div>
-        <div class="modal-buttons">
-            <button type="button" class="btn-cerrar" onclick="cerrarModalHistorialCampos()">Cerrar</button>
+
+        <div class="case-box">
+            <div class="section-heading">
+                <h3>Historial del caso: Acá puedes visualizar su trazabilidad</h3>
+            </div>
+
+            <div class="case-messages">
+                <?php if (!empty($lineaTiempo)): ?>
+                    <?php foreach ($lineaTiempo as $evento): ?>
+                        <div class="msg-entry timeline-entry">
+                            <div class="msg-date">
+                                <?= date('d/m/Y H:i', strtotime($evento['fecha'])) ?>
+                            </div>
+
+                            <div class="msg-user">
+                                <?= htmlspecialchars($evento['usuario']) ?>
+                            </div>
+
+                            <?php if ($evento['tipo'] === 'mensaje'): ?>
+                                <div class="activity-card">
+                                    <strong>Mensaje del caso</strong>
+                                    <?php if (!empty($evento['mensaje'])): ?>
+                                        <p><?= nl2br(htmlspecialchars($evento['mensaje'])) ?></p>
+                                    <?php endif; ?>
+
+                                    <?php if (!empty($evento['archivo'])): ?>
+                                        <div class="msg-file">
+                                            <a href="/project-cpr/public/uploads/casos/<?= htmlspecialchars($evento['archivo']) ?>" target="_blank">
+                                                Ver archivo adjunto
+                                            </a>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            <?php else: ?>
+                                <div class="activity-card">
+                                    <strong>Actualización del caso</strong>
+                                    <p><?= htmlspecialchars($evento['descripcion']) ?></p>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+
+                        <div class="divider"></div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <p class="empty-state">Aún no hay movimientos registrados en este caso.</p>
+                <?php endif; ?>
+            </div>
         </div>
+
+        <?php if ($puedeEditarCaso): ?>
+            <form
+                class="msg-input-box"
+                method="POST"
+                enctype="multipart/form-data"
+                action="/project-cpr/public/caso.php">
+
+                <input type="hidden" name="action" value="mensaje">
+                <input type="hidden" name="caso_id" value="<?= $caso['id'] ?>">
+
+                <input
+                    type="text"
+                    name="mensaje"
+                    placeholder="Escribir mensaje y/o adjuntar un archivo"
+                    class="msg-input"
+                    <?= !$puedeEditar ? 'disabled' : '' ?>>
+
+                <label class="btn-attach <?= !$puedeEditar ? 'is-disabled' : '' ?>" for="archivo-caso">
+                    Archivo
+                    <input
+                        id="archivo-caso"
+                        type="file"
+                        name="archivo"
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        hidden
+                        <?= !$puedeEditar ? 'disabled' : '' ?>>
+                </label>
+
+                <span class="file-name" id="archivo-nombre">Sin archivo</span>
+
+                <button class="btn-enviar" <?= !$puedeEditar ? 'disabled' : '' ?>>Enviar</button>
+            </form>
+
+            <?php if (isset($_GET['error']) && in_array($_GET['error'], ['vacio', 'tipo', 'tamano', 'subida'], true)): ?>
+                <p class="feedback error">
+                    <?php
+                    echo match ($_GET['error']) {
+                        'vacio' => 'Debes escribir un mensaje o adjuntar un archivo.',
+                        'tipo' => 'El archivo no es valido. Solo se permiten PDF, JPG, JPEG y PNG.',
+                        'tamano' => 'El archivo supera el tamaño permitido.',
+                        'subida' => 'No se pudo subir el archivo. Intenta nuevamente.',
+                    };
+                    ?>
+                </p>
+            <?php endif; ?>
+        <?php endif; ?>
+
     </div>
 </div>
 
 <script>
-    // Al cargar, desplaza el chat al final para ver lo más reciente
     window.addEventListener('load', () => {
         const messages = document.querySelector('.case-messages');
-        if (!messages) return;
-        messages.scrollTop = messages.scrollHeight;
+        if (messages) {
+            messages.scrollTop = messages.scrollHeight;
+        }
     });
 </script>
 
 <script>
-    const modalEditarCampos = document.getElementById('modal-editar-campos');
-    const modalHistorialCampos = document.getElementById('modal-historial-campos');
+    const tipoCasoSelect = document.getElementById('tipo_caso_id');
+    const tipoProcesoSelect = document.getElementById('tipo_proceso_id');
+    const reopenToggle = document.querySelector('.reopen-toggle');
+    const reopenForm = document.querySelector('.reopen-form');
+    const reopenDateInput = document.querySelector('.reopen-date-input');
+    const radicadoToggle = document.getElementById('toggle-radicado');
+    const radicadoForm = document.getElementById('form-radicado');
+    const archivoInput = document.getElementById('archivo-caso');
+    const archivoNombre = document.getElementById('archivo-nombre');
+    const edicionBloqueada = <?= $puedeEditar ? 'false' : 'true' ?>;
 
-    function abrirModalEditarCampos() {
-        if (modalEditarCampos) modalEditarCampos.style.display = 'flex';
-    }
-    function cerrarModalEditarCampos() {
-        if (modalEditarCampos) modalEditarCampos.style.display = 'none';
-    }
-
-    function abrirModalHistorialCampos() {
-        if (modalHistorialCampos) modalHistorialCampos.style.display = 'flex';
-    }
-    function cerrarModalHistorialCampos() {
-        if (modalHistorialCampos) modalHistorialCampos.style.display = 'none';
-    }
-
-    window.addEventListener('click', e => {
-        if (e.target === modalEditarCampos) cerrarModalEditarCampos();
-        if (e.target === modalHistorialCampos) cerrarModalHistorialCampos();
+    [tipoCasoSelect, tipoProcesoSelect].forEach((select) => {
+        if (!select) return;
+        select.addEventListener('change', () => {
+            if (edicionBloqueada || select.disabled) return;
+            const form = select.closest('form');
+            if (form) {
+                form.submit();
+            }
+        });
     });
 
-</script>
+    if (reopenToggle && reopenForm && reopenDateInput) {
+        reopenToggle.addEventListener('click', () => {
+            reopenForm.classList.toggle('is-open');
+            if (reopenForm.classList.contains('is-open')) {
+                reopenDateInput.focus();
+                if (typeof reopenDateInput.showPicker === 'function') {
+                    reopenDateInput.showPicker();
+                }
+            }
+        });
 
-<?php if (($_GET['error'] ?? '') === 'fechacierre'): ?>
-<script>
-    // Mantener el modal abierto si hubo error de fecha
-    if (modalEditarCampos) modalEditarCampos.style.display = 'flex';
+        if (<?= (($_GET['error'] ?? '') === 'fechacierre' && $mostrarBotonReabrir) ? 'true' : 'false' ?>) {
+            reopenForm.classList.add('is-open');
+        }
+    }
+
+    if (archivoInput && archivoNombre) {
+        archivoInput.addEventListener('change', () => {
+            const archivo = archivoInput.files && archivoInput.files[0];
+            archivoNombre.textContent = archivo ? archivo.name : 'Sin archivo';
+        });
+    }
+
+    if (radicadoToggle && radicadoForm) {
+        radicadoToggle.addEventListener('click', () => {
+            radicadoForm.classList.toggle('is-open');
+        });
+    }
+
 </script>
-<?php endif; ?>

@@ -213,6 +213,7 @@
 .cases-table {
     width: 100%;
     border-collapse: collapse;
+    table-layout: fixed;
 }
 
 .cases-table thead th {
@@ -243,24 +244,25 @@
 }
 
 .table-row td {
-    padding: 20px 25px;
+    padding: 18px 16px;
     color: #1e1e1e;
     font-size: 15px;
+    vertical-align: middle;
 }
 
 .col-id {
     font-weight: 600;
-    width: 100px;
+    width: 11%;
 }
 
 .col-description {
     font-weight: 400;
-    width: auto;
+    width: 24%;
 }
 
 .col-date {
     font-weight: 400;
-    width: 150px;
+    width: 12%;
 }
 
 .col-type {
@@ -270,26 +272,25 @@
 }
 
 .col-rad {
-    width: 140px;
+    width: 12%;
 }
 
-.col-time {
-    width: 170px;
+.col-status {
+    width: 12%;
 }
 
-.time-overdue {
-    color: #d00000;
-    font-weight: 600;
+.col-comisionado {
+    width: 17%;
 }
 
-.time-soon {
-    color: #b45309;
-    font-weight: 600;
+.col-date-close {
+    width: 12%;
 }
 
-.time-ok {
-    color: #1e1e1e;
-    font-weight: 500;
+.col-description,
+.col-comisionado,
+.col-status {
+    word-break: break-word;
 }
 
 .empty-state {

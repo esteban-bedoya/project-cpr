@@ -5,6 +5,41 @@ require_once __DIR__ . '/../models/User.php';
 
 class UsuarioController
 {
+    private const MENSAJE_MAXIMO_COMISIONADOS = "No se puede crear este comisionado porque ya hay 4 comisionados activos, y ese es el maximo permitido.";
+
+    private function validarVigenciaComisionado($rol, $estado, $vigenciaInicio, $usuarioId = null)
+    {
+        $errores = [];
+        $esComisionado = (int)$rol === 2;
+        $estaActivo = (int)$estado === 1;
+
+        if (!$esComisionado) {
+            return [$errores, null];
+        }
+
+        if ($vigenciaInicio === '') {
+            $errores[] = "El año de inicio de vigencia es obligatorio para comisionados.";
+            return [$errores, null];
+        }
+
+        if (!ctype_digit($vigenciaInicio)) {
+            $errores[] = "La vigencia debe contener un año válido.";
+            return [$errores, null];
+        }
+
+        $anioInicio = (int)$vigenciaInicio;
+
+        if ($anioInicio < 2000 || $anioInicio > 2100) {
+            $errores[] = "El año de vigencia debe estar en un rango válido.";
+        }
+
+        if ($estaActivo && User::contarComisionadosActivos($usuarioId) >= 4) {
+            $errores[] = self::MENSAJE_MAXIMO_COMISIONADOS;
+        }
+
+        return [$errores, $anioInicio];
+    }
+
     public function index()
     {
         // Marca la seccion activa en el menu.
@@ -13,9 +48,11 @@ class UsuarioController
         // Filtros opcionales desde querystring.
         $filtro_estado = $_GET['filtro_estado'] ?? 'todos';
         $filtro_rol    = $_GET['filtro_rol'] ?? 'todos';
+        $filtro_vigencia_inicio = $_GET['filtro_vigencia_inicio'] ?? 'todas';
 
         // Trae usuarios segun filtros.
-        $usuarios = User::filtrar($filtro_estado, $filtro_rol);
+        $usuarios = User::filtrar($filtro_estado, $filtro_rol, $filtro_vigencia_inicio);
+        $vigenciasInicio = User::getVigenciasInicio();
 
         include __DIR__ . '/../views/admin/usuarios.php';
     }
@@ -32,6 +69,7 @@ class UsuarioController
         $correo    = trim($_POST['correo'] ?? '');
         $telefono  = trim($_POST['telefono'] ?? '');
         $estado    = $_POST['estado'] ?? 1;
+        $vigenciaInicio = trim($_POST['vigencia_inicio'] ?? '');
 
         $errores = [];
 
@@ -60,6 +98,9 @@ class UsuarioController
             $errores[] = "El correo ya está registrado.";
         }
 
+        [$erroresVigencia, $anioInicio] = $this->validarVigenciaComisionado($rol, $estado, $vigenciaInicio);
+        $errores = array_merge($errores, $erroresVigencia);
+
         if (!empty($errores)) {
             $_SESSION['error'] = $errores;
             $_SESSION['old'] = [
@@ -69,13 +110,19 @@ class UsuarioController
                 'telefono' => $telefono,
                 'rol' => $rol,
                 'estado' => $estado,
+                'vigencia_inicio' => $vigenciaInicio,
             ];
-            header("Location: /project-cpr/public/usuarios.php?modal=agregar");
+            $debeCerrarModal = in_array(self::MENSAJE_MAXIMO_COMISIONADOS, $errores, true);
+            $urlRedireccion = $debeCerrarModal
+                ? "/project-cpr/public/usuarios.php"
+                : "/project-cpr/public/usuarios.php?modal=agregar";
+
+            header("Location: " . $urlRedireccion);
             exit;
         }
 
         // Crea el usuario en BD.
-        User::create($documento, $username, $password, $rol, $correo, $telefono, $estado);
+        User::create($documento, $username, $password, $rol, $correo, $telefono, $estado, $anioInicio);
 
         $_SESSION['success'] = "Usuario creado exitosamente.";
         unset($_SESSION['old']);
@@ -92,8 +139,16 @@ class UsuarioController
         $correo    = $_POST['correo'];
         $telefono  = $_POST['telefono'];
         $estado    = $_POST['estado'];
+        $vigenciaInicio = trim($_POST['vigencia_inicio'] ?? '');
         $password  = $_POST['password'] ?? null;
         $passwordConfirm = $_POST['password_confirm'] ?? null;
+        [$erroresVigencia, $anioInicio] = $this->validarVigenciaComisionado($rol, $estado, $vigenciaInicio, $id);
+
+        if (!empty($erroresVigencia)) {
+            $_SESSION['error'] = $erroresVigencia;
+            header("Location: /project-cpr/public/usuarios.php");
+            exit;
+        }
 
         if ($password !== null && trim($password) !== '') {
             if ($passwordConfirm === null || $password !== $passwordConfirm) {
@@ -104,7 +159,7 @@ class UsuarioController
         }
 
         // Actualiza en BD y vuelve al listado.
-        User::updateById($id, $rol, $correo, $telefono, $estado, $password);
+        User::updateById($id, $rol, $correo, $telefono, $estado, $anioInicio, $password);
 
         header("Location: /project-cpr/public/usuarios.php");
         exit;
