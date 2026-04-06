@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost
--- Tiempo de generación: 06-04-2026 a las 10:12:46
+-- Tiempo de generación: 06-04-2026 a las 13:03:58
 -- Versión del servidor: 10.4.28-MariaDB
 -- Versión de PHP: 8.2.4
 
@@ -329,8 +329,10 @@ CREATE TABLE `usuarios` (
 INSERT INTO `usuarios` (`id`, `documento`, `username`, `password`, `rol`, `estado`, `correo`, `telefono`, `vigencia_inicio`, `remember_token`, `creado_por`, `fecha_creacion`) VALUES
 (1, '1000660615', 'Esteban Bedoya', '$2y$10$zdC3jqJ2ToM.xFSE2k/dQuRLbBxC0MJJSSztPW/61k/3PJKVZWNaC', 1, 1, 'esteban.bedoya.n@gmail.com', '3246870343', NULL, NULL, NULL, '2026-02-06 14:58:23'),
 (2, '13453564', 'Ronaldo Anaya', '$2y$10$omRQbXy3QjdDlSe2l/sAp.R0qgX7ewTMW2mpszUqruWlqYuBSKvRy', 2, 1, 'ronaldoanaya2005@gmail.com', '3016490549', 2026, NULL, NULL, '2026-02-06 14:58:23'),
-(1013341538, '23456789', 'Ana Perez', '$2y$10$9AvP63Z8blgSW7HiydAtGusxmGjllZs/8/H6mXB2QIzafoCRihP2a', 2, 1, 'ana@gmail.com', '3001234567', 2026, NULL, NULL, '2026-02-06 14:58:23'),
-(1013341545, '45678901', 'Marleny Gaviria Ardila', '$2y$10$5mN2r4XFg6P0vuUA4VB1Teh9mOkfF/eIhwCqMkwezTgkjYg6/ZSY6', 2, 1, 'marleny.gaviria@sena.edu.co', '3207654321', 2026, NULL, NULL, '2026-02-10 09:37:33');
+(1013341538, '23456789', 'Ana Perez', '$2y$10$9AvP63Z8blgSW7HiydAtGusxmGjllZs/8/H6mXB2QIzafoCRihP2a', 2, 2, 'ana@gmail.com', '3001234567', 2026, NULL, NULL, '2026-02-06 14:58:23'),
+(1013341545, '45678901', 'Marleny Gaviria Ardila', '$2y$10$5mN2r4XFg6P0vuUA4VB1Teh9mOkfF/eIhwCqMkwezTgkjYg6/ZSY6', 2, 1, 'marleny.gaviria@sena.edu.co', '3207654321', 2099, NULL, NULL, '2026-02-10 09:37:33'),
+(1013341547, '4738473', 'Entie', '$2y$10$TpkEH5NO8M4EsH950nx2u.DIGjSeWX7X660RItu7KA9b9kVpZN2.S', 2, 1, 'eurehr@gmail.com', '456644', 2028, NULL, NULL, '2026-04-06 03:25:30'),
+(1013341548, '23783', 'hfiruh', '$2y$10$Lknec.D792le.M00JO8/U.uc4ovf60peqCnhN0ss9x23zrwQy4flC', 2, 1, 'hfkhrt@gmail.com', '456677', 2030, NULL, NULL, '2026-04-06 03:42:36');
 
 -- --------------------------------------------------------
 
@@ -483,7 +485,7 @@ ALTER TABLE `tipos_proceso`
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1013341547;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1013341549;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios_logins`
