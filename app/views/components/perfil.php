@@ -1,4 +1,4 @@
-<!-- Componente: perfil de usuario (datos y configuracion) -->
+<!-- Componente: perfil de usuario -->
 <link rel="stylesheet" href="/PROJECT-CPR/public/assets/css/globals/perfil.css">
 
 <?php
@@ -13,64 +13,7 @@ if ($perfil_error !== '') {
 }
 ?>
 
-<!-- Todo tu contenido de perfil.php -->
 <div class="perfil-container">
-
-    <!-- Bloque exclusivo para admin: gestion de tipos de proceso -->
-    <?php if (isset($_SESSION['user']) && $_SESSION['user']['rol'] == 1): ?>
-        <h2 class="titulo-seccion">Tipos de procesos</h2>
-
-        <form class="form-procesos" action="/project-cpr/public/perfil.php" method="GET">
-            <div class="grupo">
-                <label for="proceso_id" class="oculto">Seleccionar proceso</label>
-                <select id="proceso_id" name="proceso_id">
-                    <option value="">— Nuevo proceso —</option>
-                    <?php foreach ($tiposProceso as $tp): ?>
-                        <option value="<?= $tp['id'] ?>" <?= ($procesoSeleccionado && $procesoSeleccionado['id'] == $tp['id']) ? 'selected' : '' ?>>
-                            <?= htmlspecialchars($tp['nombre']) ?><?= ((int)($tp['estado'] ?? 1) !== 1) ? ' (inactivo)' : '' ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-        </form>
-
-        <form class="form-procesos" action="/project-cpr/public/perfil.php?action=guardarProceso" method="POST">
-            <input type="hidden" name="proceso_id" value="<?= $procesoSeleccionado['id'] ?? '' ?>">
-
-            <div class="grupo">
-                <label for="proceso_nombre" class="oculto">Nombre del proceso</label>
-                <input
-                    type="text"
-                    id="proceso_nombre"
-                    name="proceso_nombre"
-                    placeholder="Nombre del proceso"
-                    value="<?= isset($procesoSeleccionado['nombre']) ? htmlspecialchars($procesoSeleccionado['nombre']) : '' ?>">
-            </div>
-
-            <div class="grupo">
-                <label for="proceso_estado" class="oculto">Estado del proceso</label>
-                <select id="proceso_estado" name="estado">
-                    <?php $estadoActual = (int)($procesoSeleccionado['estado'] ?? 1); ?>
-                    <option value="1" <?= $estadoActual === 1 ? 'selected' : '' ?>>Activo</option>
-                    <option value="0" <?= $estadoActual === 0 ? 'selected' : '' ?>>Inactivo</option>
-                </select>
-            </div>
-
-            <div class="botones">
-                <button type="submit" class="btn-actualizar">Guardar</button>
-            </div>
-        </form>
-
-        <form class="form-procesos" action="/project-cpr/public/perfil.php?action=eliminarProceso" method="POST">
-            <input type="hidden" name="proceso_id" value="<?= $procesoSeleccionado['id'] ?? '' ?>">
-            <div class="botones">
-                <button type="submit" class="btn-cerrar">Eliminar</button>
-            </div>
-        </form>
-
-    <?php endif; ?>
-
-    <hr class="divisor">
 
     <!-- Mensajes de estado -->
     <?php if (isset($_SESSION['success'])): ?>
@@ -89,7 +32,7 @@ if ($perfil_error !== '') {
 
     <section class="perfil-card accordion" data-accordion="cuenta">
         <button class="accordion-toggle" type="button" aria-expanded="false">
-            <span>Informacion de la cuenta</span>
+            <span>Información de la cuenta</span>
             <span class="accordion-icon">∨</span>
         </button>
         <div class="accordion-panel">
@@ -115,7 +58,7 @@ if ($perfil_error !== '') {
 
             <form action="/project-cpr/public/perfil.php?action=update" method="POST">
                 <div class="grupo">
-                    <label for="nuevo_correo">Nuevo correo electronico</label>
+                    <label for="nuevo_correo">Nuevo correo electrónico</label>
                     <input type="email" id="nuevo_correo" name="nuevo_correo" placeholder="ejemplo@correo.com" required>
                 </div>
 
@@ -125,7 +68,7 @@ if ($perfil_error !== '') {
                 </div>
 
                 <div class="grupo">
-                    <label for="actual_contra_correo">Contrasena actual</label>
+                    <label for="actual_contra_correo">Contraseña actual</label>
                     <input type="password" id="actual_contra_correo" name="actual_contra" placeholder="Para confirmar el cambio" required>
                 </div>
 
@@ -142,26 +85,26 @@ if ($perfil_error !== '') {
             <span class="accordion-icon">∨</span>
         </button>
         <div class="accordion-panel">
-            <p class="texto-ayuda">Cambia tu contrasena para proteger tu cuenta.</p>
+            <p class="texto-ayuda">Cambia tu contraseña para proteger tu cuenta.</p>
 
             <form action="/project-cpr/public/perfil.php?action=update" method="POST">
                 <div class="grupo">
-                    <label for="actual_contra_seguridad">Contrasena actual</label>
-                    <input type="password" id="actual_contra_seguridad" name="actual_contra" placeholder="Tu contrasena actual" required>
+                    <label for="actual_contra_seguridad">Contraseña actual</label>
+                    <input type="password" id="actual_contra_seguridad" name="actual_contra" placeholder="Tu contraseña actual" required>
                 </div>
 
                 <div class="grupo">
-                    <label for="nueva_contra">Nueva contrasena</label>
-                    <input type="password" id="nueva_contra" name="nueva_contra" placeholder="Minimo recomendado: 8 caracteres" required>
+                    <label for="nueva_contra">Nueva contraseña</label>
+                    <input type="password" id="nueva_contra" name="nueva_contra" placeholder="Mínimo recomendado: 8 caracteres" required>
                 </div>
 
                 <div class="grupo">
-                    <label for="confirm_contra">Confirmar nueva contrasena</label>
-                    <input type="password" id="confirm_contra" name="confirm_contra" placeholder="Repite la nueva contrasena" required>
+                    <label for="confirm_contra">Confirmar nueva contraseña</label>
+                    <input type="password" id="confirm_contra" name="confirm_contra" placeholder="Repite la nueva contraseña" required>
                 </div>
 
                 <div class="botones left">
-                    <button type="submit" class="btn-actualizar">Actualizar contrasena</button>
+                    <button type="submit" class="btn-actualizar">Actualizar contraseña</button>
                 </div>
             </form>
         </div>
@@ -169,13 +112,13 @@ if ($perfil_error !== '') {
 
     <section class="perfil-card accordion" data-accordion="sesion">
         <button class="accordion-toggle" type="button" aria-expanded="false">
-            <span>Sesion</span>
+            <span>Sesión</span>
             <span class="accordion-icon">∨</span>
         </button>
         <div class="accordion-panel">
-            <p class="texto-ayuda">Salir solo cerrara la sesion en este dispositivo.</p>
+            <p class="texto-ayuda">Salir solo cerrará la sesión en este dispositivo.</p>
             <div class="botones left">
-                <a href="/PROJECT-CPR/public/logout.php" class="btn-cerrar">Cerrar sesion</a>
+                <a href="/PROJECT-CPR/public/logout.php" class="btn-cerrar">Cerrar sesión</a>
             </div>
         </div>
     </section>
@@ -218,15 +161,3 @@ if ($perfil_error !== '') {
 
     cerrarTodos();
 </script>
-
-    <!-- Script solo para admin: recarga al cambiar el proceso seleccionado -->
-    <?php if (isset($_SESSION['user']) && $_SESSION['user']['rol'] == 1): ?>
-    <script>
-        const selectProceso = document.getElementById('proceso_id');
-        if (selectProceso) {
-            selectProceso.addEventListener('change', () => {
-                selectProceso.form.submit();
-            });
-        }
-    </script>
-<?php endif; ?>

@@ -1,9 +1,7 @@
 <?php
-// Controlador de perfil: datos del usuario y catalogo de tipos de proceso (admin).
+// Controlador de perfil: datos del usuario logueado.
 
 require_once __DIR__ . '/../models/User.php';
-require_once __DIR__ . '/../models/TipoProceso.php';
-require_once __DIR__ . '/../models/Caso.php';
 
 class PerfilController
 {
@@ -11,20 +9,6 @@ class PerfilController
     {
         // Marca el menu activo en la vista.
         $activePage = 'perfil';
-
-        $tiposProceso = [];
-        $tiposCaso = [];
-        $procesoSeleccionado = null;
-
-        // Solo el admin carga catalogos para gestion de procesos.
-        if (isset($_SESSION['user']) && $_SESSION['user']['rol'] == 1) {
-            $tiposProceso = TipoProceso::all();
-
-            $procesoId = $_GET['proceso_id'] ?? null;
-            if ($procesoId) {
-                $procesoSeleccionado = TipoProceso::find($procesoId);
-            }
-        }
 
         // Vista según rol
         if ($_SESSION['user']['rol'] == 1) {
@@ -105,64 +89,4 @@ class PerfilController
     header("Location: /project-cpr/public/perfil.php");
     exit;
 }
-
-    public function guardarProceso()
-    {
-        // Solo el admin puede crear/editar tipos de proceso.
-        if (!isset($_SESSION['logged']) || $_SESSION['user']['rol'] != 1) {
-            header("Location: /project-cpr/public/login.php");
-            exit;
-        }
-
-        $id = $_POST['proceso_id'] ?? '';
-        $nombre = trim($_POST['proceso_nombre'] ?? '');
-        $estado = isset($_POST['estado']) ? (int)$_POST['estado'] : 1;
-        if ($nombre === '') {
-            $_SESSION['error'] = "Debe ingresar el nombre del proceso.";
-            header("Location: /project-cpr/public/perfil.php");
-            exit;
-        }
-
-        // Si hay id: actualiza, si no: crea.
-        if ($id) {
-            TipoProceso::update($id, $nombre, $estado);
-            $_SESSION['success'] = "Proceso actualizado correctamente.";
-        } else {
-            TipoProceso::create($nombre, $estado);
-            $_SESSION['success'] = "Proceso creado correctamente.";
-        }
-
-        header("Location: /project-cpr/public/perfil.php");
-        exit;
-    }
-
-    public function eliminarProceso()
-    {
-        // Elimina un tipo de proceso si no tiene casos asignados.
-        if (!isset($_SESSION['logged']) || $_SESSION['user']['rol'] != 1) {
-            header("Location: /project-cpr/public/login.php");
-            exit;
-        }
-
-        $id = $_POST['proceso_id'] ?? '';
-        if (!$id) {
-            $_SESSION['error'] = "Debe seleccionar un proceso para eliminar.";
-            header("Location: /project-cpr/public/perfil.php");
-            exit;
-        }
-
-        $count = TipoProceso::countCasosAsignados($id);
-        if ($count > 0) {
-            $casos = TipoProceso::getCasosAsignados($id);
-            $numeros = array_map(fn($c) => $c['numero_caso'], $casos);
-            $_SESSION['error'] = "No se puede eliminar. Casos asignados: " . implode(', ', $numeros);
-            header("Location: /project-cpr/public/perfil.php");
-            exit;
-        }
-
-        TipoProceso::delete($id);
-        $_SESSION['success'] = "Proceso eliminado correctamente.";
-        header("Location: /project-cpr/public/perfil.php");
-        exit;
-    }
 }

@@ -1,4 +1,6 @@
 <?php
+// Este bloque prepara textos y banderas para que la vista no tenga
+// demasiadas condiciones mezcladas dentro del HTML.
 $estadoActual = $caso['estado'] ?? 'Pendiente';
 $fechaCierre = !empty($caso['fecha_cierre']) ? new DateTime($caso['fecha_cierre']) : null;
 $hoy = new DateTime();
@@ -30,6 +32,7 @@ $estadoSeguimientoTexto = match ($estadoActual) {
 
 $actividad = [];
 
+// Primero se normaliza el historial de estados.
 foreach ($historial as $item) {
     $actividad[] = [
         'tipo' => 'estado',
@@ -40,6 +43,8 @@ foreach ($historial as $item) {
     ];
 }
 
+// Luego se normalizan los cambios de campos para mostrarlos con el mismo
+// formato visual del historial, sin crear otra sección aparte.
 foreach ($historialCampos as $item) {
     $labelsCampos = [
         'radicado_sena' => 'Radicado SENA',
@@ -69,6 +74,8 @@ usort($actividad, fn($a, $b) => strtotime($b['fecha']) <=> strtotime($a['fecha']
 
 $lineaTiempo = [];
 
+// Los mensajes y las actualizaciones se mezclan en una sola línea de tiempo
+// para que la trazabilidad quede centralizada y más fácil de seguir.
 foreach ($mensajes as $mensaje) {
     $lineaTiempo[] = [
         'tipo' => 'mensaje',
@@ -89,6 +96,8 @@ foreach ($actividad as $item) {
     ];
 }
 
+// Se ordena de más antiguo a más reciente para que el scroll termine abajo,
+// como un chat.
 usort($lineaTiempo, fn($a, $b) => strtotime($a['fecha']) <=> strtotime($b['fecha']));
 ?>
 
@@ -112,6 +121,8 @@ usort($lineaTiempo, fn($a, $b) => strtotime($a['fecha']) <=> strtotime($b['fecha
             <?php if ($mostrarBotonAtender): ?>
                 <div class="case-primary-action">
                     <form method="POST" action="/project-cpr/public/caso.php">
+                        <!-- Se envían también los valores actuales para no perder
+                             tipo de caso ni tipo de proceso al cambiar el estado. -->
                         <input type="hidden" name="action" value="updateDetalle">
                         <input type="hidden" name="caso_id" value="<?= $caso['id'] ?>">
                         <input type="hidden" name="tipo_caso_id" value="<?= htmlspecialchars((string)($caso['tipo_caso_id'] ?? '')) ?>">
@@ -161,6 +172,8 @@ usort($lineaTiempo, fn($a, $b) => strtotime($a['fecha']) <=> strtotime($b['fecha
 
                 <div class="filter-group">
                     <label class="filter-title" for="tipo_caso_id">Tipo de caso</label>
+                    <!-- El select se deshabilita visualmente, pero la validación fuerte
+                         sigue estando en el controlador por seguridad. -->
                     <select id="tipo_caso_id" name="tipo_caso_id" <?= !$puedeEditar ? 'disabled' : '' ?>>
                         <?php foreach (($tiposCaso ?? []) as $tipoCaso): ?>
                             <option
@@ -212,6 +225,8 @@ usort($lineaTiempo, fn($a, $b) => strtotime($a['fecha']) <=> strtotime($b['fecha
                     <div class="summary-field-header">
                         <strong><?= !empty($caso['radicado_sena']) ? htmlspecialchars($caso['radicado_sena']) : 'No registrado' ?></strong>
                         <?php if ($puedeEditarCaso): ?>
+                            <!-- El radicado quedó como edición puntual para evitar
+                                 llenar la vista con más formularios visibles. -->
                             <button type="button" class="btn-summary-edit" id="toggle-radicado">Editar</button>
                         <?php endif; ?>
                     </div>

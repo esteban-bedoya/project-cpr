@@ -81,7 +81,7 @@
     padding: 16px;
     border: none;
     border-radius: 10px;
-    background-color: #C3E6BF;  /* Verde de la imagen */
+    background-color: #e3f5e6;
     font-size: 16px;
     color: #000;
 }
@@ -91,13 +91,13 @@
     padding: 16px;
     border: none;
     border-radius: 10px;
-    background-color: #C3E6BF;
+    background-color: #e3f5e6;
     font-size: 16px;
     color: #000;
 }
 
 .grupo input::placeholder {
-    color: #4a4a4a;
+    color: #495057;
     opacity: 0.7;
 }
 
@@ -128,7 +128,7 @@
 }
 
 .btn-actualizar {
-    background-color: #3B7A37;
+    background-color: #6fbe77;
     color: white;
     padding: 12px 30px;
     border: none;
@@ -139,13 +139,15 @@
 }
 
 .btn-actualizar:hover {
-    opacity: 0.9;
+    background-color: #5aa665;
+    opacity: 1;
 }
 
 .btn-cerrar {
-    background-color: #3B7A37;
+    background-color: #6fbe77;
     color: white;
     padding: 12px 25px;
+    border: none;
     border-radius: 10px;
     font-size: 18px;
     font-weight: 600;
@@ -153,7 +155,8 @@
 }
 
 .btn-cerrar:hover {
-    opacity: 0.9;
+    background-color: #5aa665;
+    opacity: 1;
 }
 
 .alert {
@@ -171,6 +174,27 @@
 .alert.error {
     background: #fdecea;
     color: #a71d2a;
+}
+
+.tipos-proceso-panel .grupo input,
+.tipos-proceso-panel .grupo select {
+    background-color: #e3f5e6;
+}
+
+.tipos-proceso-panel .grupo input::placeholder {
+    color: #495057;
+    opacity: 0.7;
+}
+
+.tipos-proceso-panel .btn-tipos-proceso {
+    background-color: #6fbe77;
+    color: #ffffff;
+    border: none;
+}
+
+.tipos-proceso-panel .btn-tipos-proceso:hover {
+    background-color: #5aa665;
+    opacity: 1;
 }
 
 @media (max-width: 768px) {
