@@ -16,7 +16,7 @@
       <a href="/project-cpr/public/reportes.php" class="nav-item <?= ($activePage === 'reportes') ? 'active' : ''; ?>">Reportes</a>
       <a href="/project-cpr/public/casos.php" class="nav-item <?= ($activePage === 'casos') ? 'active' : ''; ?>">Casos</a>
       <a href="/project-cpr/public/usuarios.php" class="nav-item <?= ($activePage === 'usuarios') ? 'active' : ''; ?>">Usuarios</a>
-      <a href="/project-cpr/public/tipos_proceso.php" class="nav-item <?= ($activePage === 'tipos_proceso') ? 'active' : ''; ?>">Tipos de procesos</a>
+      <a href="/project-cpr/public/tipos_proceso.php" class="nav-item <?= ($activePage === 'tipos_proceso') ? 'active' : ''; ?>">Ajustar sistema</a>
       <a href="/project-cpr/public/perfil.php" class="nav-item <?= ($activePage === 'perfil') ? 'active' : ''; ?>">
         Administrador, <br>
         <strong><?= $_SESSION['user']['username'] ?? 'Administrador'; ?></strong>

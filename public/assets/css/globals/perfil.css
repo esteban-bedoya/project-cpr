@@ -79,26 +79,56 @@
 .grupo input {
     width: 100%;
     padding: 16px;
-    border: none;
+    border: 1px solid transparent;
     border-radius: 10px;
     background-color: #e3f5e6;
     font-size: 16px;
     color: #000;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
 .grupo select {
     width: 100%;
     padding: 16px;
-    border: none;
+    border: 1px solid transparent;
     border-radius: 10px;
     background-color: #e3f5e6;
     font-size: 16px;
     color: #000;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
 .grupo input::placeholder {
     color: #495057;
     opacity: 0.7;
+}
+
+.grupo .campo-informativo {
+    background-color: #f3f4f6;
+    border-color: #d1d5db;
+    color: #4b5563;
+    cursor: default;
+    font-weight: 500;
+}
+
+.grupo .campo-informativo:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.grupo .campo-editable,
+.grupo select.campo-editable {
+    background-color: #e3f5e6;
+    border-color: #87c98f;
+}
+
+.grupo .campo-editable:focus,
+.grupo select.campo-editable:focus,
+.grupo input:not([readonly]):focus,
+.grupo select:not([disabled]):focus {
+    outline: none;
+    border-color: #5aa665;
+    box-shadow: 0 0 0 3px rgba(111, 190, 119, 0.18);
 }
 
 /* Ocultar labels accesibles */

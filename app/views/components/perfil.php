@@ -38,11 +38,10 @@ if ($perfil_error !== '') {
             <span class="accordion-icon">∨</span>
         </button>
         <div class="accordion-panel">
-            <p class="texto-ayuda">Actualiza tu correo de contacto.</p>
-
             <div class="grupo">
                 <label for="usuario_actual">Usuario</label>
                 <input
+                    class="campo-informativo"
                     type="text"
                     id="usuario_actual"
                     value="<?= htmlspecialchars($_SESSION['user']['username'] ?? '') ?>"
@@ -52,26 +51,30 @@ if ($perfil_error !== '') {
             <div class="grupo">
                 <label for="correo_actual">Correo actual</label>
                 <input
+                    class="campo-informativo"
                     type="email"
                     id="correo_actual"
                     value="<?= htmlspecialchars($_SESSION['user']['correo'] ?? '') ?>"
                     readonly>
             </div>
 
+            <hr class="divisor">
+            <p class="texto-ayuda">Actualiza tu correo de contacto.</p>
+
             <form action="/project-cpr/public/perfil.php?action=update" method="POST">
                 <div class="grupo">
                     <label for="nuevo_correo">Nuevo correo electrónico</label>
-                    <input type="email" id="nuevo_correo" name="nuevo_correo" placeholder="ejemplo@correo.com" required>
+                    <input class="campo-editable" type="email" id="nuevo_correo" name="nuevo_correo" placeholder="ejemplo@correo.com" required>
                 </div>
 
                 <div class="grupo">
                     <label for="confirm_correo">Confirmar nuevo correo</label>
-                    <input type="email" id="confirm_correo" name="confirm_correo" placeholder="Repite el correo" required>
+                    <input class="campo-editable" type="email" id="confirm_correo" name="confirm_correo" placeholder="Repite el correo" required>
                 </div>
 
                 <div class="grupo">
                     <label for="actual_contra_correo">Contraseña actual</label>
-                    <input type="password" id="actual_contra_correo" name="actual_contra" placeholder="Para confirmar el cambio" required>
+                    <input class="campo-editable" type="password" id="actual_contra_correo" name="actual_contra" placeholder="Para confirmar el cambio" required>
                 </div>
 
                 <div class="botones left">
@@ -93,17 +96,17 @@ if ($perfil_error !== '') {
             <form action="/project-cpr/public/perfil.php?action=update" method="POST">
                 <div class="grupo">
                     <label for="actual_contra_seguridad">Contraseña actual</label>
-                    <input type="password" id="actual_contra_seguridad" name="actual_contra" placeholder="Tu contraseña actual" required>
+                    <input class="campo-editable" type="password" id="actual_contra_seguridad" name="actual_contra" placeholder="Tu contraseña actual" required>
                 </div>
 
                 <div class="grupo">
                     <label for="nueva_contra">Nueva contraseña</label>
-                    <input type="password" id="nueva_contra" name="nueva_contra" placeholder="Mínimo recomendado: 8 caracteres" required>
+                    <input class="campo-editable" type="password" id="nueva_contra" name="nueva_contra" placeholder="Mínimo recomendado: 8 caracteres" required>
                 </div>
 
                 <div class="grupo">
                     <label for="confirm_contra">Confirmar nueva contraseña</label>
-                    <input type="password" id="confirm_contra" name="confirm_contra" placeholder="Repite la nueva contraseña" required>
+                    <input class="campo-editable" type="password" id="confirm_contra" name="confirm_contra" placeholder="Repite la nueva contraseña" required>
                 </div>
 
                 <div class="botones left">
