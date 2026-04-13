@@ -32,7 +32,10 @@ $estadoSeguimientoTexto = match ($estadoActual) {
 
 $actividad = [];
 
-// Normaliza historial de estado.
+// A partir de aquí la vista deja de pensar en tablas separadas
+// y arma una sola colección de "actividad" para renderizar todo
+// con el mismo formato.
+// Primero se traducen los cambios de estado a un formato común.
 foreach ($historial as $item) {
     $usuarioActividad = $item['username'];
     if (
@@ -51,7 +54,8 @@ foreach ($historial as $item) {
     ];
 }
 
-// Normaliza cambios de campos.
+// Luego se convierten los cambios puntuales de campos
+// (radicado, fecha, etc.) para que entren a la misma línea de tiempo.
 foreach ($historialCampos as $item) {
     $labelsCampos = [
         'radicado_sena' => 'Radicado SENA',
@@ -77,11 +81,13 @@ foreach ($historialCampos as $item) {
     ];
 }
 
+// Esta lista se ordena aparte porque todavía no incluye los mensajes.
 usort($actividad, fn($a, $b) => strtotime($b['fecha']) <=> strtotime($a['fecha']));
 
 $lineaTiempo = [];
 
-// Mensajes y actividad comparten la misma linea de tiempo.
+// La conversación del caso y la auditoría de cambios se muestran juntas,
+// así que ambos bloques terminan viviendo en la misma línea de tiempo.
 foreach ($mensajes as $mensaje) {
     $lineaTiempo[] = [
         'tipo' => 'mensaje',
@@ -102,7 +108,8 @@ foreach ($actividad as $item) {
     ];
 }
 
-// Se ordena como chat: viejo arriba, nuevo abajo.
+// El render final se deja en orden cronológico para que se lea
+// como una conversación: lo más viejo arriba y lo más nuevo al final.
 usort($lineaTiempo, fn($a, $b) => strtotime($a['fecha']) <=> strtotime($b['fecha']));
 ?>
 
@@ -143,6 +150,8 @@ usort($lineaTiempo, fn($a, $b) => strtotime($a['fecha']) <=> strtotime($b['fecha
                     <button type="button" class="btn-primary-case-action reopen-toggle">Reabrir caso</button>
                 </div>
 
+                <!-- La reapertura no cambia todo el caso:
+                     solo fuerza una nueva fecha de cierre para devolverlo a gestión. -->
                 <form method="POST" action="/project-cpr/public/caso.php" class="reopen-form">
                     <input type="hidden" name="action" value="updateCampos">
                     <input type="hidden" name="caso_id" value="<?= $caso['id'] ?>">
@@ -170,6 +179,9 @@ usort($lineaTiempo, fn($a, $b) => strtotime($a['fecha']) <=> strtotime($b['fecha
         <div class="case-sidebar-card">
             <div class="sidebar-section-title">Datos del caso</div>
 
+            <!-- Este formulario se envía solo cuando cambian los selects.
+                 La idea es que la edición lateral se sienta rápida,
+                 sin necesitar un botón adicional para guardar. -->
             <form method="POST" action="/project-cpr/public/caso.php" class="case-actions-form">
                 <input type="hidden" name="action" value="updateDetalle">
                 <input type="hidden" name="caso_id" value="<?= $caso['id'] ?>">
@@ -225,6 +237,9 @@ usort($lineaTiempo, fn($a, $b) => strtotime($a['fecha']) <=> strtotime($b['fecha
             <?php endif; ?>
 
             <div class="case-overview">
+                <!-- Este bloque resume lo esencial del caso.
+                     El único dato editable aquí se dejó como edición puntual:
+                     el radicado SENA. -->
                 <div class="summary-field summary-field-editable">
                     <span>Radicado SENA</span>
                     <div class="summary-field-header">
@@ -269,6 +284,9 @@ usort($lineaTiempo, fn($a, $b) => strtotime($a['fecha']) <=> strtotime($b['fecha
             </div>
 
             <div class="case-messages">
+                <!-- Cada evento ya viene normalizado en $lineaTiempo.
+                     Aquí solo se decide si se pinta como mensaje
+                     o como movimiento del historial. -->
                 <?php if (!empty($lineaTiempo)): ?>
                     <?php foreach ($lineaTiempo as $evento): ?>
                         <div class="msg-entry timeline-entry">
@@ -312,6 +330,8 @@ usort($lineaTiempo, fn($a, $b) => strtotime($a['fecha']) <=> strtotime($b['fecha
         </div>
 
         <?php if ($puedeEditarCaso): ?>
+            <!-- La caja inferior funciona como entrada rápida del caso:
+                 permite mandar solo mensaje, solo archivo o ambos. -->
             <form
                 class="msg-input-box"
                 method="POST"
@@ -365,12 +385,17 @@ usort($lineaTiempo, fn($a, $b) => strtotime($a['fecha']) <=> strtotime($b['fecha
     window.addEventListener('load', () => {
         const messages = document.querySelector('.case-messages');
         if (messages) {
+            // Al abrir el detalle, baja automáticamente al final
+            // para mostrar lo más reciente del historial.
             messages.scrollTop = messages.scrollHeight;
         }
     });
 </script>
 
 <script>
+    // Este bloque reúne pequeñas interacciones de la vista:
+    // autosubmit de selects, toggle de reapertura, nombre del archivo
+    // y apertura puntual del formulario de radicado.
     const tipoCasoSelect = document.getElementById('tipo_caso_id');
     const tipoProcesoSelect = document.getElementById('tipo_proceso_id');
     const reopenToggle = document.querySelector('.reopen-toggle');
@@ -386,6 +411,8 @@ usort($lineaTiempo, fn($a, $b) => strtotime($a['fecha']) <=> strtotime($b['fecha
         if (!select) return;
         select.addEventListener('change', () => {
             if (edicionBloqueada || select.disabled) return;
+            // Cuando cambia uno de los select laterales,
+            // se envía su mismo formulario sin esperar otro botón.
             const form = select.closest('form');
             if (form) {
                 form.submit();
@@ -397,6 +424,7 @@ usort($lineaTiempo, fn($a, $b) => strtotime($a['fecha']) <=> strtotime($b['fecha
         reopenToggle.addEventListener('click', () => {
             reopenForm.classList.toggle('is-open');
             if (reopenForm.classList.contains('is-open')) {
+                // Si el navegador lo soporta, abre directamente el picker de fecha.
                 reopenDateInput.focus();
                 if (typeof reopenDateInput.showPicker === 'function') {
                     reopenDateInput.showPicker();
@@ -418,6 +446,7 @@ usort($lineaTiempo, fn($a, $b) => strtotime($a['fecha']) <=> strtotime($b['fecha
 
     if (radicadoToggle && radicadoForm) {
         radicadoToggle.addEventListener('click', () => {
+            // El radicado se deja escondido hasta que el usuario decide editarlo.
             radicadoForm.classList.toggle('is-open');
         });
     }
