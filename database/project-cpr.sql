@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost
--- Tiempo de generación: 06-04-2026 a las 14:18:06
+-- Tiempo de generación: 13-04-2026 a las 06:31:28
 -- Versión del servidor: 10.4.28-MariaDB
 -- Versión de PHP: 8.2.4
 
@@ -46,8 +46,8 @@ CREATE TABLE `casos` (
 --
 
 INSERT INTO `casos` (`id`, `numero_caso`, `tipo_caso_id`, `tipo_proceso_id`, `radicado_sena`, `asunto`, `detalles`, `estado`, `asignado_a`, `fecha_creacion`, `fecha_cierre`) VALUES
-(35, 'C-000001', 2, 3, '34323', 'Los trabajadores del área 2 no han recibido su dotación', 'Los trabajadores han manifestado por diferentes medios que necesitan sus uniformes para laborar de la mejor manera.', 'Pendiente', 2, '2026-04-06 06:47:04', '2026-04-23 23:59:59'),
-(36, 'C-000036', 1, 2, '98837', 'Se género una alarma sobre deficientes desempeños laborales', 'Por medio de diferentes medios se han recibido reportes de bajos desempeños\r\n- Correo electrónico y encuestas de satisfacción', 'Pendiente', 1013341549, '2026-04-06 06:57:47', '2026-04-06 23:59:59'),
+(35, 'C-000001', 2, 3, '34323', 'Los trabajadores del área 2 no han recibido su dotación', 'Los trabajadores han manifestado por diferentes medios que necesitan sus uniformes para laborar de la mejor manera.', 'No atendido', 2, '2026-03-11 06:47:04', '2026-03-24 23:59:59'),
+(36, 'C-000036', 1, 2, '98837', 'Se género una alarma sobre deficientes desempeños laborales', 'Por medio de diferentes medios se han recibido reportes de bajos desempeños\r\n- Correo electrónico y encuestas de satisfacción', 'No atendido', 1013341549, '2026-04-06 06:57:47', '2026-04-06 23:59:59'),
 (37, 'C-000037', 1, 11, NULL, 'Se genera alarma por salarios poco usuales a estudiar', 'Desde la rendición de cuentas públicas se evidencian inconsistencias.', 'Atendido', 1013341550, '2026-04-06 07:01:47', '2026-04-06 07:05:49'),
 (38, 'C-000038', 4, 9, '35427', 'Vulneración del debido proceso administrativo', 'La Sra. Angela Gomez demandan que se le violo un debido proceso, ya que la entidad realizo una terminación de contrato sin previo aviso.', 'Pendiente', 1013341551, '2026-04-06 07:10:39', '2026-04-30 23:59:59');
 
@@ -118,7 +118,9 @@ CREATE TABLE `casos_historial_estado` (
 --
 
 INSERT INTO `casos_historial_estado` (`id`, `caso_id`, `usuario_id`, `descripcion`, `fecha`) VALUES
-(157, 37, 1013341550, 'Cambio de estado de Pendiente a Atendido con actualización de fecha de cierre, de \"2026-04-17 23:59:59\" a \"2026-04-06 14:05:49\"', '2026-04-06 07:05:49');
+(157, 37, 1013341550, 'Cambio de estado de Pendiente a Atendido con actualización de fecha de cierre, de \"2026-04-17 23:59:59\" a \"2026-04-06 14:05:49\"', '2026-04-06 07:05:49'),
+(158, 35, 1, 'Cambio de estado automático del sistema de Pendiente a No atendido porque no recibió atención dentro del plazo establecido', '2026-03-24 23:59:00'),
+(159, 36, 1, 'Cambio de estado automático del sistema de Pendiente a No atendido porque no recibió atención dentro del plazo establecido', '2026-04-06 23:59:00');
 
 -- --------------------------------------------------------
 
@@ -140,8 +142,8 @@ CREATE TABLE `casos_mensajes` (
 --
 
 INSERT INTO `casos_mensajes` (`id`, `caso_id`, `usuario_id`, `mensaje`, `archivo`, `fecha`) VALUES
-(71, 35, 2, 'Se contacta al coordinador del área al correo enrique@outlook.com para hacer las validaciones correspondientes', NULL, '2026-04-06 06:48:33'),
-(72, 35, 2, '', 'caso_35_1775476272.png', '2026-04-06 06:51:12'),
+(71, 35, 2, 'Se contacta al coordinador del área al correo enrique@outlook.com para hacer las validaciones correspondientes', NULL, '2026-03-13 06:48:33'),
+(72, 35, 2, '', 'caso_35_1775476272.png', '2026-03-17 06:51:12'),
 (73, 37, 1013341550, 'Se envía solicitud de documentación correspondiente a la dirección general', NULL, '2026-04-06 07:03:03'),
 (74, 37, 1013341550, 'Se adjunta documentación correspondiente enviada por la dirección general', NULL, '2026-04-06 07:03:34'),
 (75, 37, 1013341550, '', 'caso_37_1775477022.png', '2026-04-06 07:03:42'),
@@ -221,7 +223,7 @@ CREATE TABLE `usuarios` (
 INSERT INTO `usuarios` (`id`, `documento`, `username`, `password`, `rol`, `estado`, `correo`, `telefono`, `vigencia_inicio`, `remember_token`, `creado_por`, `fecha_creacion`) VALUES
 (1, '1000660615', 'Esteban Bedoya', '$2y$10$zdC3jqJ2ToM.xFSE2k/dQuRLbBxC0MJJSSztPW/61k/3PJKVZWNaC', 1, 1, 'esteban.bedoya.n@gmail.com', '3246870343', NULL, NULL, NULL, '2026-02-06 14:58:23'),
 (2, '13453564', 'Ronaldo Anaya', '$2y$10$omRQbXy3QjdDlSe2l/sAp.R0qgX7ewTMW2mpszUqruWlqYuBSKvRy', 2, 1, 'ronaldoanaya2005@gmail.com', '3016490549', 2026, NULL, NULL, '2026-02-06 14:58:23'),
-(1013341549, '403278967', 'Marleny Gaviria Ardila', '$2y$10$jKG2u3OyAX9j.METdrSBWOCrmvVzQIsK/6vwcwe1H5PvrDRL8KvHK', 2, 1, 'marleny@gmail.com', '3246789854', 2026, NULL, NULL, '2026-04-06 06:28:01'),
+(1013341549, '403278967', 'Marleny Gaviria Ardila', '$2y$10$jKG2u3OyAX9j.METdrSBWOCrmvVzQIsK/6vwcwe1H5PvrDRL8KvHK', 2, 2, 'marleny@gmail.com', '3246789854', 2026, NULL, NULL, '2026-04-06 06:28:01'),
 (1013341550, '343456676', 'Jose Bustamante Cano', '$2y$10$pf10UWPA8tbv9kmVTZV32u7JSizVw1S1UkMNzHSh261W5v9Ka6CjO', 2, 1, 'jose@gmail.com', '3245766546', 2026, NULL, NULL, '2026-04-06 06:30:41'),
 (1013341551, '356456778', 'Sofía Perez Cano', '$2y$10$rUgjl.IyxmP2WVOTQw44r.ESrHf9IPcMIEQ4fzwKbND30YMpFuLWa', 2, 1, 'sofia@gmail.com', '3136786787', 2026, NULL, NULL, '2026-04-06 06:34:59');
 
@@ -342,7 +344,7 @@ ALTER TABLE `casos_historial_campos`
 -- AUTO_INCREMENT de la tabla `casos_historial_estado`
 --
 ALTER TABLE `casos_historial_estado`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=158;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=160;
 
 --
 -- AUTO_INCREMENT de la tabla `casos_mensajes`
