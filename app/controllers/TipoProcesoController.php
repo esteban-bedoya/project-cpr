@@ -74,7 +74,7 @@ class TipoProcesoController
         if ($cantidadCasosAsignados > 0) {
             $casosAsignados = TipoProceso::getCasosAsignados($id);
             $numerosCaso = array_map(fn($caso) => $caso['numero_caso'], $casosAsignados);
-            $_SESSION['error'] = "No se puede eliminar. Casos asignados: " . implode(', ', $numerosCaso);
+            $_SESSION['error'] = "No se puede eliminar este proceso porque ya tiene asignaciones. Casos asignados: " . implode(', ', $numerosCaso);
             header("Location: /project-cpr/public/tipos_proceso.php");
             exit;
         }

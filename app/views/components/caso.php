@@ -34,12 +34,20 @@ $actividad = [];
 
 // Normaliza historial de estado.
 foreach ($historial as $item) {
+    $usuarioActividad = $item['username'];
+    if (
+        !empty($item['descripcion']) &&
+        str_contains($item['descripcion'], 'Cambio de estado automático del sistema de Pendiente a No atendido')
+    ) {
+        $usuarioActividad = $caso['asignado_a_nombre'] ?? $item['username'];
+    }
+
     $actividad[] = [
         'tipo' => 'estado',
         'fecha' => $item['fecha'],
         'titulo' => 'Cambio de estado',
         'descripcion' => $item['descripcion'],
-        'usuario' => $item['username']
+        'usuario' => $usuarioActividad
     ];
 }
 

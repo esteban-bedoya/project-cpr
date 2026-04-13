@@ -152,6 +152,22 @@ class UsuarioController
             exit;
         }
 
+        $usuarioActual = User::findById($id);
+        $esComisionado = (int)$rol === 2;
+        $quiereInactivar = (int)$estado !== 1;
+        $estabaActivo = (int)($usuarioActual['estado'] ?? 0) === 1;
+
+        if ($esComisionado && $quiereInactivar && $estabaActivo) {
+            $casosPendientes = User::contarCasosPendientesAsignados($id);
+            if ($casosPendientes > 0) {
+                $_SESSION['error'] = [
+                    "No se puede inactivar este comisionado porque tiene {$casosPendientes} caso(s) pendiente(s) asignado(s)."
+                ];
+                header("Location: /project-cpr/public/usuarios.php");
+                exit;
+            }
+        }
+
         // Actualiza en BD y vuelve al listado.
         User::updateById($id, $rol, $correo, $telefono, $estado, $anioInicio);
 

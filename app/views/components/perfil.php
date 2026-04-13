@@ -59,7 +59,7 @@ if ($perfil_error !== '') {
             </div>
 
             <hr class="divisor">
-            <p class="texto-ayuda">Actualiza tu correo de contacto.</p>
+            <p class="texto-ayuda">Actualizar correo electrónico asociado.</p>
 
             <form action="/project-cpr/public/perfil.php?action=update" method="POST">
                 <div class="grupo">
@@ -78,7 +78,7 @@ if ($perfil_error !== '') {
                 </div>
 
                 <div class="botones left">
-                    <button type="submit" class="btn-actualizar">Guardar correo</button>
+                    <button type="submit" class="btn-actualizar">Actualizar correo</button>
                 </div>
             </form>
         </div>
@@ -166,5 +166,5 @@ if ($perfil_error !== '') {
         });
     });
 
-    cerrarTodos();
+    abrirAccordion('sesion');
 </script>

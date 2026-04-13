@@ -32,11 +32,15 @@
             <?php if (isset($_SESSION['error'])): ?>
                 <div class="alert error">
                     <?php if (is_array($_SESSION['error'])): ?>
-                        <ul>
-                            <?php foreach ($_SESSION['error'] as $mensaje): ?>
-                                <li><?= htmlspecialchars($mensaje) ?></li>
-                            <?php endforeach; ?>
-                        </ul>
+                        <?php if (count($_SESSION['error']) === 1): ?>
+                            <?= htmlspecialchars($_SESSION['error'][0]); ?>
+                        <?php else: ?>
+                            <ul>
+                                <?php foreach ($_SESSION['error'] as $mensaje): ?>
+                                    <li><?= htmlspecialchars($mensaje) ?></li>
+                                <?php endforeach; ?>
+                            </ul>
+                        <?php endif; ?>
                     <?php else: ?>
                         <?= htmlspecialchars($_SESSION['error']); ?>
                     <?php endif; ?>
@@ -54,7 +58,7 @@
                         <!-- FILTRO POR ROL        -->
                         <!-- ===================== -->
                         <div class="filtros" id="filtro-fol">
-                            <span class="titulo-filtro">Filtrar rol</span>
+                            <span class="titulo-filtro">Filtrar por rol</span>
                             <label>
                                 <input
                                     type="radio"
@@ -85,7 +89,7 @@
                         <!-- FILTRO POR ESTADO     -->
                         <!-- ===================== -->
                         <div class="filtros" id="filtro-estado">
-                            <span class="titulo-filtro">Filtrar estado</span>
+                            <span class="titulo-filtro">Filtrar por estado</span>
                             <label>
                                 <input
                                     type="radio"
@@ -115,7 +119,7 @@
 
                     <div class="filters-row filters-row-bottom">
                         <div class="filtros" id="filtro-vigencia">
-                            <label for="filtro-vigencia-inicio" class="titulo-filtro">Filtrar inicio de vigencia</label>
+                            <label for="filtro-vigencia-inicio" class="titulo-filtro">Filtrar por año de inicio de vigencia</label>
                             <select id="filtro-vigencia-inicio" name="filtro_vigencia_inicio">
                                 <option value="todas" <?= ($filtro_vigencia_inicio ?? 'todas') === 'todas' ? 'selected' : '' ?>>Todas</option>
                                 <?php foreach ($vigenciasInicio as $vigenciaInicio): ?>
@@ -145,7 +149,7 @@
                         <th>Correo</th>
                         <th>Teléfono</th>
                         <th>Rol</th>
-                        <th>Vigencia</th>
+                        <th>Inicial de vigencia</th>
                         <th>Actualizar</th>
                     </tr>
                 </thead>

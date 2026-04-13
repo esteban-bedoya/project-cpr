@@ -104,9 +104,9 @@
 }
 
 .grupo .campo-informativo {
-    background-color: #f3f4f6;
-    border-color: #d1d5db;
-    color: #4b5563;
+    background-color: #e3f5e6;
+    border-color: #87c98f;
+    color: #1f2937;
     cursor: default;
     font-weight: 500;
 }
@@ -118,8 +118,9 @@
 
 .grupo .campo-editable,
 .grupo select.campo-editable {
-    background-color: #e3f5e6;
-    border-color: #87c98f;
+    background-color: #f3f4f6;
+    border-color: #d1d5db;
+    color: #4b5563;
 }
 
 .grupo .campo-editable:focus,
@@ -127,8 +128,8 @@
 .grupo input:not([readonly]):focus,
 .grupo select:not([disabled]):focus {
     outline: none;
-    border-color: #5aa665;
-    box-shadow: 0 0 0 3px rgba(111, 190, 119, 0.18);
+    border-color: #b8c4d1;
+    box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.16);
 }
 
 /* Ocultar labels accesibles */
@@ -206,14 +207,125 @@
     color: #a71d2a;
 }
 
+.alert.info {
+    background: #e8f1fb;
+    color: #1f4f82;
+}
+
+.alert.warning {
+    background: #fff4db;
+    color: #8a5a00;
+}
+
 .tipos-proceso-panel .grupo input,
 .tipos-proceso-panel .grupo select {
-    background-color: #e3f5e6;
+    background-color: #f3f4f6;
+    border-color: #d1d5db;
+    color: #4b5563;
+}
+
+.tipos-proceso-panel {
+    max-width: 100%;
+}
+
+.tipos-proceso-card {
+    background: #fff;
+    border: 1px solid #dbe4ee;
+    border-radius: 20px;
+    padding: 24px;
+    margin-bottom: 20px;
+}
+
+.tipos-proceso-card-header {
+    margin-bottom: 18px;
+}
+
+.tipos-proceso-card-header h2 {
+    font-size: 24px;
+    color: #17324d;
+    margin: 0;
+}
+
+.tipos-proceso-card-header p {
+    margin: 0;
+    color: #48637c;
+    line-height: 1.6;
+}
+
+.tipos-proceso-mode-switch {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.tipo-modo-card {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 16px;
+    border-radius: 16px;
+    border: 1px solid #d3dde8;
+    background: #f8fafc;
+    text-decoration: none;
+    color: #17324d;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.tipo-modo-card strong {
+    font-size: 17px;
+}
+
+.tipo-modo-card:hover {
+    transform: translateY(-1px);
+    border-color: #8ccf94;
+    box-shadow: 0 12px 24px rgba(111, 190, 119, 0.12);
+}
+
+.tipo-modo-card.is-active {
+    background: #e3f5e6;
+    border-color: #6fbe77;
+    box-shadow: 0 12px 24px rgba(111, 190, 119, 0.15);
+}
+
+.tipo-modo-card.is-disabled {
+    opacity: 0.65;
+    pointer-events: none;
+}
+
+.tipos-proceso-hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 28px 30px;
+    border-radius: 24px;
+    background: #e3f5e6;
+    margin-bottom: 22px;
+}
+
+.tipos-proceso-hero h1 {
+    font-size: 32px;
+    line-height: 1.1;
+    margin: 0 0 10px;
+    color: #17324d;
+}
+
+.tipos-proceso-lead {
+    max-width: 760px;
+    color: #48637c;
+    line-height: 1.6;
+    margin: 0;
 }
 
 .tipos-proceso-panel .grupo input::placeholder {
     color: #495057;
     opacity: 0.7;
+}
+
+.tipos-proceso-panel .grupo input:focus,
+.tipos-proceso-panel .grupo select:focus {
+    border-color: #b8c4d1;
+    box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.16);
 }
 
 .tipos-proceso-panel .btn-tipos-proceso {
@@ -227,9 +339,47 @@
     opacity: 1;
 }
 
+.btn-eliminar-tipos {
+    background: #d97b7b;
+    color: #fff;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-eliminar-tipos:hover {
+    background: #c96b6b;
+}
+
+.tipos-proceso-panel button[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
 @media (max-width: 768px) {
     .perfil-card {
         padding: 16px;
+    }
+
+    .tipos-proceso-hero {
+        padding: 22px 18px;
+        border-radius: 18px;
+    }
+
+    .tipos-proceso-hero h1 {
+        font-size: 26px;
+    }
+
+    .tipos-proceso-card {
+        padding: 18px;
+        border-radius: 18px;
+    }
+
+    .tipos-proceso-mode-switch {
+        grid-template-columns: 1fr;
     }
 
     .botones {

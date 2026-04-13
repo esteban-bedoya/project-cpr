@@ -189,6 +189,21 @@ public static function contarComisionadosActivos($ignorarId = null)
     return (int)$stmt->fetchColumn();
 }
 
+public static function contarCasosPendientesAsignados($usuarioId)
+{
+    // Cuenta casos pendientes asignados al comisionado.
+    global $pdo;
+
+    $stmt = $pdo->prepare("
+        SELECT COUNT(*)
+        FROM casos
+        WHERE asignado_a = ? AND estado = 'Pendiente'
+    ");
+    $stmt->execute([$usuarioId]);
+
+    return (int)$stmt->fetchColumn();
+}
+
 public static function saveRememberToken($id, $token)
 {
     // Guarda el token temporal de recuperacion.
