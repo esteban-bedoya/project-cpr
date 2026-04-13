@@ -16,6 +16,8 @@
 
 <body class="private">
 
+    <?php $usuarioSesionId = (int)($_SESSION['user']['id'] ?? 0); ?>
+
     <!-- Header del administrador -->
     <?php include __DIR__ . '/../components/header_administrador.php'; ?>
 
@@ -197,7 +199,8 @@
                                 '<?= addslashes($usuario['correo']) ?>',
                                 '<?= $usuario['telefono'] ?>',
                                 '<?= $usuario['estado'] ?>',
-                                '<?= htmlspecialchars((string)($usuario['vigencia_inicio'] ?? '')) ?>'
+                                '<?= htmlspecialchars((string)($usuario['vigencia_inicio'] ?? '')) ?>',
+                                '<?= (int)$usuario['id'] === $usuarioSesionId ? '1' : '0' ?>'
                             )">Editar</span>
                             </td>
                         </tr>
@@ -382,7 +385,8 @@
             editVigenciaGroup.style.display = editRol.value === '2' ? 'block' : 'none';
         }
 
-        function abrirModalEditar(id, username, documento, rol, correo, telefono, estado, vigenciaInicio) {
+        function abrirModalEditar(id, username, documento, rol, correo, telefono, estado, vigenciaInicio, esUsuarioSesion) {
+            const editEstado = document.getElementById("edit-estado");
 
             document.getElementById("edit-id").value = id;
             document.getElementById("edit-username").value = username;
@@ -390,8 +394,18 @@
             document.getElementById("edit-rol").value = rol;
             document.getElementById("edit-correo").value = correo;
             document.getElementById("edit-telefono").value = telefono;
-            document.getElementById("edit-estado").value = estado;
+            editEstado.value = estado;
             document.getElementById("edit-vigencia-inicio").value = vigenciaInicio;
+
+            const esPropioUsuario = esUsuarioSesion === '1';
+            const opcionInactivo = editEstado.querySelector('option[value="2"]');
+            if (opcionInactivo) {
+                opcionInactivo.disabled = esPropioUsuario;
+            }
+            if (esPropioUsuario && editEstado.value === '2') {
+                editEstado.value = '1';
+            }
+
             actualizarVigenciaEditar();
 
             modalEditar.style.display = "flex";
@@ -416,14 +430,36 @@
             'input[name="filtro_estado"], input[name="filtro_rol"]'
         );
         const filtroVigenciaInicio = document.getElementById('filtro-vigencia-inicio');
+        const filtroRolTodos = document.querySelector('input[name="filtro_rol"][value="todos"]');
+        const filtroRolAdmin = document.querySelector('input[name="filtro_rol"][value="1"]');
+        const filtroRolComisionado = document.querySelector('input[name="filtro_rol"][value="2"]');
 
         function aplicarFiltrosUsuarios() {
             const estado = document.querySelector('input[name="filtro_estado"]:checked').value;
-            const rol = document.querySelector('input[name="filtro_rol"]:checked').value;
             const vigenciaInicio = filtroVigenciaInicio ? filtroVigenciaInicio.value : 'todas';
+            let rol = document.querySelector('input[name="filtro_rol"]:checked').value;
+
+            if (vigenciaInicio !== 'todas') {
+                rol = '2';
+                if (filtroRolComisionado) {
+                    filtroRolComisionado.checked = true;
+                }
+            }
 
             const nuevaURL = `usuarios.php?filtro_estado=${estado}&filtro_rol=${rol}&filtro_vigencia_inicio=${encodeURIComponent(vigenciaInicio)}`;
             window.location.href = nuevaURL;
+        }
+
+        function sincronizarFiltroVigenciaConRol() {
+            if (!filtroVigenciaInicio || !filtroRolAdmin || !filtroRolTodos || !filtroRolComisionado) return;
+
+            const usaVigencia = filtroVigenciaInicio.value !== 'todas';
+            filtroRolAdmin.disabled = usaVigencia;
+            filtroRolTodos.disabled = usaVigencia;
+
+            if (usaVigencia) {
+                filtroRolComisionado.checked = true;
+            }
         }
 
         radios.forEach(radio => {
@@ -431,7 +467,11 @@
         });
 
         if (filtroVigenciaInicio) {
-            filtroVigenciaInicio.addEventListener('change', aplicarFiltrosUsuarios);
+            filtroVigenciaInicio.addEventListener('change', () => {
+                sincronizarFiltroVigenciaConRol();
+                aplicarFiltrosUsuarios();
+            });
+            sincronizarFiltroVigenciaConRol();
         }
     </script>
 

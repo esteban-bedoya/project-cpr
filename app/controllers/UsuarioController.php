@@ -53,6 +53,10 @@ class UsuarioController
         $filtro_rol    = $_GET['filtro_rol'] ?? 'todos';
         $filtro_vigencia_inicio = $_GET['filtro_vigencia_inicio'] ?? 'todas';
 
+        if ($filtro_vigencia_inicio !== 'todas' && ctype_digit((string)$filtro_vigencia_inicio)) {
+            $filtro_rol = '2';
+        }
+
         // El select de vigencias sale de años reales en BD.
         $usuarios = User::filtrar($filtro_estado, $filtro_rol, $filtro_vigencia_inicio);
         $vigenciasInicio = User::getVigenciasInicio();
@@ -144,6 +148,15 @@ class UsuarioController
         $telefono  = $_POST['telefono'];
         $estado    = $_POST['estado'];
         $vigenciaInicio = trim($_POST['vigencia_inicio'] ?? '');
+
+        $usuarioSesionId = (int)($_SESSION['user']['id'] ?? 0);
+        $usuarioEditadoId = (int)$id;
+        if ($usuarioSesionId === $usuarioEditadoId && (int)$estado !== 1) {
+            $_SESSION['error'] = ["No puedes inhabilitar tu propio usuario mientras tienes la sesión iniciada."];
+            header("Location: /project-cpr/public/usuarios.php");
+            exit;
+        }
+
         [$erroresVigencia, $anioInicio] = $this->validarVigenciaComisionado($rol, $estado, $vigenciaInicio, $id);
 
         if (!empty($erroresVigencia)) {
